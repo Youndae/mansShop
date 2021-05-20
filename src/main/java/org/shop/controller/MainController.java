@@ -1,0 +1,21 @@
+package org.shop.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+@Slf4j
+public class MainController {
+
+    @GetMapping("/main")
+    public String main(Model model){
+
+        log.info("mainPage");
+
+        model.addAttribute("test", "WelCome To MyPage");
+
+        return "Main";
+    }
+}
