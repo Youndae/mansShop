@@ -16,12 +16,6 @@
             p:username="${jdbc.oracle.userName}"
             p:password="${jdbc.oracle.password}"/>
 
-        <!--<property name="driverClassName" value="${jdbc.oracle.driverClassName"/>
-        <property name="url"/>
-        <property name="username"/>
-        <property name="password"/>-->
-    <!--</bean>-->
-
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
