@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +13,7 @@ public class MemberVO {
     private String userId;
     private String userPw;
     private String userName;
-    private String email;
+    private String userEmail;
     private Date userBirth;
     private String userPhone;
 }

@@ -1,21 +1,27 @@
 package org.shop.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import lombok.extern.log4j.Log4j;
+import org.shop.mapper.MainMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@Slf4j
+@RequestMapping("/main")
+@RestController
+@Log4j
 public class MainController {
 
-    @GetMapping("/main")
-    public String main(Model model){
+    @Autowired(required = false)
+    private MainMapper mainMapper;
 
-        log.info("mainPage");
+    @GetMapping("/")
+    public void main(Model model){
+        //메인페이지
+        //BEST상품 12개, NEW 상품 12개 출력.
 
-        model.addAttribute("test", "WelCome To MyPage");
-
-        return "Main";
     }
+
+
 }
