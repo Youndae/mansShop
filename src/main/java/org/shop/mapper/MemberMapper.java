@@ -4,5 +4,9 @@ import org.shop.domain.MemberVO;
 
 public interface MemberMapper {
 
-    public MemberVO userInfo(String userId);
+    public void join();
+
+    public void findId();
+
+    public void findPw();
 }

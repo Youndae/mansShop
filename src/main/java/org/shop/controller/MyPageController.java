@@ -1,4 +1,85 @@
 package org.shop.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import org.shop.domain.MemberVO;
+import org.shop.domain.MyQnAVO;
+import org.shop.mapper.MyPageMapper;
+import org.shop.service.MyPageService;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RequestMapping("/myPage")
+@RestController
+@Log4j
+@AllArgsConstructor
 public class MyPageController {
+
+    private MyPageService myPageService;
+
+    private MyPageMapper myPageMapper;
+
+    @GetMapping("/getModifyInfo")
+    public void getModifyInfo(Model model){
+        //정보 수정 창
+    }
+
+    @PostMapping("/modifyInfo")
+    public void modifyInfo(MemberVO memberVO){
+        //정보 수정 처리
+    }
+
+    @GetMapping("/memberOrderList")
+    public void memberOrderList(Model model){
+        //회원 주문 내역
+    }
+
+    @GetMapping("/memberReviewList")
+    public void memberReviewList(Model model){
+        //회원 리뷰 내역
+    }
+
+    @GetMapping("/insertReview")
+    public void getInsertReview(Model model){
+        //리뷰 작성 페이지
+    }
+
+    @PostMapping("/insertReview")
+    public void insertReview(){
+        //리뷰작성 처리
+    }
+
+    @GetMapping("/memberQnAList")
+    public void memberQnAList(Model model){
+        //회원 QnA 목록
+    }
+
+    @GetMapping("/memberQnADetail")
+    public void memberQnADetail(MyQnAVO myQnAVO){
+        //회원 QnA Detail
+    }
+
+    @GetMapping("/insertMemberQnA")
+    public void getInsertMemberQnA(){
+        //회원 QnA 작성 페이지
+    }
+
+    @PostMapping("/insertMemberQnA")
+    public void insertMemberQnA(){
+        //회원 QnA 작성 처리
+    }
+
+    @GetMapping("/likeList")
+    public void likeList(Model model){
+        //찜목록
+    }
+
+    @PostMapping("/insertMemberReply")
+    public void insertMemberReply(){
+        //회원 QnA 댓글 작성 처리
+    }
+
 }
