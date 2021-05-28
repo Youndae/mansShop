@@ -3,26 +3,30 @@ package org.shop.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.mapper.AdminMapper;
-import org.shop.service.AdminService;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/admin")
-@RestController
+@RequestMapping("/admin/")
+@Controller
 @Log4j
 @AllArgsConstructor
 public class AdminController {
 
     private AdminMapper adminMapper;
 
-    private AdminService adminService;
+    //private AdminService adminService;
 
     @GetMapping("/productList")
-    public void productList(Model model){
+    public void productList(Model model) throws Exception{
         //상품 목록
+        log.info("pList");
+
+        adminMapper.pList().forEach(product -> log.info(product));
+
+        model.addAttribute("pList", adminMapper.pList());
     }
 
     @GetMapping("/addProduct")

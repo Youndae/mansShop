@@ -5,29 +5,33 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.MemberVO;
 import org.shop.domain.MyQnAVO;
 import org.shop.mapper.MyPageMapper;
-import org.shop.service.MyPageService;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/myPage")
-@RestController
+@RequestMapping("/myPage/")
+@Controller
 @Log4j
 @AllArgsConstructor
 public class MyPageController {
 
-    private MyPageService myPageService;
+    //private MyPageService myPageService;
 
     private MyPageMapper myPageMapper;
 
-    @GetMapping("/getModifyInfo")
+    @GetMapping("/ModifyInfo")
     public void getModifyInfo(Model model){
         //정보 수정 창
+        String userId = "user1";
+
+        log.info(myPageMapper.getModifyInfo(userId));
+
+        model.addAttribute("info", myPageMapper.getModifyInfo(userId));
     }
 
-    @PostMapping("/modifyInfo")
+    @PostMapping("/ModifyInfo")
     public void modifyInfo(MemberVO memberVO){
         //정보 수정 처리
     }

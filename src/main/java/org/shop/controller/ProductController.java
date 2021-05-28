@@ -15,9 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductController {
 
-    private ProductMapper productMapper;
+    //private ProductMapper productMapper;
 
-    private ProductService productService;
+    //private ProductService productService;
 
     @GetMapping("/menu")
     public void productMenu(Model model, String pClassification){

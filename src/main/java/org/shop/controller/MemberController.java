@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class MemberController {
 
-    private MemberService memberService;
+    //private MemberService memberService;
 
     @GetMapping("/join")
     public void getJoin(){

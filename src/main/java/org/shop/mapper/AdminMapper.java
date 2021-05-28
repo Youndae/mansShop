@@ -1,9 +1,6 @@
 package org.shop.mapper;
 
-import org.shop.domain.OrderVO;
-import org.shop.domain.ProductOpVO;
-import org.shop.domain.ProductQnAVO;
-import org.shop.domain.SalesVO;
+import org.shop.domain.*;
 
 import java.util.List;
 
@@ -42,4 +39,6 @@ public interface AdminMapper {
     public List<SalesVO> salesTermList();
 
     public void replyProductQnA();
+
+    public List<ProductVO> pList() throws Exception;
 }

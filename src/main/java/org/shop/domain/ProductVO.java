@@ -1,15 +1,13 @@
 package org.shop.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
+
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class ProductVO {
+
     private String pno;
     private String pClassification;
     private String pName;

@@ -1,9 +1,6 @@
 package org.shop.mapper;
 
-import org.shop.domain.LikeVO;
-import org.shop.domain.MyQnAReplyVO;
-import org.shop.domain.MyQnAVO;
-import org.shop.domain.OrderVO;
+import org.shop.domain.*;
 
 import java.util.List;
 
@@ -11,7 +8,7 @@ public interface MyPageMapper {
 
     public void modifyInfo();
 
-    public void getModifyInfo();
+    public MemberVO getModifyInfo(String userId);
 
     public List<OrderVO> memberOrderList();
 

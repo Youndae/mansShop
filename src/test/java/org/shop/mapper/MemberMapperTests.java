@@ -67,12 +67,12 @@ public class MemberMapperTests {
             }
         }
     }
-
+/*
     @Test
     public void userInfoTest(){
-        MemberVO vo = mapper.userInfo("user1");
+        MemberVO vo = mapper.getModifyInfo("user1");
 
         log.info(vo);
 
-    }
+    }*/
 }
