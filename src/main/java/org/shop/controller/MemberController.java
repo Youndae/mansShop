@@ -3,6 +3,8 @@ package org.shop.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.service.MemberService;
+import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,13 @@ public class MemberController {
 
     //private MemberService memberService;
 
+    @GetMapping("/accessError")
+    public void accessDenied(Authentication auth, Model model){
+        log.info("access Denied : " + auth);
+
+        model.addAttribute("msg", "Access Denied");
+    }
+
     @GetMapping("/join")
     public void getJoin(){
         //회원가입 페이지
@@ -27,13 +36,16 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public void login(){
+    public void login(String error, String logout, Model model){
         //로그인
+        log.info("error : " + error);
+        log.info("logout : " + logout);
+
     }
 
     @GetMapping("/logout")
     public void logout(){
-
+        log.info("logout");
     }
 
     @GetMapping("/findId")

@@ -36,3 +36,8 @@
 >   * 작성 후 PropertyNotFoundException에러 발생했으나 해결.
 >   * 상품 이미지 캡쳐랑 오류 해결하는데 너무 오래걸려서 시간 많이 지체되었으므로 좀 빠르게 작업해야함.
 >   * 시큐리티 테스트 바로 하고 관리자파트 먼저 구현하는쪽으로.
+
+>2021/05/31
+>   * security 설정 중
+>   * DB에 회원 데이터 넣으려고 테스트 작성했는데 passwordEncoder 오류.
+>   * UnsatisfiedDependencyException발생.

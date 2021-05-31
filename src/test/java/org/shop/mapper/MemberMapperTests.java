@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.shop.domain.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -24,6 +25,9 @@ public class MemberMapperTests {
     @Setter(onMethod_ = @Autowired)
     private MemberMapper mapper;
 
+    @Setter(onMethod_ = @Autowired)
+    private PasswordEncoder pwEncoder;
+
     @Test
     public void testInsertMember(){
         String sql = "insert into member(userId, userPw, userName, userEmail, UserPhone, userBirth) values(?, ?, ?, ?, ?, sysdate)";
@@ -38,9 +42,8 @@ public class MemberMapperTests {
                 con = ds.getConnection();
                 pstmt = con.prepareStatement(sql);
 
-
                 pstmt.setString(1, "user" + i);
-                pstmt.setString(2, "1234");
+                pstmt.setString(2, pwEncoder.encode("1234"));
                 pstmt.setString(3, "user" + i);
                 pstmt.setString(4, "user@google.com");
                 pstmt.setString(5, "010-0000-000"+i);
@@ -75,4 +78,5 @@ public class MemberMapperTests {
         log.info(vo);
 
     }*/
+
 }

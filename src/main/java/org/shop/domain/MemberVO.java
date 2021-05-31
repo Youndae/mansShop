@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +17,6 @@ public class MemberVO {
     private String userEmail;
     private Date userBirth;
     private String userPhone;
+
+    private List<AuthVO> authList;
 }
