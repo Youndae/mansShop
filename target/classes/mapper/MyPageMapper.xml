@@ -3,8 +3,29 @@
 
 <mapper namespace="org.shop.mapper.MyPageMapper">
 
-    <select id="getModifyInfo" resultType="org.shop.domain.MemberVO">
-        SELECT * FROM member WHERE userId = #{userId}
+    <resultMap id="memberMap" type="org.shop.domain.MemberVO">
+        <id property="userId" column="userId"/>
+        <result property="userId" column="userId"/>
+        <result property="userPw" column="userPw"/>
+        <result property="userName" column="userName"/>
+        <result property="userEmail" column="userEmail"/>
+        <result property="userBirth" column="userBirth"/>
+        <result property="userPhone" column="userPhone"/>
+        <collection property="authList" resultMap="authMap"></collection>
+    </resultMap>
+
+    <resultMap id="authMap" type="org.shop.domain.AuthVO">
+        <result property="userId" column="userId"/>
+        <result property="auth" column="auth"/>
+    </resultMap>
+
+    <select id="getModifyInfo" resultMap="memberMap">
+        SELECT
+            mem.userId, userPw, userName, userEmail, userBirth, userPhone, auth
+        FROM
+            member mem LEFT OUTER JOIN member_auth auth ON mem.userId = auth.userId
+        WHERE
+            mem.userId = #{userId}
     </select>
 
 </mapper>

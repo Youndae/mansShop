@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.MemberVO;
 import org.shop.domain.MyQnAVO;
 import org.shop.mapper.MyPageMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +23,12 @@ public class MyPageController {
     private MyPageMapper myPageMapper;
 
     @GetMapping("/ModifyInfo")
+    /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
     public void getModifyInfo(Model model){
         //정보 수정 창
         String userId = "user1";
 
-        log.info(myPageMapper.getModifyInfo(userId));
+        log.info("MyPage Controller " + myPageMapper.getModifyInfo(userId));
 
         model.addAttribute("info", myPageMapper.getModifyInfo(userId));
     }

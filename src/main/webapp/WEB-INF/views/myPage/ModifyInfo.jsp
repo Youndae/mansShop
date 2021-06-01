@@ -15,6 +15,7 @@
         <label>이름</label><input type="text" name="userName" value="${info.userName}" readonly>
         <label>이메일</label><input type="text" name="userEmail" value="${info.userEmail}">
     </form>
+    <a href="/member/login">로그인</a>
 </div>
 </body>
 </html>

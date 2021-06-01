@@ -2,16 +2,17 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.service.MemberService;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/member")
-@RestController
+import javax.servlet.http.HttpServletRequest;
+
+@RequestMapping("/member/")
+@Controller
 @Log4j
 @AllArgsConstructor
 public class MemberController {
@@ -36,11 +37,16 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public void login(String error, String logout, Model model){
+    public void login(String error, String logout, Model model, HttpServletRequest request){
         //로그인
         log.info("error : " + error);
         log.info("logout : " + logout);
 
+        String referer = request.getHeader("Referer");
+
+        log.info("Referer : " + referer);
+
+        request.getSession().setAttribute("prevPage", referer);
     }
 
     @GetMapping("/logout")

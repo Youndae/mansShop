@@ -5,6 +5,7 @@
 <head>
     <title>Title</title>
 </head>
+<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <body>
 <h1>Login</h1>
 <form action="/login" role="form" method="post">
@@ -13,14 +14,13 @@
             <input class="form-control" placeholder="userId" name="username" type="text" autofocus>
         </div>
         <div class="form-group">
-            <input class="form-control" placeholder="userPw" name="userPw" type="password">
+            <input class="form-control" placeholder="Password" name="password" type="password">
         </div>
         <a href="/myPage/ModifyInfo" class="loginBtn">Login</a>
     </fieldset>
 
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 </form>
-
 <script>
     $(".loginBtn").on("click", function(e){
         e.preventDefault();

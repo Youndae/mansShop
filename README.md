@@ -41,3 +41,12 @@
 >   * security 설정 중
 >   * DB에 회원 데이터 넣으려고 테스트 작성했는데 passwordEncoder 오류.
 >   * UnsatisfiedDependencyException발생.
+
+>2021/06/01
+>   * UnsatisfiedDependencyException 해결.
+>   * PasswordEncoder는 security-context.xml에 정의해놓고 ContextConfiguration에 applicationContext.xml만 사용해서 오류 난 것.
+>   * security 테스트 완료
+>   * security 테스트하면서 권한에 따른 페이지 이동과 이전 페이지 등 테스트.
+>   * 기존 AuthenticationSuccessHandler를 재정의하던 LoginSuccessHandler 대신
+>   * SavedRequestAwareAuthenticationSuccessHandler를 상속받는 CustomAuthenticationSuccessHandler로 변경.
+>   * 로그인 시 이전페이지로 이동하기 위함. 그리고 관리자는 로그인하면 바로 관리자 페이지로 이동.

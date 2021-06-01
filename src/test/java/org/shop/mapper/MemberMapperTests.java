@@ -15,7 +15,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("file:src/main/webapp/WEB-INF/spring-config/applicationContext.xml")
+@ContextConfiguration({"file:src/main/webapp/WEB-INF/spring-config/applicationContext.xml",
+                        "file:src/main/webapp/WEB-INF/spring-config/security-context.xml"})
 @Log4j
 public class MemberMapperTests {
 
@@ -26,7 +27,7 @@ public class MemberMapperTests {
     private MemberMapper mapper;
 
     @Setter(onMethod_ = @Autowired)
-    private PasswordEncoder pwEncoder;
+    private PasswordEncoder pwencoder;
 
     @Test
     public void testInsertMember(){
@@ -43,7 +44,7 @@ public class MemberMapperTests {
                 pstmt = con.prepareStatement(sql);
 
                 pstmt.setString(1, "user" + i);
-                pstmt.setString(2, pwEncoder.encode("1234"));
+                pstmt.setString(2, pwencoder.encode("1234"));
                 pstmt.setString(3, "user" + i);
                 pstmt.setString(4, "user@google.com");
                 pstmt.setString(5, "010-0000-000"+i);
@@ -78,5 +79,110 @@ public class MemberMapperTests {
         log.info(vo);
 
     }*/
+
+    @Test
+    public void testAdminInsert(){
+        String sql = "insert into member(userId, userPw, userName, userEmail, UserPhone, userBirth) values(?, ?, ?, ?, ?, sysdate)";
+
+            Connection con = null;
+            PreparedStatement pstmt = null;
+
+            try{
+                con = ds.getConnection();
+                pstmt = con.prepareStatement(sql);
+
+                pstmt.setString(1, "admin");
+                pstmt.setString(2, pwencoder.encode("1234"));
+                pstmt.setString(3, "admin");
+                pstmt.setString(4, "admin@google.com");
+                pstmt.setString(5, "010-1000-0000");
+
+                pstmt.executeUpdate();
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                if(pstmt != null) {
+                    try{
+                        pstmt.close();
+                    }catch (Exception e){
+
+                    }
+                }
+
+                if(con != null){
+                    try{
+                        con.close();
+                    }catch (Exception e){
+
+                    }
+                }
+            }
+    }
+
+    @Test
+    public void testMemberAuth(){
+        String sql = "insert into member_auth(userId, auth) values(?, ?)";
+
+        for(int i = 0; i < 5; i++){
+            Connection con = null;
+            PreparedStatement pstmt = null;
+
+            try{
+                con = ds.getConnection();
+                pstmt = con.prepareStatement(sql);
+
+                pstmt.setString(1, "user"+i);
+                pstmt.setString(2, "ROLE_MEMBER");
+
+                pstmt.executeUpdate();
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                if(con != null){
+                    try{
+                        con.close();
+                    }catch (Exception e){}
+                }
+
+                if(pstmt != null){
+                    try{
+                        pstmt.close();
+                    }catch (Exception e){}
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testAdminAuth(){
+        String sql = "insert into member_auth(userId, auth) values(?, ?)";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+
+        try{
+            con = ds.getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, "admin");
+            pstmt.setString(2, "ROLE_ADMMIN");
+
+            pstmt.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(con != null){
+                try{
+                    con.close();
+                }catch (Exception e){}
+            }
+
+            if(pstmt != null){
+                try{
+                    pstmt.close();
+                }catch (Exception e){}
+            }
+        }
+    }
 
 }

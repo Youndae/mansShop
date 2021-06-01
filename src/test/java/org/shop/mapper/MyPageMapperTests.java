@@ -23,6 +23,7 @@ public class MyPageMapperTests {
 
         log.info(vo);
 
+        vo.getAuthList().forEach(authVO -> log.info(authVO));
 
     }
 }
