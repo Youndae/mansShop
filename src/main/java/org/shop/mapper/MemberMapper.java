@@ -9,4 +9,6 @@ public interface MemberMapper {
     public void findId();
 
     public void findPw();
+
+    int idCheck(String userId) throws Exception;
 }

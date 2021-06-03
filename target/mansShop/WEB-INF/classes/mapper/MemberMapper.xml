@@ -7,4 +7,8 @@
         SELECT * FROM member WHERE userId = #{userId}
     </select>
 
+
+    <select id="idCheck" resultType="int">
+        SELECT count(*) FROM member WHERE userId = #{userId}
+    </select>
 </mapper>

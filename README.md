@@ -50,3 +50,10 @@
 >   * 기존 AuthenticationSuccessHandler를 재정의하던 LoginSuccessHandler 대신
 >   * SavedRequestAwareAuthenticationSuccessHandler를 상속받는 CustomAuthenticationSuccessHandler로 변경.
 >   * 로그인 시 이전페이지로 이동하기 위함. 그리고 관리자는 로그인하면 바로 관리자 페이지로 이동.
+
+>2021/06/03
+>   * 회원가입 구현중.
+>   * 아이디 중복체크 구현중에 ajax 부분 문제 발생.
+>   * 403에러 출력되는 중이고 ajax success에 unused property 라는 오류가 발생.
+>   * 오류내용이 제대로 출력되지 않고 accessError로 자꾸 넘어가서 
+>   * security-context.xml에 customAccessDeniedHandler 주석처리.
