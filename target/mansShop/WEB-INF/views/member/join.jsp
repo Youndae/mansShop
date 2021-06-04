@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <title>Title</title>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/Member.js"></script>
@@ -13,7 +15,7 @@
         <label>아이디</label>
         <input type="text" id="userId" placeholder="아이디를 입력하세요">
         <button type="button" id="IdCheck">중복체크</button>
-        <div class="check" id="overlap"></div>
+        <div class="check" id="idOverlap"></div>
     </div>
     <div>
         <label>비밀번호</label>
@@ -21,7 +23,8 @@
     </div>
     <div>
         <label>비밀번호 확인</label>
-        <input type="password" id="checkUserPw" placeholder="비밀번호를 다시 입력하세요" onchange="javascript:checkPassword();">
+        <input type="password" id="checkUserPw" placeholder="비밀번호를 한번 더 입력하세요" onchange="javascript:checkPassword();">
+        <div class="checkPw" id="pwOverlap"></div>
     </div>
     <div>
         <label>이름</label>
@@ -29,7 +32,8 @@
     </div>
     <div>
         <label>이메일</label>
-        <input type="text" id="userEmail">
+        <input type="text" id="userEmail" onchange="javascript:checkEmail();">
+        <div class="checkEmail" id="emailOverlap"></div>
     </div>
     <div>
         <label>생년월일</label>
@@ -40,8 +44,10 @@
     </div>
     <div>
         <label>연락처</label>
-        <input type="text" id="userPhone">
+        <input type="text" id="userPhone" placeholder="-를 제외한 숫자만 입력하세요" onchange="javascript:checkPhone();">
+        <div class="checkPhone" id="phoneOverlap"></div>
     </div>
+    <sec:csrfInput/>
 </form>
 <button type="button" id="join">가입</button>
 </body>

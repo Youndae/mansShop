@@ -57,3 +57,10 @@
 >   * 403에러 출력되는 중이고 ajax success에 unused property 라는 오류가 발생.
 >   * 오류내용이 제대로 출력되지 않고 accessError로 자꾸 넘어가서 
 >   * security-context.xml에 customAccessDeniedHandler 주석처리.
+
+>2021/06/04
+>   * 403에러 해결.
+>   * 권한문제였고 csrf를 같이 넘겨줘야 하는데 안넘겨줬기 때문에 발생한 오류.
+>   * token과 header를 같이 넘겨주는 방법으로 해결함.
+>   * 회원가입 정규표현식 작성.
+>   * 아이디 중복체크, 비밀번호 확인 작동 확인.

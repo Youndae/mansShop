@@ -1,27 +1,39 @@
+var idPattern = /^[A-Za-z0-9]{5,15}$/;
+var pwPattern = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/;
+var emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+var phonePattern = /^01(?:0|1|6|9)([0-9]{3,4})([0-9]{4})$/;
+
 $(document).ready(function(){
+
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
 
     $(function(){
         $("#IdCheck").click(function(){
-            var userId = {userId : $("#userId").val(),};
+            var UserId ={
+                UserId : $("#userId").val(),
+            };
 
-            console.log("userId : " + userId);
-            if(userId.userId == ""){
-                $("#overlap").text("아이디를 입력하세요.");
-
-            }else if(userId.userId != "" && (userId.userId < "0" || userId.userId > "9") && (userId.userId < "A" || userId.userId > "Z") && (userId.userId < "a" || userId.userId > "z")) {
-                $("#overlap").text("한글 및 특수문자는 사용하실 수 없습니다.");
+            if(UserId.UserId == ""){
+                $("#idOverlap").text("아이디를 입력하세요");
+            }else if(UserId.UserId != "" && idPattern.test(UserId.UserId) == false){
+                $("#idOverlap").text("영문자와 숫자를 사용한 5~15 자리만 가능합니다.");
 
             }else{
-                $.ajaxSettings.traditional = true;
                 $.ajax({
-                    url: "/member/CheckUserId",
+                    url: "/member/checkUserId",
                     type: "post",
-                    data: userId,
+                    data: UserId,
+                    dataType: "json",
+                    beforeSend : function(xhr){
+                        xhr.setRequestHeader(header, token);
+                    },
                     success : function(data){
+                        console.log("data : " + data);
                         if(data == 1){
-                            $("#overlap").text("사용중인 아이디입니다.");
+                            $("#idOverlap").text("사용중인 아이디입니다.");
                         }else{
-                            $("#overlap").text("사용가능한 아이디입니다.");
+                            $("#idOverlap").text("사용가능한 아이디입니다.");
                         }
 
                     },
@@ -73,12 +85,39 @@ function lastday(){
     }
 }
 
+
+
 function checkPassword(){
     var originPw = $("#userPw").val();
     var checkPw = $("#checkUserPw").val();
 
-    if(originPw != checkPw){
-        //같지 않다는 메세지 출력.
+    if(originPw.length < 8){
+        $("#pwOverlap").text("비밀번호는 8자리 이상입니다.");
+    }else if(originPw != checkPw){
+        $("#pwOverlap").text("비밀번호가 일치하지 않습니다.");
+    }else if(pwPattern.test(originPw) == false){
+        $("#pwOverlap").text("비밀번호는 영어,특수문자,숫자가 포함되어야합니다.");
+    }else{
+        $("#pwOverlap").text("");
     }
 }
 
+function checkEmail(){
+    var email = $("#userEmail").val();
+
+    if(emailPattern.test(email) == false){
+        $("#emailOverlap").text("유효한 주소가 아닙니다.");
+    }else{
+        $("#emailOverlap").text("");
+    }
+}
+
+function checkPhone(){
+    var phoneNo = $("#userPhone").val();
+
+    if(phonePattern.test(phoneNo) == false){
+        $("#phoneOverlap").text("유효한 번호가 아닙니다.");
+    }else{
+        $("#phoneOverlap").text("");
+    }
+}

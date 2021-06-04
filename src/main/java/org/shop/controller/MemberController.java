@@ -1,8 +1,8 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.mapper.MemberMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/member/")
 @Controller
 @Log4j
-@AllArgsConstructor
 public class MemberController {
 
     //private MemberService memberService;
 
+    @Autowired(required = false)
     private MemberMapper memberMapper;
 
     @GetMapping("/accessError")
@@ -78,9 +78,8 @@ public class MemberController {
 
 
     @PostMapping("/checkUserId")
-    @PreAuthorize("permitAll()")
     @ResponseBody
-    public int checkUserId(@RequestParam("userId") String userId) throws Exception{
+    public int checkUserId(@RequestParam("UserId") String userId) throws Exception{
 
         log.info("userId : " + userId);
 
