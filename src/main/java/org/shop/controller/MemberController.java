@@ -1,7 +1,10 @@
 package org.shop.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.shop.domain.MemberVO;
 import org.shop.mapper.MemberMapper;
+import org.shop.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -14,11 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/member/")
 @Controller
 @Log4j
+@AllArgsConstructor
 public class MemberController {
 
-    //private MemberService memberService;
+    private MemberService memberService;
 
-    @Autowired(required = false)
     private MemberMapper memberMapper;
 
     @GetMapping("/accessError")
@@ -34,8 +37,16 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public void join(){
+    public String join(MemberVO memberVO) throws Exception{
         //회원가입 처리
+
+        log.info("memberVO : " + memberVO);
+
+        memberService.join(memberVO);
+
+        log.info("join Success");
+
+        return "member/login";
     }
 
     @GetMapping("/login")

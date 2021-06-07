@@ -1,4 +1,3 @@
-/*var idPattern = /^[A-Za-z]{1}[A-Za-z0-9]{3,19}$/;*/
 var idPattern = /^[A-Za-z0-9]{5,15}$/;
 var pwPattern = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/;
 var emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
@@ -33,8 +32,10 @@ $(document).ready(function(){
                         console.log("data : " + data);
                         if(data == 1){
                             $("#idOverlap").text("사용중인 아이디입니다.");
+                            $("#idStat").val("0");
                         }else{
                             $("#idOverlap").text("사용가능한 아이디입니다.");
+                            $("#idStat").val("1");
                         }
 
                     },
@@ -89,7 +90,8 @@ function lastday(){
 
 
 function checkPassword(){
-    var originPw = $("#userPw").val();
+    var originPw = $("input[name='userPw']").val();
+    console.log("originPw : " + originPw);
     var checkPw = $("#checkUserPw").val();
 
     if(originPw.length < 8){
@@ -100,6 +102,7 @@ function checkPassword(){
         $("#pwOverlap").text("비밀번호는 영어,특수문자,숫자가 포함되어야합니다.");
     }else{
         $("#pwOverlap").text("");
+        $("#pwStat").val("1");
     }
 }
 
@@ -110,6 +113,7 @@ function checkEmail(){
         $("#emailOverlap").text("유효한 주소가 아닙니다.");
     }else{
         $("#emailOverlap").text("");
+        $("#mailStat").val("1");
     }
 }
 
@@ -120,6 +124,61 @@ function checkPhone(){
         $("#phoneOverlap").text("유효한 번호가 아닙니다.");
     }else{
         $("#phoneOverlap").text("");
+        $("#phoneStat").val("1");
     }
 }
 
+
+$(function(){
+    $("#join").click(function() {
+        var formObj = $("form[role='form']");
+        var year = $("#select_year").val();
+        var month = $("#select_month").val();
+        var day = $("#select_day").val();
+        var select_date = [year, month, day].join('-');
+        var str = "<input type='hidden' name='userBirth' value='" + select_date + "'>";
+
+
+        formObj.append(str);
+
+
+        if($("#userId").val() == ""){
+            console.log("id null");
+            $("#userId").focus();
+        }else if($("#idStat").val() == ""){
+            console.log("id stat null");
+            $("#idOverlap").text("아이디 중복체크를 해주세요");
+            $("#userId").focus();
+        }else if($("#idStat").val() == "0"){
+            console.log("id stat 0");
+            $("#userId").focus();
+        }else if($("#userPw").val() == ""){
+            console.log("pw null");
+            $("#pwOverlap").text("비밀번호를 입력하세요");
+            $("#userPw").focus();
+        }else if($("#checkUserPw").val() == ""){
+            console.log("checkPw null");
+            $("#pwOverlap").text("비밀번호를 한번 더 입력하세요");
+            $("#checkUserPw").focus();
+        }else if($("#pwStat").val() != "1"){
+            console.log("pwOverlap not null");
+            $("#userPw").focus();
+        }else if($("#userName").val() == ""){
+            console.log("Name Null");
+            $("#userName").focus();
+        }else if($("#userEmail").val() == "" || $("#mailStat").val() != "1"){
+            console.log("Email null || overlap not null");
+            $("#userEmail").focus();
+        }else if($("#userPhone").val() == "" || $("#phoneStat").val() != "1"){
+            console.log("Phone null || overlap not null");
+            $("#userPhone").focus();
+        }else{
+            alert("가입 고고");
+        }
+
+
+
+        /*formObj.submit();*/
+
+    })
+});

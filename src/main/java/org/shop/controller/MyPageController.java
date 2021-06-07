@@ -26,7 +26,7 @@ public class MyPageController {
     /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
     public void getModifyInfo(Model model){
         //정보 수정 창
-        String userId = "user1";
+        String userId = "coco";
 
         log.info("MyPage Controller " + myPageMapper.getModifyInfo(userId));
 
