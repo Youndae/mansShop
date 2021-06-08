@@ -17,6 +17,7 @@
 
     <resources mapping="/resources/**" location="/resources/" />
     <resources mapping="/js/**" location="/resources/js/"/>
+    <resources mapping="/img/**" location="/resources/img/"/>
 
 
     <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -27,5 +28,9 @@
     <bean:component-scan base-package="org.shop"/>
 
     <security:global-method-security pre-post-annotations="enabled" secured-annotations="enabled"/>
+
+    <beans:bean id="multipartResolver"
+                class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </beans:bean>
 
 </beans:beans>

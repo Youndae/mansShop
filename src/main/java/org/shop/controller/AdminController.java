@@ -2,6 +2,7 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.shop.domain.ProductOpVO;
 import org.shop.mapper.AdminMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Log4j
 @AllArgsConstructor
-
 public class AdminController {
 
     private AdminMapper adminMapper;
@@ -35,6 +35,21 @@ public class AdminController {
     @GetMapping("/addProduct")
     public void addProduct(){
         //상품 추가
+    }
+
+    @PostMapping("/addProduct")
+    public void insertProduct(ProductOpVO opVO){
+        log.info(opVO.getPClassification());
+        log.info(opVO.getPSize());
+
+        opVO.setPOpNo("6번상품옵션");
+        opVO.setPno("6번상품");
+        opVO.setFirstThumbnail("6번사진");
+
+        adminMapper.addProduct(opVO);
+        adminMapper.addProductOp(opVO);
+
+        log.info("insert complete");
     }
 
     @GetMapping("/productInfo")

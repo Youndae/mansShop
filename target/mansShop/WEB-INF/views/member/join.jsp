@@ -7,7 +7,7 @@
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="/js/Member.js"></script>
+<script type="text/javascript" src="/js/member.js"></script>
 <body>
 <h1>회원가입</h1>
 <form class="formJoin" action="/member/join" method="post" id="joinForm" role="form">

@@ -14,5 +14,4 @@ public class ProductVO {
     private Long pPrice;
     private Date pRegDate;
     private String firstThumbnail;
-    private String pInfo;
 }

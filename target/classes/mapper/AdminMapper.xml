@@ -7,4 +7,40 @@
         SELECT * FROM product
     </select>
 
+    <insert id="addProduct" parameterType="org.shop.domain.ProductOpVO">
+        INSERT INTO product(
+                pno
+                , pClassification
+                , pName
+                , pPrice
+                , pRegDate
+                , firstThumbnail
+                )
+            VALUES(
+                #{pno}
+                , #{pClassification}
+                , #{pName}
+                , #{pPrice}
+                , sysdate
+                , #{firstThumbnail}
+            )
+    </insert>
+
+    <insert id="addProductOp" parameterType="org.shop.domain.ProductOpVO">
+        INSERT INTO productOp(
+            pOpNo
+            , pno
+            , pSize
+            , pColor
+            , pStock
+        )
+        VALUES(
+            #{pOpNo}
+            , #{pno}
+            , #{pSize}
+            , #{pColor}
+            , #{pStock}
+        )
+    </insert>
+
 </mapper>

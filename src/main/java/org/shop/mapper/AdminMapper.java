@@ -8,7 +8,9 @@ public interface AdminMapper {
 
     public List<ProductOpVO> productList();
 
-    public void addProduct();
+    public void addProduct(ProductOpVO productOpVO);
+
+    public void addProductOp(ProductOpVO productOpVO);
 
     public void productInfo();
 
