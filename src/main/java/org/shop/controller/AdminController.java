@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ProductOpVO;
 import org.shop.mapper.AdminMapper;
+import org.shop.service.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/admin/")
 @Controller
@@ -19,7 +19,7 @@ public class AdminController {
 
     private AdminMapper adminMapper;
 
-    //private AdminService adminService;
+    private AdminService adminService;
 
     @GetMapping("/productList")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -37,17 +37,36 @@ public class AdminController {
         //상품 추가
     }
 
+    @PostMapping("/testAdd")
+    @ResponseBody
+    public void testAdd(ProductOpVO productOpVO, MultipartFile[] firstFiles){
+
+        log.info(productOpVO);
+        log.info(firstFiles);
+
+    }
+
     @PostMapping("/addProduct")
-    public void insertProduct(ProductOpVO opVO){
-        log.info(opVO.getPClassification());
-        log.info(opVO.getPSize());
+    @ResponseBody
+    public void insertProduct( ProductOpVO opVO,
+                                        MultipartFile[] firstFiles,
+                                        MultipartFile[] thumbFiles,
+                                        MultipartFile[] infoFiles
+                              ) throws Exception{
 
-        opVO.setPOpNo("6번상품옵션");
-        opVO.setPno("6번상품");
-        opVO.setFirstThumbnail("6번사진");
+        log.info("opVO : " + opVO);
 
-        adminMapper.addProduct(opVO);
-        adminMapper.addProductOp(opVO);
+        /*log.info(opVO.getPClassification());*/
+        /*log.info(opVO.getPSize());*/
+
+        /*opVO.setPOpNo("7번상품옵션");
+        opVO.setPno("7번상품");
+        opVO.setFirstThumbnail("6번사진");*/
+
+        /*adminMapper.addProduct(opVO);
+        adminMapper.addProductOp(opVO);*/
+
+        /*adminService.test(opVO, productImgVO, thumbnailVO, firstFiles, thumbFiles, infoFiles, request);*/
 
         log.info("insert complete");
     }

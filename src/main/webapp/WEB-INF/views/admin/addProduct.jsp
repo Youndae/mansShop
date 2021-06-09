@@ -6,12 +6,18 @@
     <meta name="_csrf" content="${_csrf.token}">
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
-<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/admin.js"></script>
+<style>
+    img{
+        width: 300px;
+        height: 300px;
+    }
+</style>
 <body>
 <h1>상품추가</h1>
 <div>
-    <form action="/admin/addProduct" id="addProduct" method="post">
+    <form id="addProductForm">
         <div>
             <label>상품 분류</label>
             <select id="classification" name="pClassification">
@@ -39,7 +45,7 @@
         </div>
         <div>
             <label>컬러</label>
-            <input type="text" name="pColor">
+            <input type="text" id="pColor" name="pColor">
         </div>
         <div>
             <label>가격</label>
@@ -49,17 +55,17 @@
             <label>재고</label>
             <input type="text" name="pStock">
         </div>
-        <div>
+        <div id="firstThumb">
             <label>대표이미지</label>
             <input type="file" name="firstThumbnail" value="파일 선택">
             <div id="firstThumbPreview"></div>
         </div>
-        <div>
+        <div id="thumb">
             <label>썸네일</label>
             <input type="file" name="thumbnail" value="파일 선택" multiple>
         </div>
         <div id="thumbPreview"></div>
-        <div>
+        <div id="productInfo">
             <label>상품정보</label>
             <input type="file" name="pImg" value="파일 선택" multiple>
         </div>

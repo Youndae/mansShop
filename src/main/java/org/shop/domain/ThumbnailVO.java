@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThumbnailVO {
-    private Long thumbNo;
+    private String thumbNo;
     private String pno;
     private String pThumbnail;
 }
