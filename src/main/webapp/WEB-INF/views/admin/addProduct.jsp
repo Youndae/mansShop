@@ -17,7 +17,7 @@
 <body>
 <h1>상품추가</h1>
 <div>
-    <form id="addProductForm">
+    <form action="/admin/testAdd" id="addProductForm" method="post">
         <div>
             <label>상품 분류</label>
             <select id="classification" name="pClassification">
@@ -55,6 +55,8 @@
             <label>재고</label>
             <input type="text" name="pStock">
         </div>
+        <sec:csrfInput/>
+    </form>
         <div id="firstThumb">
             <label>대표이미지</label>
             <input type="file" name="firstThumbnail" value="파일 선택">
@@ -70,9 +72,38 @@
             <input type="file" name="pImg" value="파일 선택" multiple>
         </div>
         <div id="imgPreview"></div>
-        <sec:csrfInput/>
-    </form>
+    <div>
+        <img src="/IMG/a.jpeg">
+    </div>
+
     <button type="button" id="addSubmit">등록</button>
 </div>
+<%--<script>
+    $(document).ready(function(){
+        $("#addSubmit").on('click', function(){
+            var form = $("#addProductForm")[0];
+            var formdata = new FormData(form);
+
+
+
+            $.ajax({
+               url: '/admin/testAdd',
+               processData : false,
+               contentType : false,
+               data : formdata,
+               type : 'POST',
+               dataType : 'json',
+               success : function(result){
+                   console.log("complete");
+               },
+                error : function(request, status, error){
+                    alert("code:" + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " +error);
+                }
+            });
+        })
+    })
+</script>--%>
 </body>
 </html>

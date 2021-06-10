@@ -144,38 +144,36 @@ $(document).ready(function() {
                 formData.append('firstThumbFile', firstThumbFile[index]);
             }
 
-            /*for(var index = 0; index < Object.keys(thumbFiles).length; index++){
+            for(var index = 0; index < Object.keys(thumbFiles).length; index++){
                 formData.append('thumbFiles', thumbFiles[index]);
             }
 
             for(var index = 0; index < Object.keys(infoFiles).length; index++){
                 formData.append('infoFiles', infoFiles[index]);
-            }*/
+            }
 
-            console.log("formdata1 : " + formData);
-
-            /*formData = JSON.stringify(formData);*/
+            // console.log("formdata1 : " + formData);
 
             /*console.log("test : " + formData.get('pColor'));*/
 
             /*console.log("formdata : " + formData);*/
 
-            console.log("type : " + typeof(formData));
+            // console.log("type : " + typeof(formData));
 
-            console.log("append complete");
+            // console.log("append complete");
 
             $.ajax({
-                url: '/admin/testAdd',
+                url: '/admin/addProduct',
                 enctype: 'multipart/form-data',
                 contentType: false,
                 processData: false,
                 cache: false,
                 type: 'post',
                 dataType: 'JSON',
-                data: JSON.stringify(formData),
-                beforeSend : function(xhr){
+                data: formData,
+                /*beforeSend : function(xhr){
                     xhr.setRequestHeader(header, token);
-                },
+                },*/
                 success: function(result){
                     if(result === -1){
                         alert("업로드 실패");

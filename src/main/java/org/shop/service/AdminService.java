@@ -11,7 +11,7 @@ import java.util.List;
 public interface AdminService {
 
     public void addProduct(ProductOpVO productOpVO, ProductImgVO productImgVO, ThumbnailVO thumbnailVO, List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg, HttpServletRequest request) throws Exception;
-    public void test(ProductOpVO productOpVO, ProductImgVO productImgVO, ThumbnailVO thumbnailVO,
+    public void test(ProductOpVO productOpVO,  ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception;
 

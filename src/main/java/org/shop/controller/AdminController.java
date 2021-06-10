@@ -2,7 +2,9 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.shop.domain.ProductImgVO;
 import org.shop.domain.ProductOpVO;
+import org.shop.domain.ThumbnailVO;
 import org.shop.mapper.AdminMapper;
 import org.shop.service.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RequestMapping("/admin/")
 @Controller
@@ -37,27 +42,41 @@ public class AdminController {
         //상품 추가
     }
 
-    @PostMapping("/testAdd")
-    @ResponseBody
-    public void testAdd(ProductOpVO productOpVO, MultipartFile[] firstFiles){
-
-        log.info(productOpVO);
-        log.info(firstFiles);
-
-    }
-
     @PostMapping("/addProduct")
     @ResponseBody
-    public void insertProduct( ProductOpVO opVO,
-                                        MultipartFile[] firstFiles,
-                                        MultipartFile[] thumbFiles,
-                                        MultipartFile[] infoFiles
+    public void insertProduct(ProductOpVO opVO, ThumbnailVO thumbnailVO, ProductImgVO imgVO,
+                                @RequestParam("firstThumbFile") List<MultipartFile> firstFiles,
+                                @RequestParam("thumbFiles") List<MultipartFile> thumbFiles,
+                                @RequestParam("infoFiles") List<MultipartFile> infoFiles,
+                                HttpServletRequest request
                               ) throws Exception{
 
-        log.info("opVO : " + opVO);
+        String path = request.getSession().getServletContext().getRealPath("IMG/");
 
-        /*log.info(opVO.getPClassification());*/
-        /*log.info(opVO.getPSize());*/
+        log.info("controller path : " + path);
+
+
+
+/*        log.info("opVO : " + opVO);
+
+        log.info(opVO.getPClassification());
+        log.info(opVO.getPName());
+
+        log.info("firstfile length : " + firstFiles.size());
+        log.info("thumbfile length : " + thumbFiles.size());
+        log.info("infofile length : " + infoFiles.size());
+
+        for(MultipartFile image : firstFiles){
+            log.info("first img name : " + image.getOriginalFilename());
+        }
+
+        for(MultipartFile image : thumbFiles){
+            log.info("thumbfile name : " + image.getOriginalFilename());
+        }
+
+        for(MultipartFile image : infoFiles){
+            log.info("infofile Name : " + image.getOriginalFilename());
+        }*/
 
         /*opVO.setPOpNo("7번상품옵션");
         opVO.setPno("7번상품");
@@ -66,7 +85,7 @@ public class AdminController {
         /*adminMapper.addProduct(opVO);
         adminMapper.addProductOp(opVO);*/
 
-        /*adminService.test(opVO, productImgVO, thumbnailVO, firstFiles, thumbFiles, infoFiles, request);*/
+        adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);
 
         log.info("insert complete");
     }

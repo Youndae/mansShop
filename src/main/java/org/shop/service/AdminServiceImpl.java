@@ -4,9 +4,11 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.ProductImgVO;
 import org.shop.domain.ProductOpVO;
 import org.shop.domain.ThumbnailVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -17,26 +19,41 @@ import java.util.UUID;
 @Log4j
 public class AdminServiceImpl implements AdminService{
 
+
     @Override
     //이미지 업로드 test메서드.
-    public void test(ProductOpVO productOpVO, ProductImgVO productImgVO, ThumbnailVO thumbnailVO,
+    public void test(ProductOpVO productOpVO, ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception{
+
+        String filePath = request.getSession().getServletContext().getRealPath("resources/");
+
+        log.info("filePath : " + filePath);
+
         for(MultipartFile image : firstThumb){
+            log.info("firstThumb start");
                 productOpVO.setPno(productOpVO.getPClassification() + productOpVO.getPName());
-                productOpVO.setFirstThumbnail(test2(image));
+                productOpVO.setFirstThumbnail(test2(image, filePath));
+                log.info("firstImg : " + productOpVO.getFirstThumbnail());
+
         }
         log.info("first end");
 
         for(MultipartFile image : thumb){
-            thumbnailVO.setPThumbnail(test2(image));
+            log.info("thumb start");
+            thumbnailVO.setPThumbnail(test2(image, filePath));
+            log.info("pthumb name : " + thumbnailVO.getPThumbnail());
+            log.info("thumb save complete");
             thumbnailVO.setThumbNo("s_"+productOpVO.getPno());
+            log.info("set ThumbNo");
             thumbnailVO.setPno(productOpVO.getPno());
+            log.info("set Thumb pno");
         }
         log.info("thumb end");
         int step = 1;
         for(MultipartFile image : infoImg){
-            productImgVO.setPImg(test2(image));
+            log.info("info start");
+            productImgVO.setPImg(test2(image, filePath));
             productImgVO.setPImgStep(step);
             productImgVO.setPno(productOpVO.getPno());
             step++;
@@ -50,9 +67,9 @@ public class AdminServiceImpl implements AdminService{
         log.info("productImgVO : " + productImgVO);
     }
 
-    public String test2(MultipartFile image){
+    public String test2(MultipartFile image, String filePath){
 
-        String filePath = "/img";
+        /*log.info("filePath : " + filePath);*/
 
         try{
             String originalname = image.getOriginalFilename();
@@ -63,12 +80,15 @@ public class AdminServiceImpl implements AdminService{
             String saveFile = filePath + saveName;
 
             /*image.transferTo(new File(saveFile));*/
+            log.info("image save. saveName : " + saveName);
 
             return saveName;
         }catch (Exception e){
+            log.info("Exception!!!");
             e.printStackTrace();
         }
 
+        log.info("why?");
         return "";
     }
 
