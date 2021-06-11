@@ -13,8 +13,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 @RequestMapping("/admin/")
 @Controller
@@ -51,9 +54,21 @@ public class AdminController {
                                 HttpServletRequest request
                               ) throws Exception{
 
-        String path = request.getSession().getServletContext().getRealPath("IMG/");
+        log.info("context path : " + request.getContextPath());
+
+        log.info("servlet path : " + request.getServletPath());
+
+
+        Set path = request.getSession().getServletContext().getResourcePaths("/");
+
 
         log.info("controller path : " + path);
+
+        String cPath = request.getSession().getServletContext().getRealPath("/resources/img/a.jpeg");
+        log.info(new File(cPath).exists());
+
+        String realPath = request.getSession().getServletContext().getRealPath("/resources/img/");
+        log.info("real Path : " + realPath);
 
 
 
@@ -85,7 +100,7 @@ public class AdminController {
         /*adminMapper.addProduct(opVO);
         adminMapper.addProductOp(opVO);*/
 
-        adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);
+        /*adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);*/
 
         log.info("insert complete");
     }

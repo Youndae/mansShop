@@ -26,7 +26,7 @@ public class AdminServiceImpl implements AdminService{
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception{
 
-        String filePath = request.getSession().getServletContext().getRealPath("resources/");
+        String filePath = request.getSession().getServletContext().getRealPath("/resources/img/");
 
         log.info("filePath : " + filePath);
 
@@ -79,7 +79,7 @@ public class AdminServiceImpl implements AdminService{
                     .append(originalname.substring(originalname.lastIndexOf("."))).toString();
             String saveFile = filePath + saveName;
 
-            /*image.transferTo(new File(saveFile));*/
+            image.transferTo(new File(saveFile));
             log.info("image save. saveName : " + saveName);
 
             return saveName;
