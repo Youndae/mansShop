@@ -43,4 +43,9 @@ public interface AdminMapper {
     public void replyProductQnA();
 
     public List<ProductVO> pList() throws Exception;
+
+
+
+
+    public List<ProductVO> getAttachList();
 }

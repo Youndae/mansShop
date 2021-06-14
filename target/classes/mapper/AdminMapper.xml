@@ -43,4 +43,7 @@
         )
     </insert>
 
+    <select id="getAttachList" resultType="org.shop.domain.ProductVO">
+        select * from product
+    </select>
 </mapper>

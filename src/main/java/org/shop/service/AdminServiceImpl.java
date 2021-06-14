@@ -26,7 +26,9 @@ public class AdminServiceImpl implements AdminService{
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception{
 
-        String filePath = request.getSession().getServletContext().getRealPath("/resources/img/");
+        /*String filePath = request.getSession().getServletContext().getRealPath("/resources/img/");*/
+
+        String filePath = "E:\\upload";
 
         log.info("filePath : " + filePath);
 
@@ -35,6 +37,9 @@ public class AdminServiceImpl implements AdminService{
                 productOpVO.setPno(productOpVO.getPClassification() + productOpVO.getPName());
                 productOpVO.setFirstThumbnail(test2(image, filePath));
                 log.info("firstImg : " + productOpVO.getFirstThumbnail());
+
+
+
 
         }
         log.info("first end");
@@ -77,9 +82,11 @@ public class AdminServiceImpl implements AdminService{
             String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
                     .append(UUID.randomUUID().toString())
                     .append(originalname.substring(originalname.lastIndexOf("."))).toString();
-            String saveFile = filePath + saveName;
+            /*String saveFile = filePath + saveName;*/
 
-            image.transferTo(new File(saveFile));
+            File saveFile = new File(filePath, saveName);
+
+            image.transferTo(saveFile);
             log.info("image save. saveName : " + saveName);
 
             return saveName;

@@ -4,18 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ProductImgVO;
 import org.shop.domain.ProductOpVO;
+import org.shop.domain.ProductVO;
 import org.shop.domain.ThumbnailVO;
 import org.shop.mapper.AdminMapper;
 import org.shop.service.AdminService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 
@@ -54,21 +61,7 @@ public class AdminController {
                                 HttpServletRequest request
                               ) throws Exception{
 
-        log.info("context path : " + request.getContextPath());
 
-        log.info("servlet path : " + request.getServletPath());
-
-
-        Set path = request.getSession().getServletContext().getResourcePaths("/");
-
-
-        log.info("controller path : " + path);
-
-        String cPath = request.getSession().getServletContext().getRealPath("/resources/img/a.jpeg");
-        log.info(new File(cPath).exists());
-
-        String realPath = request.getSession().getServletContext().getRealPath("/resources/img/");
-        log.info("real Path : " + realPath);
 
 
 
@@ -100,9 +93,39 @@ public class AdminController {
         /*adminMapper.addProduct(opVO);
         adminMapper.addProductOp(opVO);*/
 
-        /*adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);*/
+        adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);
 
         log.info("insert complete");
+    }
+
+    @GetMapping("/getAttachList")
+    @ResponseBody
+    public ResponseEntity<List<ProductVO>> getAttachList(){
+        log.info("getAttachList");
+
+        return new ResponseEntity<>(adminMapper.getAttachList(), HttpStatus.OK);
+    }
+
+    @GetMapping("/display")
+    @ResponseBody
+    public ResponseEntity<byte[]> getFile(String firstThumbnail){
+        log.info("thumb : " + firstThumbnail);
+
+        File file = new File("E:\\upload\\" + firstThumbnail);
+
+        log.info("file : " + file);
+
+        ResponseEntity<byte[]> result = null;
+
+        try{
+            HttpHeaders header = new HttpHeaders();
+
+            header.add("Content-Type", Files.probeContentType(file.toPath()));
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @GetMapping("/productInfo")
