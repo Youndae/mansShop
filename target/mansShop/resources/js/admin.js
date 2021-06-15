@@ -3,6 +3,7 @@ var thumbFiles = {};
 var infoFiles = {};
 var token = $("meta[name='_csrf']").attr("content");
 var header = $("meta[name='_csrf_header']").attr("content");
+var numRegex = /\d/;
 
 function validation(fileName){
     fileName = fileName + "";
@@ -58,15 +59,7 @@ function addInfoPreview(input){
 }
 
 function setPreviewForm(file, type, imgNum){
-   /* preview-box의 value와 a태그의 value는 동일해야 하고
-    * 이 value와 각 이미지 배열의 index도 동일해야 한다.
-    * 그럼 구현부를 하나의 변수로 만들게 아니라
-    * 각 조건마다 다르게..?
-    * 아니면 addPreview 부분에서 imgNum을 넘겨주는데
-    * f1, t1, i1 형태로 넘겨주고
-    * substr로 분리한다음에 인덱스로 넣어주고
-    * 삭제할때도 분리해서 index값을 구하는쪽으로?
-    * */
+
 
     var reader = new FileReader();
     reader.onload = function(img) {
@@ -87,7 +80,7 @@ function setPreviewForm(file, type, imgNum){
             thumbFiles[indexNo] = file;
         }else if(type == "info"){
             var indexNo = imgNum.substr(1, imgNum.length+1);
-            $("#imgPreview").append(appendStr);
+            $("#infoPreview").append(appendStr);
             infoFiles[indexNo] = file;
         }
     };
@@ -115,6 +108,50 @@ function deletePreview(obj){
 
 $(document).ready(function() {
 
+    $('select[name=pClassification]').on("propertychange change keyup paste input", function(){
+        $("#checkClassification").text("");
+    })
+
+    $('input[name=pName]').on("propertychange change keyup paste input", function(){
+        $("#checkPName").text("");
+    })
+
+    $('select[name=pSize]').on("propertychange change keyup paste input", function(){
+        $("#checkPSize").text("");
+    })
+
+    $('input[name=pColor]').on("propertychange change keyup paste input", function(){
+        $("#checkPColor").text("");
+    })
+
+    $('input[name=pPrice]').on("propertychange change keyup paste input", function(){
+
+        if($('input[name=pPrice]').val() == ""){
+            $("#checkPPrice").text("");
+        }else if(numRegex.test($('input[name=pPrice]').val()) == false){
+            $("#checkPPrice").text("숫자만 입력 가능합니다.");
+        }else{
+            $("#checkPPrice").text("");
+        }
+    })
+
+    $('input[name=pStock]').on("propertychange change keyup paste input", function(){
+        if($('input[name=pStock]').val() == ""){
+            $("#checkPStock").text("");
+        }else if(numRegex.test($('input[name=pStock]').val()) == false){
+            $("#checkPStock").text("숫자만 입력 가능합니다.");
+        }else{
+            $("#checkPStock").text("");
+        }
+    })
+
+    $('input[name=firstThumbnail]').on("propertychange change keyup paste input", function(){
+        $("#checkFirstThumb").text("");
+    })
+
+    $('input[name=pImg]').on("propertychange change keyup paste input", function(){
+        $("#checkInfo").text("");
+    })
 
 
     $("#firstThumb input[type=file]").change(function(){
@@ -140,48 +177,89 @@ $(document).ready(function() {
             /*console.log("form : " + form);*/
             var formData = new FormData(form);
 
-            for(var index = 0; index < Object.keys(firstThumbFile).length; index++){
-                formData.append('firstThumbFile', firstThumbFile[index]);
-            }
+            console.log("classification : " + $('select[name=pClassification]').val());
 
-            for(var index = 0; index < Object.keys(thumbFiles).length; index++){
-                formData.append('thumbFiles', thumbFiles[index]);
-            }
+            console.log("pName : " + $('input[name=pName]').val());
 
-            for(var index = 0; index < Object.keys(infoFiles).length; index++){
-                formData.append('infoFiles', infoFiles[index]);
-            }
+            console.log("pSize : " + $('select[name=pSize]').val());
 
-            // console.log("formdata1 : " + formData);
+            console.log("pColor : " + $('input[name=pColor]').val());
 
-            /*console.log("test : " + formData.get('pColor'));*/
+            console.log("pPrice : " + $('input[name=pPrice]').val());
 
-            /*console.log("formdata : " + formData);*/
+            console.log("firstThumb length : " + Object.keys(firstThumbFile).length);
 
-            // console.log("type : " + typeof(formData));
+            console.log("info length : " + Object.keys(infoFiles).length);
 
-            // console.log("append complete");
 
-            $.ajax({
-                url: '/admin/addProduct',
-                enctype: 'multipart/form-data',
-                contentType: false,
-                processData: false,
-                cache: false,
-                type: 'post',
-                dataType: 'JSON',
-                data: formData,
-                /*beforeSend : function(xhr){
-                    xhr.setRequestHeader(header, token);
-                },*/
-                success: function(result){
-                    if(result === -1){
-                        alert("업로드 실패");
-                    }else{
-                        /*location.href="myPage/ModifyInfo";*/
-                    }
+            if($('select[name=pClassification]').val() == "default"){
+                $("#checkClassification").text("상품 분류를 선택해주세요");
+            }else if($('input[name=pName]').val() == ""){
+                $("#checkPName").text("상품명을 입력해주세요");
+                $('input[name=pName]').focus();
+            }else if($('select[name=pSize]').val() == "default"){
+                $("#checkPSize").text("사이즈를 선택해주세요");
+            }else if($('input[name=pColor]').val() == ""){
+                $("#checkPColor").text("색상을 입력해주세요");
+                $('input[name=pColor]').focus();
+            }else if($('input[name=pPrice]').val() == "") {
+                $("#checkPPrice").text("금액을 입력해주세요");
+                $('input[name=pPrice]').focus();
+            }else if(numRegex.test($('input[name=pPrice]').val()) == false) {
+                $("#checkPPrice").text("숫자만 입력 가능합니다.");
+                $('input[name=pPrice]').focus();
+            }else if($('input[name=pStock]').val() != "" && numRegex.test($('input[name=pStock]').val()) == false){
+                $("#checkPStock").text("숫자만 입력 가능합니다.");
+                $('input[name=pStock]').focus();
+            }else if(Object.keys(firstThumbFile).length == 0){
+                $("#checkFirstThumb").text("대표사진을 선택해주세요");
+            }else if(Object.keys(infoFiles).length == 0){
+                $("#checkInfo").text("상품정보사진을 선택해주세요");
+            }else{
+                for(var index = 0; index < Object.keys(firstThumbFile).length; index++){
+                    formData.append('firstThumbFile', firstThumbFile[index]);
                 }
-            });
+
+                for(var index = 0; index < Object.keys(thumbFiles).length; index++){
+                    formData.append('thumbFiles', thumbFiles[index]);
+                }
+
+                for(var index = 0; index < Object.keys(infoFiles).length; index++){
+                    formData.append('infoFiles', infoFiles[index]);
+                }
+
+                // console.log("formdata1 : " + formData);
+
+                /*console.log("test : " + formData.get('pColor'));*/
+
+                /*console.log("formdata : " + formData);*/
+
+                // console.log("type : " + typeof(formData));
+
+                // console.log("append complete");
+
+                $.ajax({
+                    url: '/admin/addProduct',
+                    enctype: 'multipart/form-data',
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    type: 'post',
+                    dataType: 'JSON',
+                    data: formData,
+                    /*beforeSend : function(xhr){
+                        xhr.setRequestHeader(header, token);
+                    },*/
+                    success: function(result){
+                        if(result === -1){
+                            alert("업로드 실패");
+                        }else{
+                            location.href="admin/productList";
+                        }
+                    }
+                });
+            }
+
 
             /*$("#addProductForm").submit();*/
         });

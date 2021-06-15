@@ -43,7 +43,52 @@
         )
     </insert>
 
-    <select id="getAttachList" resultType="org.shop.domain.ProductVO">
-        select * from product
+    <insert id="addProductThumbnail" parameterType="org.shop.domain.ThumbnailVO">
+        INSERT INTO p_thumbnail(
+            thumbNo
+            , pno
+            , pThumbnail
+        )
+        VALUES(
+            #{thumbNo}||thumb_seq.NEXTVAL
+            , #{pno}
+            , #{pThumbnail}
+        )
+    </insert>
+
+    <insert id="addProductInfo" parameterType="org.shop.domain.ProductImgVO">
+        INSERT INTO productImg(
+            pImgNo
+            , pno
+            , pImg
+            , pImgStep
+        )
+        VALUES(
+            productImg_seq.NEXTVAL
+            , #{pno}
+            , #{pImg}
+            , #{pImgStep}
+        )
+    </insert>
+
+    <select id="productInfo" resultType="org.shop.domain.ProductOpVO">
+        SELECT
+            p.pno
+            , p.pClassification
+            , p.pName
+            , p.pPrice
+            , p.firstThumbnail
+            , op.pOpNo
+            , op.pSize
+            , op.pColor
+            , op.pStock
+        FROM
+            productOp op INNER JOIN product p
+        ON
+            p.pno = op.pno
+        WHERE
+            p.pno = #{pno}
     </select>
+
+
 </mapper>

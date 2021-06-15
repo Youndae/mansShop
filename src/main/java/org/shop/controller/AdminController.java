@@ -37,7 +37,7 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping("/productList")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    /*@PreAuthorize("hasRole('ROLE_ADMIN')")*/
     public void productList(Model model) throws Exception{
         //상품 목록
         log.info("pList");
@@ -57,8 +57,7 @@ public class AdminController {
     public void insertProduct(ProductOpVO opVO, ThumbnailVO thumbnailVO, ProductImgVO imgVO,
                                 @RequestParam("firstThumbFile") List<MultipartFile> firstFiles,
                                 @RequestParam("thumbFiles") List<MultipartFile> thumbFiles,
-                                @RequestParam("infoFiles") List<MultipartFile> infoFiles,
-                                HttpServletRequest request
+                                @RequestParam("infoFiles") List<MultipartFile> infoFiles
                               ) throws Exception{
 
 
@@ -93,7 +92,7 @@ public class AdminController {
         /*adminMapper.addProduct(opVO);
         adminMapper.addProductOp(opVO);*/
 
-        adminService.test(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles, request);
+        adminService.addProduct(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles);
 
         log.info("insert complete");
     }
@@ -111,7 +110,7 @@ public class AdminController {
     public ResponseEntity<byte[]> getFile(String firstThumbnail){
         log.info("thumb : " + firstThumbnail);
 
-        File file = new File("E:\\upload\\" + firstThumbnail);
+        File file = new File("E:\\upload\\Product\\" + firstThumbnail);
 
         log.info("file : " + file);
 
@@ -128,14 +127,27 @@ public class AdminController {
         return result;
     }
 
-    @GetMapping("/productInfo")
-    public void productInfo(){
+    @GetMapping("/productInfo/{pno}")
+    public String productInfo(@PathVariable("pno") String pno, Model model){
         //상품 정보
+
+        log.info("pno : " + pno);
+
+        model.addAttribute("info", adminMapper.productInfo(pno));
+
+        log.info("log : " + adminMapper.productInfo(pno));
+
+        return "admin/productInfo";
     }
 
     @PostMapping("/modifyProductInfo")
     public void modifyProductInfo(){
         //상품 정보 수정
+    }
+
+    @PostMapping("/addProductOp")
+    public void addProductOp(){
+        //상품 옵션 추가
     }
 
     @GetMapping("/orderList")

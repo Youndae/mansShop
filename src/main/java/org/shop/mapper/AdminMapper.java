@@ -12,7 +12,11 @@ public interface AdminMapper {
 
     public void addProductOp(ProductOpVO productOpVO);
 
-    public void productInfo();
+    public void addProductThumbnail(ThumbnailVO thumbnailVO);
+
+    public void addProductInfo(ProductImgVO productImgVO);
+
+    public ProductOpVO productInfo(String pno);
 
     public void modifyProductInfo();
 

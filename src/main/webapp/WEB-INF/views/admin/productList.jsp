@@ -24,23 +24,25 @@
         </thead>
         <c:forEach items="${pList}" var="list">
             <tr>
-                <td><c:out value="${list.pno}"/></td>
+                <td id="productNo"><c:out value="${list.pno}"/></td>
                 <td><c:out value="${list.PClassification}"/></td>
-                <td><c:out value="${list.PName}"/></td>
+                <td>
+                    <a href="<c:url value="/admin/productInfo/${list.pno}"/>"><c:out value="${list.PName}"/></a>
+                </td>
                 <td><c:out value="${list.PPrice}"/></td>
                 <td><c:out value="${list.PRegDate}"/></td>
             </tr>
         </c:forEach>
     </table>
-
-    <div class="testImg">
-        <ul>
-
-        </ul>
-    </div>
 </div>
-
 <script>
+    function productInfo(){
+            var pno = $("#productNo").val();
+            console.log("js pno : " + pno);
+            location.href="/admin/productInfo/"+pno;
+    }
+</script>
+<%--<script>
     $(document).ready(function(){
         (function(){
 
@@ -65,6 +67,6 @@
             });
         })();
     });
-</script>
+</script>--%>
 </body>
 </html>

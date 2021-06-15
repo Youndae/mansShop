@@ -1,9 +1,11 @@
 package org.shop.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ProductImgVO;
 import org.shop.domain.ProductOpVO;
 import org.shop.domain.ThumbnailVO;
+import org.shop.mapper.AdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,22 +13,25 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Log4j
+@AllArgsConstructor
 public class AdminServiceImpl implements AdminService{
 
+    private AdminMapper adminMapper;
 
-    @Override
+    /*@Override
     //이미지 업로드 test메서드.
     public void test(ProductOpVO productOpVO, ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception{
 
-        /*String filePath = request.getSession().getServletContext().getRealPath("/resources/img/");*/
+        *//*String filePath = request.getSession().getServletContext().getRealPath("/resources/img/");*//*
 
         String filePath = "E:\\upload";
 
@@ -74,7 +79,7 @@ public class AdminServiceImpl implements AdminService{
 
     public String test2(MultipartFile image, String filePath){
 
-        /*log.info("filePath : " + filePath);*/
+        *//*log.info("filePath : " + filePath);*//*
 
         try{
             String originalname = image.getOriginalFilename();
@@ -82,7 +87,7 @@ public class AdminServiceImpl implements AdminService{
             String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
                     .append(UUID.randomUUID().toString())
                     .append(originalname.substring(originalname.lastIndexOf("."))).toString();
-            /*String saveFile = filePath + saveName;*/
+            *//*String saveFile = filePath + saveName;*//*
 
             File saveFile = new File(filePath, saveName);
 
@@ -97,74 +102,102 @@ public class AdminServiceImpl implements AdminService{
 
         log.info("why?");
         return "";
-    }
+    }*/
 
 
 
 
 
     @Override
-    public void addProduct(ProductOpVO productOpVO, ProductImgVO productImgVO, ThumbnailVO thumbnailVO,
-                           List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
-                           HttpServletRequest request) throws Exception {
+    public void addProduct(ProductOpVO productOpVO, ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
+                           List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg
+                            ) throws Exception {
 
-        productOpVO.setPno(productOpVO.getPClassification()+productOpVO.getPName());
-        /*productOpVO.setFirstThumbnail(imgProc(firstThumb, request, "first"));*/
-
-        //mapper.addProduct로 product테이블과 productOp테이블에 먼저 insert
-
-        imgProc(firstThumb, request, "first", productOpVO);
-
-
-        imgProc(thumb, request, "thumb", productOpVO);
-        imgProc(infoImg, request, "info", productOpVO);
-    }
-
-    public void imgProc(List<MultipartFile> images, HttpServletRequest request, String imgType, ProductOpVO productOpVO) throws Exception{
-        ProductImgVO productImgVO;
-        ThumbnailVO thumbnailVO;
-
+        String filePath = "E:\\upload\\Product\\";
         int step = 1;
 
-        String filePath = request.getSession().getServletContext().getRealPath("img/");
-
-        for(MultipartFile image : images){
-            String originalName = image.getOriginalFilename();
-            if(imgType == "first"){
-                try{
-                    StringBuffer sb = new StringBuffer();
-                    String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
-                            .append(UUID.randomUUID().toString())
-                            .append(originalName.substring(originalName.lastIndexOf("."))).toString();
-                    String saveFile = filePath + saveName;
-
-                    image.transferTo(new File(saveFile));
-                    log.info("file save");
-                    productOpVO.setFirstThumbnail(saveName);
-
-                    //mapper
-
-                    log.info(productOpVO);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }else if(imgType == "thumb"){
-                try{
-                    StringBuffer sb = new StringBuffer();
-                    String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
-                            .append(UUID.randomUUID().toString())
-                            .append(originalName.substring(originalName.lastIndexOf("."))).toString();
-                    String saveFile = filePath + saveName;
-
-                    image.transferTo(new File(saveFile));
-                    log.info("file save");
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }else if(imgType == "info"){
-
-            }
+        if(productOpVO.getPStock() == null){
+            long stock = 0;
+            productOpVO.setPStock(stock);
         }
+
+        productOpVO.setPno(productOpVO.getPClassification()+productOpVO.getPName());
+        productOpVO.setPOpNo(productOpVO.getPClassification() + productOpVO.getPName() + productOpVO.getPSize() + productOpVO.getPColor());
+        log.info("pno : " + productOpVO.getPno());
+        //mapper.addProduct로 product테이블과 productOp테이블에 먼저 insert
+
+        log.info("productOpVO : " + productOpVO);
+
+
+
+        for(MultipartFile image : firstThumb){
+            log.info("firstThumbnail save");
+
+            productOpVO.setFirstThumbnail(imgProc(image, filePath));
+            log.info("productOpVO : " + productOpVO);
+
+            adminMapper.addProduct(productOpVO);
+        }
+
+
+        adminMapper.addProductOp(productOpVO);
+
+        log.info("addproductOp success");
+
+        for(MultipartFile image : thumb){
+            log.info("Thumbnail save");
+
+
+            thumbnailVO.setPno(productOpVO.getPno());
+            thumbnailVO.setThumbNo("s_" + productOpVO.getPno());
+            thumbnailVO.setPThumbnail(imgProc(image, filePath));
+            log.info("thumbnailVO : " + thumbnailVO);
+
+            adminMapper.addProductThumbnail(thumbnailVO);
+        }
+
+        for(MultipartFile image : infoImg){
+            log.info("ProductInfo save");
+
+            productImgVO.setPno(productOpVO.getPno());
+            productImgVO.setPImgStep(step++);
+            productImgVO.setPImg(imgProc(image, filePath));
+
+            log.info("productImgVO : " + productImgVO);
+
+            adminMapper.addProductInfo(productImgVO);
+        }
+
+
+
+
+
+    }
+
+    public String imgProc(MultipartFile image, String filePath) throws Exception{
+
+        log.info("imgProc");
+
+        try{
+            String originalName = image.getOriginalFilename();
+            StringBuffer sb = new StringBuffer();
+            String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
+                    .append(UUID.randomUUID().toString())
+                    .append(originalName.substring(originalName.lastIndexOf("."))).toString();
+
+            File saveFile = new File(filePath, saveName);
+
+            image.transferTo(saveFile);
+
+            log.info("Save image. saveName : " + saveName);
+
+            return saveName;
+        }catch (IOException e){
+            log.info("image save Error");
+            e.printStackTrace();
+        }
+
+        return null;
 
     }
 }

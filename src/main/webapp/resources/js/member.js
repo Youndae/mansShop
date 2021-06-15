@@ -8,6 +8,50 @@ $(document).ready(function(){
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
 
+    $("#userPw").on("propertychange change keyup paste input", function(){
+        if($("#userPw").val().length < 8){
+            $("#pwOverlap").text("비밀번호는 8자리 이상입니다.");
+            $("#pwStat").val("");
+        }else if(pwPattern.test($("#userPw").val()) == false){
+            $("#pwOverlap").text("비밀번호는 영어,특수문자,숫자가 포함되어야합니다.");
+            $("#pwStat").val("");
+        }else{
+            $("#pwOverlap").text("");
+            $("#pwStat").val("");
+        }
+    })
+
+    $("#checkUserPw").on("propertychange change keyup paste input", function(){
+        if($("#userPw").val() != $("#checkUserPw").val()) {
+            $("#pwCheckOverlap").text("비밀번호가 일치하지 않습니다.");
+            $("#pwStat").val("");
+        }else{
+            $("#pwCheckOverlap").text("");
+            $("#pwStat").val("1");
+        }
+    })
+
+    $("#userEmail").on("propertychange change keyup paste input", function(){
+        if(emailPattern.test($("#userEmail").val()) == false){
+            $("#emailOverlap").text("유효한 주소가 아닙니다.");
+            $("#mailStat").val("");
+        }else{
+            $("#emailOverlap").text("");
+            $("#mailStat").val("1");
+        }
+    })
+
+    $("#userPhone").on("propertychange change keyup paste input", function(){
+        if(phonePattern.test($("#userPhone").val()) == false){
+            $("#phoneOverlap").text("유효한 번호가 아닙니다.");
+            $("#phoneStat").text("");
+        }else{
+            $("#phoneOverlap").text("");
+            $("#phoneStat").val("1");
+        }
+    })
+
+
     $(function(){
         $("#IdCheck").click(function(){
             var UserId ={
@@ -25,9 +69,9 @@ $(document).ready(function(){
                     type: "post",
                     data: UserId,
                     dataType: "json",
-                    beforeSend : function(xhr){
+                    /*beforeSend : function(xhr){
                         xhr.setRequestHeader(header, token);
-                    },
+                    },*/
                     success : function(data){
                         console.log("data : " + data);
                         if(data == 1){
@@ -67,7 +111,15 @@ $(document).ready(function(){
         index++;
     }
 
-    lastday();
+    /*lastday();*/
+
+    $("#select_year").on("propertychange change keyup paste input", function(){
+        lastday();
+    })
+
+    $("#select_month").on("propertychange change keyup paste input", function(){
+        lastday();
+    })
 
 });
 
@@ -88,7 +140,7 @@ function lastday(){
 }
 
 
-
+/*
 function checkPassword(){
     var originPw = $("input[name='userPw']").val();
     console.log("originPw : " + originPw);
@@ -126,7 +178,7 @@ function checkPhone(){
         $("#phoneOverlap").text("");
         $("#phoneStat").val("1");
     }
-}
+}*/
 
 
 $(function(){
@@ -141,9 +193,12 @@ $(function(){
 
         formObj.append(str);
 
+        console.log("birth : " + $('input[name=userBirth]').val());
+
 
         if($("#userId").val() == ""){
             console.log("id null");
+            $("#idOverlap").text("아이디를 입력하세요");
             $("#userId").focus();
         }else if($("#idStat").val() == ""){
             console.log("id stat null");
@@ -158,19 +213,26 @@ $(function(){
             $("#userPw").focus();
         }else if($("#checkUserPw").val() == ""){
             console.log("checkPw null");
-            $("#pwOverlap").text("비밀번호를 한번 더 입력하세요");
+            $("#pwCheckOverlap").text("비밀번호를 다시 입력하세요");
             $("#checkUserPw").focus();
         }else if($("#pwStat").val() != "1"){
             console.log("pwOverlap not null");
             $("#userPw").focus();
         }else if($("#userName").val() == ""){
             console.log("Name Null");
+            $("#nameOverlap").text("이름을 입력하세요");
             $("#userName").focus();
-        }else if($("#userEmail").val() == "" || $("#mailStat").val() != "1"){
+        }else if($("#userEmail").val() == "") {
             console.log("Email null || overlap not null");
+            $("#emailOverlap").text("이메일을 입력하세요");
             $("#userEmail").focus();
-        }else if($("#userPhone").val() == "" || $("#phoneStat").val() != "1"){
+        }else if($("#mailStat").val() != "1"){
+            $("#userEmail").focus();
+        }else if($("#userPhone").val() == "") {
             console.log("Phone null || overlap not null");
+            $("#phoneOverlap").text("연락처를 입력하세요");
+            $("#userPhone").focus();
+        }else if($("#phoneStat").val() != "1"){
             $("#userPhone").focus();
         }else{
             alert("가입 고고");
@@ -178,7 +240,7 @@ $(function(){
 
 
 
-        /*formObj.submit();*/
+        formObj.submit();
 
     })
 });
