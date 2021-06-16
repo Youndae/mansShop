@@ -90,5 +90,16 @@
             p.pno = #{pno}
     </select>
 
+    <select id="getFirstThumb" resultType="org.shop.domain.ProductVO">
+        select * from product where pno=#{pno}
+    </select>
+
+    <select id="getThumbnail" resultType="org.shop.domain.ThumbnailVO">
+        SELECT * FROM p_thumbnail where pno=#{pno}
+    </select>
+
+    <select id="getInfoImg" resultType="org.shop.domain.ProductImgVO">
+        SELECT * FROM productimg where pno=#{pno}
+    </select>
 
 </mapper>

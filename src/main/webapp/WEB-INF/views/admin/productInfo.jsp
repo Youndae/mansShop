@@ -12,6 +12,59 @@
 
         $('select[name=pClassification]').val(classification);
         $('select[name=pSize]').val(size);
+
+        var pno = $('input[name=pno]').val();
+
+        (function(){
+            $.getJSON("/admin/getFirstThumb", {pno:pno}, function(arr){
+                console.log(arr);
+
+                var append = img("f", arr);
+
+                $("#firstThumbPreview").html(append);
+            })
+        })();
+
+        (function(){
+            $.getJSON("/admin/getThumbnail", {pno:pno}, function(arr){
+                var append = img("t", arr);
+
+                $("#thumbPreview").html(append);
+            })
+        })();
+
+        (function(){
+            $.getJSON("/admin/getInfoImage", {pno:pno}, function(arr){
+                var append = img("i", arr);
+
+                $("#infoPreview").html(append);
+            })
+        })();
+
+        function img(type, arr){
+            var num = 1;
+            var str = "";
+            console.log("each start");
+            $(arr).each(function(i, attach){
+                var imgNum = type + num;
+                console.log("imgNum : " + imgNum);
+                str += "<div class=\"preview-box\" value=\"" + imgNum +"\">";
+                if(type == "f"){
+                    str += "<img class=\"firstThumb\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
+                }else if(type == "t"){
+                    str += "<img class=\"thumb\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
+                }else if(type == "i"){
+                    str += "<img class=\"infoImg\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
+                }
+                str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">";
+                str += "삭제" + "</a>";
+                str += "</div>";
+                num++;
+            });
+
+            return str;
+        }
+
     });
 </script>
 <body>
@@ -65,6 +118,7 @@
             <div class="overlap" id="checkPStock"></div>
         </div>
         <%--<sec:csrfInput/>--%>
+        <input type="hidden" name="pno" value="${info.pno}">
     </form>
     <div id="firstThumb">
         <label>대표이미지</label>

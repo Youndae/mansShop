@@ -65,7 +65,6 @@ function setPreviewForm(file, type, imgNum){
     reader.onload = function(img) {
         var appendStr = "<div class=\"preview-box\" value=\"" + imgNum +"\">" +
                         "<img class=\"thumbnail\" src=\"" + img.target.result + "\"\/>" +
-                        "<p>" + file.name + "</p>" +
                         "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
                         "삭제" + "</a>"
                         + "</div>";

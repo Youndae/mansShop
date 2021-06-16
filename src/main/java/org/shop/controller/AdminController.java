@@ -97,20 +97,37 @@ public class AdminController {
         log.info("insert complete");
     }
 
-    @GetMapping("/getAttachList")
+    @GetMapping("/getFirstThumb")
     @ResponseBody
-    public ResponseEntity<List<ProductVO>> getAttachList(){
-        log.info("getAttachList");
+    public ResponseEntity<List<ProductVO>> getFirstThumb(String pno){
+        log.info("getFirstThumb : " + pno);
 
-        return new ResponseEntity<>(adminMapper.getAttachList(), HttpStatus.OK);
+        return new ResponseEntity<>(adminMapper.getFirstThumb(pno), HttpStatus.OK);
+    }
+
+    @GetMapping("/getThumbnail")
+    @ResponseBody
+    public ResponseEntity<List<ThumbnailVO>> getThumbnail(String pno){
+        log.info("getThumbnail : " + pno);
+        log.info("return data : " + new ResponseEntity<>(adminMapper.getThumbnail(pno), HttpStatus.OK));
+
+        return new ResponseEntity<>(adminMapper.getThumbnail(pno), HttpStatus.OK);
+    }
+
+    @GetMapping("/getInfoImage")
+    @ResponseBody
+    public ResponseEntity<List<ProductImgVO>> getInfoImg(String pno){
+        log.info("get InfoImg : " + pno);
+
+        return new ResponseEntity<>(adminMapper.getInfoImg(pno), HttpStatus.OK);
     }
 
     @GetMapping("/display")
     @ResponseBody
-    public ResponseEntity<byte[]> getFile(String firstThumbnail){
-        log.info("thumb : " + firstThumbnail);
+    public ResponseEntity<byte[]> getFile(String image){
+        log.info("thumb : " + image);
 
-        File file = new File("E:\\upload\\Product\\" + firstThumbnail);
+        File file = new File("E:\\upload\\Product\\" + image);
 
         log.info("file : " + file);
 

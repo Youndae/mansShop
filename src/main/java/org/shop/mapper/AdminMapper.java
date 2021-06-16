@@ -51,5 +51,9 @@ public interface AdminMapper {
 
 
 
-    public List<ProductVO> getAttachList();
+    public List<ProductVO> getFirstThumb(String pno);
+
+    public List<ThumbnailVO> getThumbnail(String pno);
+
+    public List<ProductImgVO> getInfoImg(String pno);
 }
