@@ -16,4 +16,8 @@ public interface AdminService {
                      List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                      HttpServletRequest request) throws Exception;*/
 
+    public void modifyProduct(ProductOpVO productOpVO, ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
+                              List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
+                              List<String> delFirstThumb, List<String> delThumb, List<String> delInfoImg) throws Exception;
+
 }

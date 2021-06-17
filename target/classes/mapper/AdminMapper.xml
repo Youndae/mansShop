@@ -102,4 +102,40 @@
         SELECT * FROM productimg where pno=#{pno}
     </select>
 
+    <update id="modifyProductThumb" parameterType="org.shop.domain.ProductOpVO">
+        UPDATE product
+        SET pClassification=#{pClassification}
+            , pName=#{pName}
+            , pPrice=#{pPrice}
+            , firstThumbnail=#{firstThumbnail}
+        WHERE pno=#{pno}
+    </update>
+
+    <update id="modifyProductInfo" parameterType="org.shop.domain.ProductOpVO">
+        UPDATE product
+        SET pClassification=#{pClassification}
+            , pName=#{pName}
+            , pPrice=#{pPrice}
+        WHERE pno=#{pno}
+    </update>
+
+    <update id="modifyProductOp" parameterType="org.shop.domain.ProductOpVO">
+        UPDATE productOp
+        SET pOpNo=#{pOpNo}
+            , pSize=#{pSize}
+            , pColor=#{pColor}
+            , pStock=#{pStock}
+        WHERE pOpNo=#{pOpNo}
+    </update>
+
+    <delete id="deleteThumb" parameterType="String">
+        DELETE FROM p_thumbnail
+        WHERE pThumbnail=#{pThumbnail}
+    </delete>
+
+    <delete id="deleteInfoImg" parameterType="String">
+        DELETE FROM productImg
+        WHERE pImg=#{pImg}
+    </delete>
+
 </mapper>

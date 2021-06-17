@@ -1,6 +1,12 @@
 var firstThumbFile = {};
 var thumbFiles = {};
 var infoFiles = {};
+var deleteFirstThumbFile = {};
+var deleteFirstThumbNum = 0;
+var deleteThumbFiles = {};
+var deleteThumbNum = 0;
+var deleteInfoFiles = {};
+var deleteInfoNum = 0;
 var token = $("meta[name='_csrf']").attr("content");
 var header = $("meta[name='_csrf_header']").attr("content");
 var numRegex = /\d/;
@@ -104,8 +110,190 @@ function deletePreview(obj){
 
 }
 
+function deleteOldPreview(obj){
+    var imgNum = obj.attributes['value'].value;
+    var imgType = imgNum.substr(0, 2);
+    var imgName = $('img[id='+imgNum + ']').attr("src");
+    var idx = imgName.lastIndexOf('=');
+    var deleteImg = imgName.substring(idx+1);
+
+    if(imgType == "of"){
+        console.log("firstThumb deleteImg : " + deleteImg);
+        console.log("deleteFirstThumbNum : " + deleteFirstThumbNum);
+        deleteFirstThumbFile[deleteFirstThumbNum++] = deleteImg;
+        $("#firstThumbPreview .preview-box[value=" + imgNum + "]").remove();
+    }else if(imgType == "ot"){
+        console.log("Thumb deleteImg : " + deleteImg);
+        console.log("deleteThumbNum : " + deleteThumbNum);
+        deleteThumbFiles[deleteThumbNum++] = deleteImg;
+        $("#thumbPreview .preview-box[value=" + imgNum + "]").remove();
+    }else if(imgType == "oi"){
+        console.log("InfoFiles deleteImg : " + deleteImg);
+        console.log("deleteInfoNum : " + deleteInfoNum);
+        deleteInfoFiles[deleteInfoNum++] = deleteImg;
+        $("#infoPreview .preview-box[value=" + imgNum + "]").remove();
+    }
+}
+
 
 $(document).ready(function() {
+
+
+    var classification = $("#classification").val();
+    var size = $("#size").val();
+
+    $('select[name=pClassification]').val(classification);
+    $('select[name=pSize]').val(size);
+
+    var pno = $('input[name=pno]').val();
+
+    (function(){
+        $.getJSON("/admin/getFirstThumb", {pno:pno}, function(arr){
+            console.log(arr);
+
+            var str = img("of", arr);
+
+            $("#firstThumbPreview").append(str);
+        })
+    })();
+
+    (function(){
+        $.getJSON("/admin/getThumbnail", {pno:pno}, function(arr){
+            var str = img("ot", arr);
+
+            $("#thumbPreview").append(str);
+        })
+    })();
+
+    (function(){
+        $.getJSON("/admin/getInfoImage", {pno:pno}, function(arr){
+            var str = img("oi", arr);
+
+            $("#infoPreview").append(str);
+        })
+    })();
+
+    function img(type, arr){
+        var num = 1;
+        var str = "";
+        console.log("each start");
+        $(arr).each(function(i, attach){
+            var imgNum = type + num;
+            console.log("imgNum : " + imgNum);
+            str += "<div class=\"preview-box\" value=\"" + imgNum +"\">";
+            if(type == "of"){
+                str += "<img class=\"firstThumb\" id=\"" + imgNum +"\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
+            }else if(type == "ot"){
+                str += "<img class=\"thumb\" id=\"" + imgNum +"\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
+            }else if(type == "oi"){
+                str += "<img class=\"infoImg\" id=\"" + imgNum +"\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
+            }
+            str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deleteOldPreview(this)\">";
+            str += "삭제" + "</a>";
+            str += "</div>";
+            num++;
+        });
+
+        return str;
+    }
+
+
+    $("#modifyProduct").on('click', function(){
+        console.log("modify product");
+
+        var form = $("#modifyProductForm")[0];
+
+        var formData = new FormData(form);
+
+        if($('select[name=pClassification]').val() == "default"){
+            $("#checkClassification").text("상품 분류를 선택해주세요");
+        }else if($('input[name=pName]').val() == ""){
+            $("#checkPName").text("상품명을 입력해주세요");
+            $('input[name=pName]').focus();
+        }else if($('select[name=pSize]').val() == "default"){
+            $("#checkPSize").text("사이즈를 선택해주세요");
+        }else if($('input[name=pColor]').val() == ""){
+            $("#checkPColor").text("색상을 입력해주세요");
+            $('input[name=pColor]').focus();
+        }else if($('input[name=pPrice]').val() == "") {
+            $("#checkPPrice").text("금액을 입력해주세요");
+            $('input[name=pPrice]').focus();
+        }else if(numRegex.test($('input[name=pPrice]').val()) == false) {
+            $("#checkPPrice").text("숫자만 입력 가능합니다.");
+            $('input[name=pPrice]').focus();
+        }else if($('input[name=pStock]').val() != "" && numRegex.test($('input[name=pStock]').val()) == false){
+            $("#checkPStock").text("숫자만 입력 가능합니다.");
+            $('input[name=pStock]').focus();
+        }else if(Object.keys(firstThumbFile).length == 0 && ($("#of1").attr("src") == null)){
+            $("#checkFirstThumb").text("대표사진을 선택해주세요");
+        }else if(Object.keys(infoFiles).length == 0 && ($("#oi1").attr("src") == null)){
+            $("#checkInfo").text("상품정보사진을 선택해주세요");
+        }else{
+            for(var index = 0; index < Object.keys(firstThumbFile).length; index++){
+                console.log("first Thumb index : " + index);
+                formData.append('firstThumbFile', firstThumbFile[index]);
+            }
+
+            for(var index = 0; index < Object.keys(thumbFiles).length; index++){
+                console.log("Thumb index : " + index);
+                formData.append('thumbFiles', thumbFiles[index]);
+            }
+
+            for(var index = 0; index < Object.keys(infoFiles).length; index++){
+                console.log("info index : " + index);
+                formData.append('infoFiles', infoFiles[index]);
+            }
+
+            for(var index = 0; index < Object.keys(deleteFirstThumbFile).length; index++){
+                console.log("delete first Thumb index : " + index);
+                formData.append('deleteFirstThumbFile', deleteFirstThumbFile[index]);
+            }
+
+            for(var index = 0; index < Object.keys(deleteThumbFiles).length; index++){
+                console.log("delete Thumb index : " + index);
+                formData.append('deleteThumbFiles', deleteThumbFiles[index]);
+            }
+
+            for(var index = 0; index < Object.keys(deleteInfoFiles).length; index++){
+                console.log("delete info index : " + index);
+                formData.append('deleteInfoFiles', deleteInfoFiles[index]);
+            }
+
+            console.log("formdata : " + formData.get('deleteFirstThumbFile'));
+            for(var v of formData.entries()){
+                console.log("form Data val : " + v);
+            }
+
+
+
+            $.ajax({
+                url: '/admin/modifyProduct',
+                enctype: 'multipart/form-data',
+                contentType: false,
+                processData: false,
+                cache: false,
+                type: 'post',
+                dataType: 'JSON',
+                data: formData,
+                /*beforeSend : function(xhr){
+                    xhr.setRequestHeader(header, token);
+                },*/
+                success: function(result){
+                    if(result === -1){
+                        alert("업로드 실패");
+                    }else{
+                        location.href="admin/productList";
+                    }
+                },
+                error : function(request, status, error){
+                    alert("code:" + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " +error);
+                }
+            });
+        }
+    });
+
 
     $('select[name=pClassification]').on("propertychange change keyup paste input", function(){
         $("#checkClassification").text("");

@@ -5,7 +5,8 @@
     <title>Title</title>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script>
+<script src="/js/admin.js" type="text/javascript"></script>
+<%--<script>
     $(document).ready(function () {
         var classification = $("#classification").val();
         var size = $("#size").val();
@@ -20,8 +21,6 @@
                 console.log(arr);
 
                 var append = img("f", arr);
-
-
 
                 $("#firstThumbPreview").html(append);
             })
@@ -52,11 +51,11 @@
                 console.log("imgNum : " + imgNum);
                 str += "<div class=\"preview-box\" value=\"" + imgNum +"\">";
                 if(type == "f"){
-                    str += "<img class=\"thumbnail\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
+                    str += "<img class=\"firstThumb\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
                 }else if(type == "t"){
-                    str += "<img class=\"thumbnail\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
+                    str += "<img class=\"thumb\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
                 }else if(type == "i"){
-                    str += "<img class=\"thumbnail\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
+                    str += "<img class=\"infoImg\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
                 }
                 str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">";
                 str += "삭제" + "</a>";
@@ -68,10 +67,17 @@
         }
 
     });
-</script>
+</script>--%>
+
+<style>
+    img{
+        width: 50px;
+        height: 50px;
+    }
+</style>
 <body>
 <div>
-    <form id="addProductForm" method="post">
+    <form id="modifyProductForm" method="post">
         <div>
             <label>상품 분류</label>
             <select name="pClassification">
@@ -121,6 +127,7 @@
         </div>
         <%--<sec:csrfInput/>--%>
         <input type="hidden" name="pno" value="${info.pno}">
+        <input type="hidden" name="pOpNo" value="${info.POpNo}">
     </form>
     <div id="firstThumb">
         <label>대표이미지</label>
@@ -143,7 +150,7 @@
         <div class="overlap" id="checkInfo"></div>
     </div>
 
-    <button type="button" id="addSubmit">등록</button>
+    <button type="button" id="modifyProduct">수정</button>
 </div>
 
 

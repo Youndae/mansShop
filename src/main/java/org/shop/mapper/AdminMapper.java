@@ -18,7 +18,17 @@ public interface AdminMapper {
 
     public ProductOpVO productInfo(String pno);
 
-    public void modifyProductInfo();
+    public void modifyProductThumb(ProductOpVO productOpVO);
+
+    public void modifyProductInfo(ProductOpVO productOpVO);
+
+    public void modifyProductOp(ProductOpVO productOpVO);
+
+    public void deleteThumb(String pThumbnail);
+
+    public void deleteInfoImg(String pImg);
+
+    public void deleteProduct(String pno);
 
     public List<OrderVO> orderList();
 

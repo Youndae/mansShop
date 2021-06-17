@@ -97,6 +97,72 @@ public class AdminController {
         log.info("insert complete");
     }
 
+    @PostMapping("/modifyProduct")
+    @ResponseBody
+    public void modifyProductInfo(ProductOpVO productOpVO, ProductImgVO productImgVO, ThumbnailVO thumbnailVO,
+                              @RequestParam("firstThumbFile") List<MultipartFile> firstFile,
+                              @RequestParam("thumbFiles") List<MultipartFile> thumbFiles,
+                              @RequestParam("infoFiles") List<MultipartFile> infoFiles,
+                              @RequestParam(value = "deleteFirstThumbFile", required = false) List<String> deleteFirstThumbFile,
+                              @RequestParam(value = "deleteThumbFiles", required = false) List<String> deleteThumbFiles,
+                              @RequestParam(value = "deleteInfoFiles", required = false) List<String> deleteInfoFiles) throws Exception{
+
+        //상품정보수정
+
+
+        //버튼 눌렀을 때 변경될 pOpNo가 기존에 있는 값인지 확인하는 코드 작성해야함.
+
+
+
+        /*log.info("opVO : " + productOpVO);
+        log.info("classification : " + productOpVO.getPClassification());
+        log.info("pName : " + productOpVO.getPName());
+
+        log.info("firstFile size : " + firstFile.size());
+        log.info("thumbFiles size : " + thumbFiles.size());
+        log.info("infoFiles size : " + infoFiles.size());
+        log.info("deleteFirstThumbFile size : " + deleteFirstThumbFile.size());
+        log.info("deleteThumbFiles size : " + deleteThumbFiles.size());
+        log.info("deleteInfoFiles size : " + deleteInfoFiles.size());
+
+
+        for(MultipartFile image : firstFile){
+            log.info("firstThumb file : " + image.getOriginalFilename());
+        }
+
+        for(MultipartFile image : thumbFiles){
+            log.info("thumbFiles file : " + image.getOriginalFilename());
+        }
+
+        for(MultipartFile image : infoFiles){
+            log.info("infoFiles file : " + image.getOriginalFilename());
+        }
+
+        for(String image : deleteFirstThumbFile){
+            log.info("deleteFirstThumbFile file : " + image);
+        }
+
+        for(String image : deleteThumbFiles){
+            log.info("deleteThumbFiles file : " + image);
+        }
+
+        for(String image : deleteInfoFiles){
+            log.info("deleteInfoFiles file : " + image);
+        }*/
+
+
+        log.info("controller size check : " + deleteFirstThumbFile == null);
+
+
+        adminService.modifyProduct(productOpVO, thumbnailVO, productImgVO,
+                                    firstFile, thumbFiles, infoFiles,
+                                    deleteFirstThumbFile, deleteThumbFiles, deleteInfoFiles);
+
+        log.info("complete");
+
+
+    }
+
     @GetMapping("/getFirstThumb")
     @ResponseBody
     public ResponseEntity<List<ProductVO>> getFirstThumb(String pno){
@@ -155,11 +221,6 @@ public class AdminController {
         log.info("log : " + adminMapper.productInfo(pno));
 
         return "admin/productInfo";
-    }
-
-    @PostMapping("/modifyProductInfo")
-    public void modifyProductInfo(){
-        //상품 정보 수정
     }
 
     @PostMapping("/addProductOp")
