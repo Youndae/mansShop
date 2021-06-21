@@ -20,4 +20,6 @@ public interface AdminService {
                               List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg,
                               List<String> delFirstThumb, List<String> delThumb, List<String> delInfoImg) throws Exception;
 
-}
+    public void addProductOp(ProductOpVO productOpVO) throws Exception;
+
+ }

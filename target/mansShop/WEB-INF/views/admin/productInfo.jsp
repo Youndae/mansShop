@@ -77,7 +77,7 @@
 </style>
 <body>
 <div>
-    <form id="modifyProductForm" method="post">
+    <form id="modifyProductForm" method="post" action="/admin/addProductOp">
         <div>
             <label>상품 분류</label>
             <select name="pClassification">
@@ -129,6 +129,8 @@
         <input type="hidden" name="pno" value="${info.pno}">
         <input type="hidden" name="pOpNo" value="${info.POpNo}">
     </form>
+    <input type="hidden" id="pClosed" value="${info.PClosed}">
+    <input type="hidden" id="opClosed" value="${info.opClosed}">
     <div id="firstThumb">
         <label>대표이미지</label>
         <input type="file" name="firstThumbnail" value="파일 선택">
@@ -149,8 +151,15 @@
         <div id="infoPreview"></div>
         <div class="overlap" id="checkInfo"></div>
     </div>
+    <div class="button-area">
+        <button type="button" id="addProductOp">옵션 추가</button>
+        <button type="button" id="modifyProduct">수정</button>
+        <%--<button type="button" id="closedProductOp">옵션 비공개</button>
+        <button type="button" id="openProductOp">옵션 공개</button>
+        <button type="button" id="closedProduct">상품 비공개</button>
+        <button type="button" id="openProduct">상품 공개</button>--%>
+    </div>
 
-    <button type="button" id="modifyProduct">수정</button>
 </div>
 
 

@@ -22,4 +22,5 @@ public class AdminMapperTests {
         adminMapper.pList().forEach(product -> log.info(product));
 
     }
+
 }

@@ -106,8 +106,6 @@ public class AdminServiceImpl implements AdminService{
 
 
 
-
-
     @Override
     public void addProduct(ProductOpVO productOpVO, ThumbnailVO thumbnailVO, ProductImgVO productImgVO,
                            List<MultipartFile> firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg
@@ -126,7 +124,7 @@ public class AdminServiceImpl implements AdminService{
                 .append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
 
         productOpVO.setPno(pnoPattern);
-        productOpVO.setPOpNo(productOpVO.getPClassification() + productOpVO.getPName() + productOpVO.getPSize() + productOpVO.getPColor());
+        productOpVO.setPOpNo("Op_" + pnoPattern);
         log.info("pno : " + productOpVO.getPno());
         //mapper.addProduct로 product테이블과 productOp테이블에 먼저 insert
 
@@ -211,7 +209,7 @@ public class AdminServiceImpl implements AdminService{
                               List<String> delFirstThumb, List<String> delThumb, List<String> delInfoImg) throws Exception {
 
         String filePath = "E:\\upload\\Product\\";
-        int step = 0;//mapper.maxStep 형태로 제일 큰 step값 가져올것.
+        int step = adminMapper.maxStep(productOpVO.getPno());//mapper.maxStep 형태로 제일 큰 step값 가져올것.
 
         if(productOpVO.getPStock() == null){
             long stock = 0;
@@ -244,17 +242,12 @@ public class AdminServiceImpl implements AdminService{
                 log.info("productOpVO : " + productOpVO);
 
             }
-            /*adminMapper.addProduct(productOpVO); 수정쿼리*/
 
             adminMapper.modifyProductThumb(productOpVO);
         }else{
             adminMapper.modifyProductInfo(productOpVO);
         }
 
-
-        /*adminMapper.addProductOp(productOpVO); 수정쿼리*/
-
-        /*productOpVO.setPOpNo(productOpVO.getPClassification() + productOpVO.getPName() + productOpVO.getPSize() + productOpVO.getPColor());*/
 
         adminMapper.modifyProductOp(productOpVO);
 
@@ -293,7 +286,7 @@ public class AdminServiceImpl implements AdminService{
             log.info("ProductInfo save");
 
             productImgVO.setPno(productOpVO.getPno());
-            productImgVO.setPImgStep(step++);
+            productImgVO.setPImgStep(++step);
             productImgVO.setPImg(imgProc(image, filePath));
 
             log.info("productImgVO : " + productImgVO);
@@ -344,5 +337,19 @@ public class AdminServiceImpl implements AdminService{
                 log.info("null");
             }
         }
+    }
+
+
+    @Override
+    public void addProductOp(ProductOpVO productOpVO) throws Exception {
+        StringBuffer sb = new StringBuffer();
+
+        String pOpNo = sb.append("Op_")
+                .append(productOpVO.getPClassification())
+                .append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
+
+        productOpVO.setPOpNo(pOpNo);
+
+        adminMapper.addProductOp(productOpVO);
     }
 }

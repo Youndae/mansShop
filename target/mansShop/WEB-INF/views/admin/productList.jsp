@@ -19,6 +19,8 @@
                 <th>상품분류</th>
                 <th>상품명</th>
                 <th>가격</th>
+                <th>사이즈</th>
+                <th>컬러</th>
                 <th>등록일</th>
             </tr>
         </thead>
@@ -27,9 +29,11 @@
                 <td id="productNo"><c:out value="${list.pno}"/></td>
                 <td><c:out value="${list.PClassification}"/></td>
                 <td>
-                    <a href="<c:url value="/admin/productInfo/${list.pno}"/>"><c:out value="${list.PName}"/></a>
+                    <a href="<c:url value="/admin/productInfo/${list.POpNo}"/>"><c:out value="${list.PName}"/></a>
                 </td>
                 <td><c:out value="${list.PPrice}"/></td>
+                <td><c:out value="${list.PSize}"/></td>
+                <td><c:out value="${list.PColor}"/></td>
                 <td><c:out value="${list.PRegDate}"/></td>
             </tr>
         </c:forEach>

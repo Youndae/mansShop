@@ -452,5 +452,114 @@ $(document).ready(function() {
         });
 
 
+
+
+    (function(){
+        var pclosed = $("#pClosed").val();
+        var opClosed = $("#opClosed").val();
+
+        var opc = "<button type='button' id='closedProductOp'>옵션 비공개</button>";
+        var opo = "<button type='button' id='openProductOp'>옵션 공개</button>";
+        var pc = "<button type='button' id='closedProduct'>상품 비공개</button>";
+        var po = "<button type='button' id='openProduct'>상품 공개</button>";
+
+        if(pclosed == 0){
+            $(".button-area").append(pc);
+        }else if(pclosed == 1){
+            $(".button-area").append(po);
+        }
+
+        if(opClosed == 0){
+            $(".button-area").append(opc);
+        }else if(opClosed == 1){
+            $(".button-area").append(opo);
+        }
+
+    })();
+
+
+
+
+        $("#addProductOp").on('click', function(){
+            var form = $("#modifyProductForm");
+
+            form.submit();
+
+        })
+
+    $("#closedProductOp").on('click', function(){
+        var pOpNo = {
+            pOpNo : $("input[name=pOpNo]").val()
+        };
+
+        console.log(pOpNo);
+
+        $.ajax({
+            url: '/admin/closedProductOp',
+            type: 'post',
+            data: pOpNo,
+            success: function(result){
+                location.reload();
+            }
+        });
+
+    });
+
+    $("#openProductOp").on('click', function(){
+        var pOpNo = {
+            pOpNo : $("input[name=pOpNo]").val()
+        };
+
+        console.log(pOpNo);
+
+        $.ajax({
+            url: '/admin/openProductOp',
+            type: 'post',
+            data: pOpNo,
+            success: function(result){
+                location.reload();
+            }
+        });
+
+    });
+
+    $("#closedProduct").on('click', function(){
+        var pno = {
+            pno : $("input[name=pno]").val()
+        };
+
+        console.log(pno);
+
+        $.ajax({
+            url: '/admin/closedProduct',
+            type: 'post',
+            data: pno,
+            success: function(result){
+                location.reload();
+            }
+        });
+
+    });
+
+    $("#openProduct").on('click', function(){
+        var pno = {
+            pno : $("input[name=pno]").val()
+        };
+
+        console.log(pno);
+
+        $.ajax({
+            url: '/admin/openProduct',
+            type: 'post',
+            data: pno,
+            success: function(result){
+                location.reload();
+            }
+        });
+
+    });
+
+
+
 })
 

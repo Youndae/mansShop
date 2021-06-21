@@ -3,8 +3,21 @@
 
 <mapper namespace="org.shop.mapper.AdminMapper">
 
-    <select id="pList" resultType="org.shop.domain.ProductVO">
-        SELECT * FROM product
+    <select id="pList" resultType="org.shop.domain.ProductOpVO">
+        SELECT
+            p.pno
+            , p.pClassification
+            , p.pName
+            , p.pPrice
+            , p.pRegDate
+            , op.pOpNo
+            , op.pSize
+            , op.pColor
+            , op.pStock
+        FROM
+            productOp op INNER JOIN product p
+        ON
+            p.pno = op.pno
     </select>
 
     <insert id="addProduct" parameterType="org.shop.domain.ProductOpVO">
@@ -78,16 +91,18 @@
             , p.pName
             , p.pPrice
             , p.firstThumbnail
+            , p.pClosed
             , op.pOpNo
             , op.pSize
             , op.pColor
             , op.pStock
+            , op.opClosed
         FROM
             productOp op INNER JOIN product p
         ON
             p.pno = op.pno
         WHERE
-            p.pno = #{pno}
+            op.pOpNo = #{pOpNo}
     </select>
 
     <select id="getFirstThumb" resultType="org.shop.domain.ProductVO">
@@ -121,8 +136,7 @@
 
     <update id="modifyProductOp" parameterType="org.shop.domain.ProductOpVO">
         UPDATE productOp
-        SET pOpNo=#{pOpNo}
-            , pSize=#{pSize}
+        SET pSize=#{pSize}
             , pColor=#{pColor}
             , pStock=#{pStock}
         WHERE pOpNo=#{pOpNo}
@@ -138,4 +152,33 @@
         WHERE pImg=#{pImg}
     </delete>
 
+    <select id="maxStep" resultType="int">
+        SELECT max(pImgStep)
+        FROM productImg
+        WHERE pno=#{pno}
+    </select>
+
+    <update id="closedProductOp" parameterType="String">
+        UPDATE productOp
+        SET opClosed=1
+        WHERE pOpNo=#{pOpNo}
+    </update>
+
+    <update id="openProductOp" parameterType="String">
+        UPDATE productOp
+        SET opClosed=0
+        WHERE pOpNo=#{pOpNo}
+    </update>
+
+    <update id="closedProduct" parameterType="String">
+        UPDATE product
+        SET pClosed=1
+        WHERE pno=#{pno}
+    </update>
+
+    <update id="openProduct" parameterType="String">
+        UPDATE product
+        SET pClosed=0
+        WHERE pno=#{pno}
+    </update>
 </mapper>

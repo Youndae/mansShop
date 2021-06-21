@@ -11,20 +11,16 @@ import org.shop.service.AdminService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Set;
 
 @RequestMapping("/admin/")
 @Controller
@@ -108,9 +104,6 @@ public class AdminController {
                               @RequestParam(value = "deleteInfoFiles", required = false) List<String> deleteInfoFiles) throws Exception{
 
         //상품정보수정
-
-
-        //버튼 눌렀을 때 변경될 pOpNo가 기존에 있는 값인지 확인하는 코드 작성해야함.
 
 
 
@@ -210,23 +203,69 @@ public class AdminController {
         return result;
     }
 
-    @GetMapping("/productInfo/{pno}")
-    public String productInfo(@PathVariable("pno") String pno, Model model){
+    @GetMapping("/productInfo/{pOpNo}")
+    public String productInfo(@PathVariable("pOpNo") String pOpNo, Model model){
         //상품 정보
 
-        log.info("pno : " + pno);
+        log.info("pno : " + pOpNo);
 
-        model.addAttribute("info", adminMapper.productInfo(pno));
+        model.addAttribute("info", adminMapper.productInfo(pOpNo));
 
-        log.info("log : " + adminMapper.productInfo(pno));
+        log.info("log : " + adminMapper.productInfo(pOpNo));
 
         return "admin/productInfo";
     }
 
     @PostMapping("/addProductOp")
-    public void addProductOp(){
+    public String addProductOp(ProductOpVO productOpVO) throws Exception{
         //상품 옵션 추가
+
+        adminService.addProductOp(productOpVO);
+
+
+        log.info(productOpVO);
+
+        return "redirect:/admin/productList";
     }
+
+    @PostMapping("/closedProductOp")
+    @ResponseBody
+    public void closedProductOp(String pOpNo){
+        //상품 옵션 비공개
+        log.info("Closed ProductOp");
+        log.info("pOpNo : " + pOpNo);
+        adminMapper.closedProductOp(pOpNo);
+    }
+
+    @PostMapping("/openProductOp")
+    @ResponseBody
+    public void openProductOp(String pOpNo){
+        //상품 옵션 공개
+        log.info("Opened ProductOp");
+        log.info("Open pOpNo : " + pOpNo);
+        adminMapper.openProductOp(pOpNo);
+    }
+
+    @PostMapping("/closedProduct")
+    @ResponseBody
+    public void closedProduct(String pno){
+        //상품 비공개
+        log.info("Closed Product");
+        log.info("closed pno : " + pno);
+        adminMapper.closedProduct(pno);
+
+    }
+
+    @PostMapping("/openProduct")
+    @ResponseBody
+    public void openProduct(String pno){
+        //상품 공개
+        log.info("Opened Product");
+        log.info("open pno : " + pno);
+        adminMapper.openProduct(pno);
+
+    }
+
 
     @GetMapping("/orderList")
     public void orderList(){

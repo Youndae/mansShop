@@ -16,7 +16,7 @@ public interface AdminMapper {
 
     public void addProductInfo(ProductImgVO productImgVO);
 
-    public ProductOpVO productInfo(String pno);
+    public ProductOpVO productInfo(String pOpNo);
 
     public void modifyProductThumb(ProductOpVO productOpVO);
 
@@ -66,4 +66,14 @@ public interface AdminMapper {
     public List<ThumbnailVO> getThumbnail(String pno);
 
     public List<ProductImgVO> getInfoImg(String pno);
+
+    int maxStep(String pno);
+
+    public void closedProductOp(String pOpNo);
+
+    public void openProductOp(String pOpNo);
+
+    public void closedProduct(String pno);
+
+    public void openProduct(String pno);
 }

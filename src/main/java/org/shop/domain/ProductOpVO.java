@@ -17,6 +17,7 @@ public class ProductOpVO extends ProductVO{
     private Long pSalesRate;
     private Long pSales;
     private Long pStock;
+    private int opClosed;
 
     private List<ThumbnailVO> pThumbList;
     private List<ProductImgVO> pImgList;
