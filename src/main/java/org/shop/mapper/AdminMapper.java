@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AdminMapper {
 
-    public List<ProductOpVO> productList();
+    public List<ProductOpVO> productList(Criteria cri);
 
     public void addProduct(ProductOpVO productOpVO);
 
@@ -76,4 +76,7 @@ public interface AdminMapper {
     public void closedProduct(String pno);
 
     public void openProduct(String pno);
+
+
+    public int getProductTotal(Criteria cri);
 }

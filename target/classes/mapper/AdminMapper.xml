@@ -3,7 +3,7 @@
 
 <mapper namespace="org.shop.mapper.AdminMapper">
 
-    <select id="pList" resultType="org.shop.domain.ProductOpVO">
+    <!--<select id="pList" resultType="org.shop.domain.ProductOpVO">
         SELECT
             p.pno
             , p.pClassification
@@ -18,7 +18,54 @@
             productOp op INNER JOIN product p
         ON
             p.pno = op.pno
+    </select>-->
+
+    <sql id="search">
+        <trim prefix="WHERE " prefixOverrides="AND">
+            <if test="keyword != null || keyword != ''.toString()">pName like '%'||#{keyword}||'%'</if>
+            <!--<if test="classification != null || classification != ''.toString()">AND pClassification=#{classification}</if>-->
+        </trim>
+    </sql>
+
+
+
+    <select id="productList" resultType="org.shop.domain.ProductOpVO">
+        <![CDATA[
+            SELECT *
+            FROM(
+                    SELECT
+                        rownum rn
+                        , pno
+                        , pClassification
+                        , pName
+                        , pPrice
+                        , pRegDate
+                        , pOpNo
+                        , pSize
+                        , pColor
+                        , pStock
+                    FROM
+                        product_view
+
+                ]]>
+        <include refid="search"></include>
+
+
+        <![CDATA[)
+                WHERE
+                    rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        ]]>
     </select>
+
+    <select id="getProductTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            product_view
+        <include refid="search"></include>
+    </select>
+
+
 
     <insert id="addProduct" parameterType="org.shop.domain.ProductOpVO">
         INSERT INTO product(

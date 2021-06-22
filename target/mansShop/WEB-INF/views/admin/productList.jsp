@@ -10,6 +10,13 @@
 <div class="productList">
     <h1>ProductList</h1>
 </div>
+<div class="productList-classification">
+    <a href="OUTER">OUTER</a>
+    <a href="TOP">TOP</a>
+    <a href="PANTS">PANTS</a>
+    <a href="SHOES">SHOES</a>
+    <a href="BAGS">BAGS</a>
+</div>
 
 <div class="content">
     <table>
@@ -38,6 +45,46 @@
             </tr>
         </c:forEach>
     </table>
+
+    <div class="search">
+        <div>
+            <form id="searchForm" action="/admin/productList" method="get">
+                <input type="text" name="keyword" value='<c:out value="${pageMaker.cri.keyword}"/>'/>
+                <input type="hidden" name="pageNum" value='<c:out value="${pageMaker.cri.pageNum}"/>'/>
+                <input type="hidden" name="amount" value='<c:out value="${pageMaker.cri.amount}"/>'/>
+                <button class="btn">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="paging">
+        <ul class="pagination">
+            <c:if test="${pageMaker.prev}">
+                <li class="paginate_button previous">
+                    <a href="${pageMaker.startPage - 1}">Prev</a>
+                </li>
+            </c:if>
+
+            <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
+                <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
+                    <a href="${num}">${num}</a>
+                </li>
+            </c:forEach>
+
+            <c:if test="${pageMaker.next}">
+                <li class="paginate_button next">
+                    <a href="${pageMaker.endPage + 1}">Next</a>
+                </li>
+            </c:if>
+        </ul>
+    </div>
+
+    <form id="actionForm" action="/admin/productList" method="get">
+        <input type="hidden" name="classification" value="<c:out value="${pageMaker.cri.classification}"/>">
+        <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
+        <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
+        <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">
+    </form>
 </div>
 <script>
     function productInfo(){
@@ -45,6 +92,42 @@
             console.log("js pno : " + pno);
             location.href="/admin/productInfo/"+pno;
     }
+
+    $(document).ready(function(){
+        var actionForm = $("#actionForm");
+
+        $(".paginate_button a").on("click", function(e){
+            e.preventDefault();
+
+            if(!actionForm.find("input[name='classification']").val()){
+                actionForm.find("input[name='classification']").val(null);
+            }
+
+            alert("classification test : " + $("#actionForm [name=classification]").val());
+
+            actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+            actionForm.submit();
+        });
+
+        $(".productList-classification a").on('click', function(e){
+            e.preventDefault();
+
+            actionForm.find("input[name='classification']").val($(this).attr("href"));
+            actionForm.submit();
+        });
+
+        var searchForm = $("#searchForm");
+        $("#searchForm button").on('click', function(e){
+            if(!searchForm.find("input[name='keyword']").val()){
+                alert("키워드 입력");
+            }
+
+            searchForm.find("input[name='pageNum']").val("1");
+            e.preventDefault();
+
+            searchForm.submit();
+        })
+    })
 </script>
 <%--<script>
     $(document).ready(function(){

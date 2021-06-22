@@ -2,10 +2,7 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.ProductImgVO;
-import org.shop.domain.ProductOpVO;
-import org.shop.domain.ProductVO;
-import org.shop.domain.ThumbnailVO;
+import org.shop.domain.*;
 import org.shop.mapper.AdminMapper;
 import org.shop.service.AdminService;
 import org.springframework.http.HttpHeaders;
@@ -34,13 +31,23 @@ public class AdminController {
 
     @GetMapping("/productList")
     /*@PreAuthorize("hasRole('ROLE_ADMIN')")*/
-    public void productList(Model model) throws Exception{
+    public void productList(Model model, Criteria cri) throws Exception{
         //상품 목록
         log.info("pList");
 
-        adminMapper.pList().forEach(product -> log.info(product));
+        log.info("controller keyword : " + cri.getKeyword() == "");
 
-        model.addAttribute("pList", adminMapper.pList());
+        log.info("controller cri : " + cri);
+
+        adminMapper.productList(cri).forEach(product -> log.info(product));
+
+        model.addAttribute("pList", adminMapper.productList(cri));
+
+        int total = adminMapper.getProductTotal(cri);
+        log.info("Product Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
+
     }
 
     @GetMapping("/addProduct")
