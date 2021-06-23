@@ -7,7 +7,7 @@
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/js/admin.js"></script>
+<script type="text/javascript" src="/js/adminProduct.js"></script>
 <style>
     img{
         width: 300px;

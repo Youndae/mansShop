@@ -22,8 +22,8 @@
 
     <sql id="search">
         <trim prefix="WHERE " prefixOverrides="AND">
-            <if test="keyword != null || keyword != ''.toString()">pName like '%'||#{keyword}||'%'</if>
-            <!--<if test="classification != null || classification != ''.toString()">AND pClassification=#{classification}</if>-->
+            <if test="keyword != null">pName like '%'||#{keyword}||'%'</if>
+            <if test="classification != null">AND pClassification=#{classification}</if>
         </trim>
     </sql>
 

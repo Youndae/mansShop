@@ -138,6 +138,37 @@ function deleteOldPreview(obj){
 
 $(document).ready(function() {
 
+    var actionForm = $("#actionForm");
+
+    var n = null;
+
+    $(".paginate_button a").on("click", function(e){
+        e.preventDefault();
+
+        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+        actionForm.submit();
+    });
+
+    $(".productList-classification a").on('click', function(e){
+        e.preventDefault();
+
+        actionForm.find("input[name='classification']").val($(this).attr("href"));
+        actionForm.find("input[name='pageNum']").val("1");
+        actionForm.submit();
+    });
+
+    var searchForm = $("#searchForm");
+    $("#searchForm button").on('click', function(e){
+        if(!searchForm.find("input[name='keyword']").val()){
+            alert("키워드 입력");
+        }
+
+        searchForm.find("input[name='pageNum']").val("1");
+        e.preventDefault();
+
+        searchForm.submit();
+    })
+
 
     var classification = $("#classification").val();
     var size = $("#size").val();

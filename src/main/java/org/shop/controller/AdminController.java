@@ -35,7 +35,15 @@ public class AdminController {
         //상품 목록
         log.info("pList");
 
-        log.info("controller keyword : " + cri.getKeyword() == "");
+
+
+        if(cri.getKeyword() == ""){
+            cri.setKeyword(null);
+        }
+
+        if(cri.getClassification() == ""){
+            cri.setClassification(null);
+        }
 
         log.info("controller cri : " + cri);
 

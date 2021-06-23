@@ -6,6 +6,7 @@
     <title>Title</title>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/adminProduct.js"></script>
 <body>
 <div class="productList">
     <h1>ProductList</h1>
@@ -32,7 +33,7 @@
             </tr>
         </thead>
         <c:forEach items="${pList}" var="list">
-            <tr>
+            <tr id="productInfo">
                 <td id="productNo"><c:out value="${list.pno}"/></td>
                 <td><c:out value="${list.PClassification}"/></td>
                 <td>
@@ -80,30 +81,21 @@
     </div>
 
     <form id="actionForm" action="/admin/productList" method="get">
-        <input type="hidden" name="classification" value="<c:out value="${pageMaker.cri.classification}"/>">
+        <input type="hidden" id="classification" name="classification" value="<c:out value="${pageMaker.cri.classification}"/>">
         <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
         <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">
     </form>
 </div>
-<script>
-    function productInfo(){
-            var pno = $("#productNo").val();
-            console.log("js pno : " + pno);
-            location.href="/admin/productInfo/"+pno;
-    }
-
+<%--<script>
     $(document).ready(function(){
+
         var actionForm = $("#actionForm");
+
+        var n = null;
 
         $(".paginate_button a").on("click", function(e){
             e.preventDefault();
-
-            if(!actionForm.find("input[name='classification']").val()){
-                actionForm.find("input[name='classification']").val(null);
-            }
-
-            alert("classification test : " + $("#actionForm [name=classification]").val());
 
             actionForm.find("input[name='pageNum']").val($(this).attr("href"));
             actionForm.submit();
@@ -113,6 +105,7 @@
             e.preventDefault();
 
             actionForm.find("input[name='classification']").val($(this).attr("href"));
+            actionForm.find("input[name='pageNum']").val("1");
             actionForm.submit();
         });
 
@@ -128,7 +121,7 @@
             searchForm.submit();
         })
     })
-</script>
+</script>--%>
 <%--<script>
     $(document).ready(function(){
         (function(){
