@@ -7,6 +7,7 @@ import org.shop.mapper.AdminMapper;
 import org.shop.service.AdminService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -296,9 +297,33 @@ public class AdminController {
 
     }
 
+    @GetMapping("/orderInfo/{orderNo}")
+    public ResponseEntity<OrderVO> orderInfo(@PathVariable("orderNo") String orderNo){
+
+        log.info("orderInfo orderNo : " + orderNo);
+
+        return new ResponseEntity<>(adminMapper.orderInfo(orderNo), HttpStatus.OK);
+    }
+
+    @GetMapping("/orderInfoTable")
+    @ResponseBody
+    public ResponseEntity<List<OrderDetailVO>> orderInfoTable(String orderNo){
+
+        log.info("orderInfoTable : " + orderNo);
+
+        return new ResponseEntity<>(adminMapper.orderInfoTable(orderNo), HttpStatus.OK);
+    }
+
+
     @PostMapping("/shippingProcess")
-    public void shippingProcess(){
+    @ResponseBody
+    public int shippingProcess(String orderNo){
         //배송처리
+        log.info("orderNo : " + orderNo);
+
+        adminMapper.shippingProcessing(orderNo);
+
+        return adminMapper.checkOrderStat(orderNo);
     }
 
     @PostMapping("/orderPacking")

@@ -32,7 +32,7 @@ public interface AdminMapper {
 
     public List<OrderVO> orderList(Criteria cri);
 
-    public void shippingProcessing();
+    public void shippingProcessing(String orderNo);
 
     public void orderPacking();
 
@@ -81,4 +81,11 @@ public interface AdminMapper {
     public int getProductTotal(Criteria cri);
 
     public int getOrderTotal(Criteria cri);
+
+
+    public OrderVO orderInfo(String orderNo);
+
+    public List<OrderDetailVO> orderInfoTable(String orderNo);
+
+    public int checkOrderStat(String orderNo);
 }

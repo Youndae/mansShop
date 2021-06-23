@@ -258,4 +258,53 @@
         <include refid="orderSearch"></include>
     </select>
 
+    <select id="orderInfo" resultType="org.shop.domain.OrderVO">
+        select
+            orderNo
+            , userId
+            , orderPhone
+            , addr
+            , orderMemo
+            , orderStat
+        FROM
+            p_order
+        WHERE
+            orderNo=#{orderNo}
+    </select>
+
+    <select id="orderInfoTable" resultType="org.shop.domain.OrderDetailVO">
+        SELECT
+            p.pClassification
+            , p.pName
+            , p.pSize
+            , p.pColor
+            , p.pPrice
+            , pod.pOpNo
+            , pod.orderNo
+            , pod.orderCount
+        FROM
+            p_order_detail pod INNER JOIN product_view p
+            ON pod.pOpNo = p.pOpNo
+        WHERE
+            orderNo=#{orderNo}
+    </select>
+
+    <update id="shippingProcessing">
+        UPDATE
+            p_order
+        SET
+            orderStat=1
+        WHERE
+            orderNo=#{orderNo}
+    </update>
+
+    <select id="checkOrderStat" resultType="int">
+        SELECT
+            orderStat
+        FROM
+            p_order
+        WHERE
+            orderNo=#{orderNo}
+    </select>
+
 </mapper>

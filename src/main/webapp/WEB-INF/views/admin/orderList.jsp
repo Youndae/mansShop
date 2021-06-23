@@ -6,6 +6,29 @@
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/adminOrder.js"></script>
+<style>
+    /* The Modal (background) */
+    #orderModal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 10; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 70%; /* Could be more or less, depending on screen size */
+    }
+</style>
 <body>
 <div>
     <h1>주문목록</h1>
@@ -14,7 +37,6 @@
     <table>
         <thead>
             <tr>
-                <th></th>
                 <th>주문번호</th>
                 <th>주문자</th>
                 <th>처리</th>
@@ -23,7 +45,6 @@
         </thead>
         <c:forEach items="${order}" var="list">
             <tr>
-                <td></td><!-- 체크박스 -->
                 <td>
                     <a id="modalShow"><c:out value="${list.orderNo}"/></a>
                         <%--<c:out value="${list.orderNo}"/>--%>
@@ -85,42 +106,51 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>주문번호</label>
-                    <input class="form-control" name="orderNo" value="">
+                    <span class="form-control" name="orderNo"></span>
                 </div>
                 <div class="form-group">
                     <label>받는사람</label>
-                    <input clas="form-control" name="userId" value="">
+                    <span class="form-control" name="userId"></span>
                 </div>
                 <div class="form-group">
-                    <label>연락처</label>
-                    <input clas="form-control" name="orderPhone" value="">
+                    <label>연 락 처</label>
+                    <span class="form-control" name="orderPhone"></span>
                 </div>
                 <div class="form-group">
-                    <label>주소</label>
-                    <input clas="form-control" name="addr" value="">
+                    <label>주&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;소</label>
+                    <span class="form-control" name="addr"></span>
                 </div>
                 <div class="form-group">
                     <label>배송메모</label>
-                    <input clas="form-control" name="orderMemo" value="">
+                    <span class="form-control" name="orderMemo"></span>
                 </div>
                 <div class="form-group">
                     <label>주문목록</label>
-                    <table class="order_detail_list">
+                    <table class="order_detail_list" border="1">
 
                     </table>
                 </div>
+            </div>
+            <div class="shipping_btn">
+                <button type="button" id="shipping">배송처리</button>
             </div>
         </div>
     </div>
 </div>
 </body>
 
-<table>
+<!--<table>
     <thead>
         <tr>
             <th>옵션번호</th>
-            <th></th>
+            <th>분류</th>
+            <th>상품명</th>
+            <th>사이즈</th>
+            <th>컬러</th>
+            <th>수량</th>
         </tr>
     </thead>
 </table>
+모달 구성
+-->
 </html>
