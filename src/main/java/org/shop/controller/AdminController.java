@@ -283,9 +283,17 @@ public class AdminController {
 
 
     @GetMapping("/orderList")
-    public void orderList(){
+    public void orderList(Model model, Criteria cri){
         //주문 목록
         //모든 주문 목록 출력
+
+        model.addAttribute("order", adminMapper.orderList(cri));
+
+        int total = adminMapper.getOrderTotal(cri);
+        log.info("Product Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
+
     }
 
     @PostMapping("/shippingProcess")

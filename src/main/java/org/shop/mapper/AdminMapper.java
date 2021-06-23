@@ -30,7 +30,7 @@ public interface AdminMapper {
 
     public void deleteProduct(String pno);
 
-    public List<OrderVO> orderList();
+    public List<OrderVO> orderList(Criteria cri);
 
     public void shippingProcessing();
 
@@ -79,4 +79,6 @@ public interface AdminMapper {
 
 
     public int getProductTotal(Criteria cri);
+
+    public int getOrderTotal(Criteria cri);
 }

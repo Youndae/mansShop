@@ -30,31 +30,28 @@
 
 
     <select id="productList" resultType="org.shop.domain.ProductOpVO">
-        <![CDATA[
-            SELECT *
-            FROM(
-                    SELECT
-                        rownum rn
-                        , pno
-                        , pClassification
-                        , pName
-                        , pPrice
-                        , pRegDate
-                        , pOpNo
-                        , pSize
-                        , pColor
-                        , pStock
-                    FROM
-                        product_view
+        SELECT *
+        FROM(
+                SELECT
+                    rownum rn
+                    , pno
+                    , pClassification
+                    , pName
+                    , pPrice
+                    , pRegDate
+                    , pOpNo
+                    , pSize
+                    , pColor
+                    , pStock
+                FROM
+                    product_view
 
-                ]]>
         <include refid="search"></include>
 
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
 
-        <![CDATA[)
-                WHERE
-                    rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
-        ]]>
     </select>
 
     <select id="getProductTotal" resultType="int">
@@ -228,4 +225,37 @@
         SET pClosed=0
         WHERE pno=#{pno}
     </update>
+
+    <sql id="orderSearch">
+        <trim prefix="WHERE " prefixOverrides="AND">
+            <if test="keyword != null">userId like '%'||#{keyword}||'%'</if>
+        </trim>
+    </sql>
+
+    <select id="orderList" resultType="org.shop.domain.OrderVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , o.*
+            FROM(
+                SELECT *
+                FROM
+                    p_order
+                <include refid="orderSearch"></include>
+                ORDER BY orderDate DESC
+            ) o
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getOrderTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            p_order
+        <include refid="orderSearch"></include>
+    </select>
+
 </mapper>
