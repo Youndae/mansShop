@@ -38,7 +38,7 @@
         <thead>
             <tr>
                 <th>주문번호</th>
-                <th>주문자</th>
+                <th>아이디</th>
                 <th>처리</th>
                 <th>주문일</th>
             </tr>
@@ -50,7 +50,14 @@
                         <%--<c:out value="${list.orderNo}"/>--%>
                 </td>
                 <td><c:out value="${list.userId}"/></td>
-                <td><c:out value="${list.orderStat}"/></td>
+                <c:choose>
+                    <c:when test="${list.orderStat == 0}">
+                        <td>새 주문</td>
+                    </c:when>
+                    <c:when test="${list.orderStat == 1}">
+                        <td>확인완료</td>
+                    </c:when>
+                </c:choose>
                 <td><c:out value="${list.orderDate}"/></td>
             </tr>
         </c:forEach>
@@ -109,8 +116,12 @@
                     <span class="form-control" name="orderNo"></span>
                 </div>
                 <div class="form-group">
-                    <label>받는사람</label>
+                    <label>아 이 디</label>
                     <span class="form-control" name="userId"></span>
+                </div>
+                <div class="form-group">
+                    <label>수 령 인</label>
+                    <span class="form-control" name="recipient"></span>
                 </div>
                 <div class="form-group">
                     <label>연 락 처</label>

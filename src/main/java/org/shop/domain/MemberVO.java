@@ -17,6 +17,7 @@ public class MemberVO {
     private String userEmail;
     private Date userBirth;
     private String userPhone;
+    private Date joinRegDate;
 
     private List<AuthVO> authList;
 }

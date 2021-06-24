@@ -1,4 +1,46 @@
 $(document).ready(function(){
+
+    //adminQnA
+    var qno = $("#qno").val();
+    (function(){
+        console.log("replyList get");
+        $.getJSON("/admin/getQnAReply", {qno:qno}, function(arr){
+            var str = "";
+            $(arr).each(function(i, reply){
+                console.log("reply get");
+                str += "<div class=\"QnAReplyContent\">" +
+                        "<label>"+reply.userId+"</label>" +
+                        "<span>"+reply.qrContent+"</span>" +
+                        "<button type=\"button\" onclick=\"reply_del(this)\" value=\""+reply.replyNo+"\">삭제</button>" +
+                        "</div>";
+            })
+            $(".QnAReply").append(str);
+        })
+    })();
+
+    $("#QnAComplete").on('click', function(){
+        $.ajax({
+           url: '/admin/adminQnAComplete',
+            type: 'post',
+            data: {qno:qno},
+            dataType: 'json',
+            success: function(data){
+               console.log("complete success");
+               if(data == 1){
+                   location.reload();
+               }else{
+                   alert("처리 실패");
+               }
+            }
+        });
+    });
+
+
+
+
+
+
+
     var actionForm = $("#orderActionForm");
     var ordersearchForm = $("#orderSearchForm");
 
@@ -21,7 +63,6 @@ $(document).ready(function(){
     })
 
 
-
     $("#modalShow").on('click', function(e){
 
         e.preventDefault();
@@ -32,12 +73,13 @@ $(document).ready(function(){
         getInfo(orderNo, function(info){
            /*alert("data : " + info.orderNo + ", " + info.userId + ", " + info.orderPhone + ", " + info.addr + ", " + info.orderMemo);*/
             $(".modal-body span[name=orderNo]").text(info.orderNo);
+            $(".modal-body span[name=recipient]").text(info.recipient);
             $(".modal-body span[name=userId]").text(info.userId);
             $(".modal-body span[name=orderPhone]").text(info.orderPhone);
             $(".modal-body span[name=addr]").text(info.addr);
             $(".modal-body span[name=orderMemo]").text(info.orderMemo);
 
-            var shipping_btn = "<button type=\"button\" id=\"shipping\">배송처리</button>";
+
 
             if(info.orderStat == 1){
                 $("#shipping").hide();
@@ -103,8 +145,7 @@ $(document).ready(function(){
             dataType: 'json',
             success: function(data){
 
-                alert("ajax result : " + data);
-
+                console.log("return data : " + data);
 
                 if(data == 1){
                     $(".modal").hide();
@@ -113,11 +154,50 @@ $(document).ready(function(){
                     alert("오류발생");
                 }
 
-
             }
         })
     })
 
+});
+
+function reply_del(obj){
+    console.log("reply del");
+    var replyNo = obj.attributes['value'].value;
+    console.log("rno : " + replyNo);
+
+    $.ajax({
+        url: '/admin/QnAReplyDel',
+        type: 'post',
+        data: {replyNo : replyNo},
+        success: function(data){
+            console.log("reply delete complete");
+            location.reload();
+        }
+    })
+}
+
+
+
+$(function(){
+    $("#replyForm_submit").on('click', function(){
+        console.log("reply submit");
+        var form = $("#replyForm").serialize();
+
+        $.ajax({
+            url: '/admin/QnAReply',
+            type: 'post',
+            data: form,
+            success: function(data){
+                alert("댓글등록 성공!");//alert 삭제할것.
+                location.reload();
+            },
+            error : function(request, status, error){
+                alert("code:" + request.status + "\n"
+                    + "message : " + request.responseText
+                    + "\n" + "error : " +error);
+            }
+        })
+    });
 });
 
 function getInfo(orderNo, callback, error){

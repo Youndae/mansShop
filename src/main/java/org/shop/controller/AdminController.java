@@ -326,38 +326,75 @@ public class AdminController {
         return adminMapper.checkOrderStat(orderNo);
     }
 
-    @PostMapping("/orderPacking")
-    public void orderPacking(){
-        //상품 포장 처리
-        //이건 shippingProcess랑 합쳐서 할지 따로 할지 좀 더 고민.
-    }
-
-    @GetMapping("/orderDetail")
-    public void orderDetail(){
-        //주문 상세 정보
-    }
-
     @GetMapping("/adminQnAList")
-    public void adminQnAList(){
+    public void adminQnAList(Model model, Criteria cri){
         //QnA 리스트.
         //상품 QnA가 아닌 회원 문의 리스트트
+
+        model.addAttribute("list", adminMapper.adminQnAList(cri));
+
+        int total = adminMapper.getAdminQnATotal(cri);
+        log.info("Product Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
-    @GetMapping("/adminQnAList/{qno}")
-    public void adminQnADetail(){
+    @GetMapping("/adminQnADetail/{qno}")
+    public String adminQnADetail(@PathVariable("qno") int qno, Model model){
         //QnA Detail
+
+        log.info("Detail qno : " + qno);
+
+        model.addAttribute("aqDetail", adminMapper.adminQnADetail(qno));
+
+        return "admin/adminQnADetail";
     }
 
     @PostMapping("/adminQnAComplete")
-    public void adminQnAComplete(){
+    @ResponseBody
+    public int adminQnAComplete(int qno){
         //QnA 답변 완료 처리
+        log.info("QnAComplete");
+
+        adminMapper.adminQnAComplete(qno);
+
+        return adminMapper.adminQnACheck(qno);
     }
 
-    @PostMapping("/adminQnAReply")
-    public void adminQnAReply(){
+    @GetMapping("/getQnAReply")
+    @ResponseBody
+    public ResponseEntity<List<MyQnAReplyVO>> getQnAReply(int qno){
         // QnA 댓글 처리
         // MyPageController에도 동일하게 있는데
         // 거기서 한번에 처리하도록 할지 admin과 user를 나눠서 처리할지 고민.
+
+        log.info("controller qno : " + qno);
+        log.info("ReplyList");
+
+        return new ResponseEntity<>(adminMapper.adminQnAReplyList(qno), HttpStatus.OK);
+    }
+
+    @PostMapping("/QnAReply")
+    @ResponseBody
+    public void QnAReply(MyQnAReplyVO myQnAReplyVO){
+        //userId는 일단 강제로 넣어주고 admin페이지 다 작성후에 시큐리티 활성화 하면서 꼭 체크할것.
+        myQnAReplyVO.setUserId("coco");
+        //replyNo는 테스트 후 oracle 시퀀스로 처리할것.
+        long replyNo = 20;
+        myQnAReplyVO.setReplyNo(replyNo);
+
+        log.info("QnAReply Controller : " + myQnAReplyVO);
+
+        adminMapper.adminQnAReply(myQnAReplyVO);
+
+    }
+
+    @PostMapping("/QnAReplyDel")
+    @ResponseBody
+    public void QnAReplyDel(int replyNo){
+        log.info("controller rno : " + replyNo);
+
+        adminMapper.QnAReplyDelete(replyNo);
     }
 
     @GetMapping("/userInfo")
@@ -366,8 +403,14 @@ public class AdminController {
     }
 
     @GetMapping("/userList")
-    public void userList(){
+    public void userList(Model model, Criteria cri){
         //회원 목록
+        model.addAttribute("uList", adminMapper.userList(cri));
+
+        int total = adminMapper.getUserTotal(cri);
+        log.info("Product Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
     @GetMapping("/salesProductList")

@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyQnAVO {
-    private Long qNo;
+    private Long qno;
     private String userId;
-    private String qTithe;
+    private String qTitle;
     private String qContent;
     private int qStat;
     private Date qRegDate;

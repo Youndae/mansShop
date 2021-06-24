@@ -261,6 +261,7 @@
     <select id="orderInfo" resultType="org.shop.domain.OrderVO">
         select
             orderNo
+            , recipient
             , userId
             , orderPhone
             , addr
@@ -305,6 +306,117 @@
             p_order
         WHERE
             orderNo=#{orderNo}
+    </select>
+
+    <select id="getAdminQnATotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            my_QnA
+
+    </select>
+
+    <select id="adminQnAList" resultType="org.shop.domain.MyQnAVO">
+        SELECT *
+        FROM (
+            SELECT
+                rownum rn
+                , qno
+                , userid
+                , qtitle
+                , qcontent
+                , qstat
+                , qregdate
+            FROM
+                my_QnA
+            ORDER BY
+                qno DESC
+            )
+        WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="adminQnADetail" resultType="org.shop.domain.MyQnAVO">
+        SELECT *
+        FROM
+            my_QnA
+        WHERE
+            qno=#{qno}
+    </select>
+
+    <select id="adminQnAReplyList" resultType="org.shop.domain.MyQnAReplyVO">
+        SELECT *
+        FROM
+            my_QnA_Reply
+        WHERE
+            qno=#{qno}
+        ORDER BY replyNo DESC
+    </select>
+
+    <update id="adminQnAComplete">
+        UPDATE
+            my_QnA
+        SET
+            qStat=1
+        WHERE
+            qno=#{qno}
+    </update>
+
+    <select id="adminQnACheck" resultType="int">
+        SELECT
+            qStat
+        FROM
+            my_QnA
+        WHERE
+            qno=#{qno}
+    </select>
+
+    <insert id="adminQnAReply" parameterType="org.shop.domain.MyQnAReplyVO">
+        INSERT INTO
+            my_QnA_Reply(
+                replyNo
+                , qno
+                , userId
+                , qrContent
+                , qrRegDate
+            )
+        VALUES(
+            #{replyNo}
+            , #{qno}
+            , #{userId}
+            , #{qrContent}
+            , sysdate
+        )
+    </insert>
+
+    <delete id="QnAReplyDelete">
+        DELETE FROM
+            my_qna_reply
+        WHERE
+            replyNo=#{replyNo}
+    </delete>
+
+    <select id="userList" resultType="org.shop.domain.MemberVO">
+        SELECT *
+        FROM(
+            SELECT rownum rn, m.*
+            FROM(
+                SELECT *
+                FROM
+                    member
+                <include refid="orderSearch"></include>
+                ORDER BY
+                    joinRegdate desc
+                )m
+            )
+        WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getUserTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            member
+        <include refid="orderSearch"></include>
     </select>
 
 </mapper>

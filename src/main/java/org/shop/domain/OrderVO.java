@@ -11,6 +11,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class OrderVO {
     private String orderNo;
+    private String recipient;
     private String userId;
     private String addr;
     private String orderPhone;

@@ -38,17 +38,23 @@ public interface AdminMapper {
 
     public void orderDetail();
 
-    public List<ProductQnAVO> adminQnAList();
+    public List<ProductQnAVO> adminQnAList(Criteria cri);
 
-    public void adminQnADetail();
+    public MyQnAVO adminQnADetail(int qno);
 
-    public void adminQnAComplete();
+    public void adminQnAComplete(int qno);
 
-    public void adminQnAReply();
+    public int adminQnACheck(int qno);
+
+    public List<MyQnAReplyVO> adminQnAReplyList(int qno);
+
+    public void adminQnAReply(MyQnAReplyVO myQnAReplyVO);
+
+    public void QnAReplyDelete(int replyNo);
 
     public void userInfo();
 
-    public void userList();
+    public List<MemberVO> userList(Criteria cri);
 
     public List<SalesVO> salesProductList();
 
@@ -82,10 +88,14 @@ public interface AdminMapper {
 
     public int getOrderTotal(Criteria cri);
 
+    public int getUserTotal(Criteria cri);
+
 
     public OrderVO orderInfo(String orderNo);
 
     public List<OrderDetailVO> orderInfoTable(String orderNo);
 
     public int checkOrderStat(String orderNo);
+
+    public int getAdminQnATotal(Criteria cri);
 }
