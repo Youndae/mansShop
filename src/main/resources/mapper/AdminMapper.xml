@@ -227,7 +227,7 @@
     </update>
 
     <sql id="orderSearch">
-        <trim prefix="WHERE " prefixOverrides="AND">
+        <trim prefix="WHERE ">
             <if test="keyword != null">userId like '%'||#{keyword}||'%'</if>
         </trim>
     </sql>
@@ -418,5 +418,98 @@
             member
         <include refid="orderSearch"></include>
     </select>
+
+    <select id="userInfo" resultType="org.shop.domain.MemberVO">
+        SELECT *
+        FROM
+            member
+        WHERE
+            userId=#{userId}
+    </select>
+
+    <sql id="salesSearchProduct">
+        <trim  prefix="WHERE ">
+            <if test="type == 'classification'.toString()">pClassification LIKE '%'||#{keyword}||'%'</if>
+            <if test="type == 'pName'.toString()">pName LIKE '%'||#{keyword}||'%'</if>
+        </trim>
+    </sql>
+
+    <sql id="salesSortProduct">
+        <trim prefix="ORDER BY ">
+            <if test="sortType == '1'.toString()">pSales ASC</if>
+            <if test="sortType == '2'.toString()">pSales DESC</if>
+            <if test="sortType == '3'.toString()">pSalesRate ASC</if>
+            <if test="sortType == '4'.toString()">pSalesRate DESC</if>
+        </trim>
+    </sql>
+
+
+    <select id="getSalesProductTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            product_view
+        <include refid="salesSearchProduct"></include>
+    </select>
+
+    <select id="salesProductList" resultType="org.shop.domain.ProductOpVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , v.*
+            FROM(
+                SELECT *
+                FROM
+                    product_view
+                <include refid="salesSortProduct"></include>
+                ) v
+            <include refid="salesSearchProduct"></include>
+            )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <sql id="salesSearchTerm">
+        <trim  prefix="WHERE ">
+            <if test="keyword != null">salesTerm LIKE '%'||#{keyword}||'%'</if>
+        </trim>
+    </sql>
+
+    <select id="salesTermSelect" resultType="org.shop.domain.SalesVO">
+        SELECT
+            salesTerm
+        FROM
+            sales
+        ORDER BY
+            salesTerm DESC
+    </select>
+
+    <select id="getSalesTermTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            sales
+        <include refid="salesSearchTerm"></include>
+    </select>
+
+    <select id="salesTermList" resultType="org.shop.domain.SalesVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , s.*
+            FROM(
+                SELECT *
+                FROM
+                    sales
+                ORDER BY salesterm DESC
+            ) s
+        <include refid="salesSearchTerm"></include>
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
 
 </mapper>

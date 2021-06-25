@@ -14,10 +14,14 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/admin/")
@@ -288,6 +292,8 @@ public class AdminController {
         //주문 목록
         //모든 주문 목록 출력
 
+        log.info("orderList keyword : " + cri.getKeyword());
+
         model.addAttribute("order", adminMapper.orderList(cri));
 
         int total = adminMapper.getOrderTotal(cri);
@@ -397,10 +403,15 @@ public class AdminController {
         adminMapper.QnAReplyDelete(replyNo);
     }
 
-    @GetMapping("/userInfo")
-    public void userInfo(){
+    @GetMapping("/userInfo/{userId}")
+    public ResponseEntity<MemberVO> userInfo(@PathVariable("userId") String userId){
         //회원 정보
+        log.info("get user Info controller : " + userId);
+
+
+        return new ResponseEntity<>(adminMapper.userInfo(userId), HttpStatus.OK);
     }
+
 
     @GetMapping("/userList")
     public void userList(Model model, Criteria cri){
@@ -414,13 +425,38 @@ public class AdminController {
     }
 
     @GetMapping("/salesProductList")
-    public void salesProductList(){
+    public void salesProductList(Model model, Criteria cri){
         //상품별 매출 목록
+
+        log.info("salesProductList cri : " + cri);
+
+        model.addAttribute("spList", adminMapper.salesProductList(cri));
+
+        int total = adminMapper.getSalesProductTotal(cri);
+        log.info("salesProduct Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
     @GetMapping("/salesTermList")
-    public void salesTermList(){
+    public void salesTermList(Model model, Criteria cri){
         //기간별 매출 목록
+
+        log.info("salesTermList cri : " + cri);
+
+        model.addAttribute("stList", adminMapper.salesTermList(cri));
+
+        int total = adminMapper.getSalesTermTotal(cri);
+
+        log.info("salesTermList Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
+    }
+
+    @GetMapping("/salesTermSelect")
+    public ResponseEntity<List<SalesVO>> salesTermSelect(){
+        log.info("salesTerm Select Option List");
+        return new ResponseEntity<>(adminMapper.salesTermSelect(), HttpStatus.OK);
     }
 
     @GetMapping("/replyProductQnA")
@@ -433,6 +469,4 @@ public class AdminController {
     public void replyProductQnA(){
         //상품 문의 답글 작성 처리
     }
-
-
 }

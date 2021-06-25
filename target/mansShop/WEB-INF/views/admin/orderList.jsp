@@ -34,7 +34,7 @@
     <h1>주문목록</h1>
 </div>
 <div>
-    <table>
+    <table id="tbl_orderList">
         <thead>
             <tr>
                 <th>주문번호</th>
@@ -138,8 +138,22 @@
                 <div class="form-group">
                     <label>주문목록</label>
                     <table class="order_detail_list" border="1">
+                        <thead>
+                            <tr>
+                                <th>옵션번호</th>
+                                <th>분류</th>
+                                <th>상품명</th>
+                                <th>사이즈</th>
+                                <th>컬러</th>
+                                <th>수량</th>
+                            </tr>
+                        </thead>
+                        <tr class="order_detail_info_list">
 
+                        </tr>
                     </table>
+
+
                 </div>
             </div>
             <div class="shipping_btn">

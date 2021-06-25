@@ -14,6 +14,8 @@ public class Criteria {
 
     private String keyword;
     private String classification;
+    private String type;
+    private String sortType;
 
     public Criteria(){
         this(1, 3);

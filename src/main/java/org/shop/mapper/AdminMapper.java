@@ -2,6 +2,8 @@ package org.shop.mapper;
 
 import org.shop.domain.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public interface AdminMapper {
@@ -52,13 +54,13 @@ public interface AdminMapper {
 
     public void QnAReplyDelete(int replyNo);
 
-    public void userInfo();
+    public MemberVO userInfo(String userId);
 
     public List<MemberVO> userList(Criteria cri);
 
-    public List<SalesVO> salesProductList();
+    public List<ProductOpVO> salesProductList(Criteria cri);
 
-    public List<SalesVO> salesTermList();
+    public List<SalesVO> salesTermList(Criteria cri);
 
     public void replyProductQnA();
 
@@ -98,4 +100,11 @@ public interface AdminMapper {
     public int checkOrderStat(String orderNo);
 
     public int getAdminQnATotal(Criteria cri);
+
+    public int getSalesProductTotal(Criteria cri);
+
+    public int getSalesTermTotal(Criteria cri);
+
+    public List<SalesVO> salesTermSelect();
+
 }

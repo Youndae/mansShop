@@ -63,12 +63,13 @@ $(document).ready(function(){
     })
 
 
-    $("#modalShow").on('click', function(e){
+    $("#tbl_orderList a").on('click', function(e){
 
         e.preventDefault();
         var orderNo = $(this).text();
-
         var str = "";
+
+
 
         getInfo(orderNo, function(info){
            /*alert("data : " + info.orderNo + ", " + info.userId + ", " + info.orderPhone + ", " + info.addr + ", " + info.orderMemo);*/
@@ -105,20 +106,15 @@ $(document).ready(function(){
 
         (function(){
             $.getJSON("/admin/orderInfoTable", {orderNo:orderNo}, function(arr){
-                str = "<thead>" +
-                    "<tr>" +
-                    "<th>옵션번호</th>" +
-                    "<th>분류</th>" +
-                    "<th>상품명</th>" +
-                    "<th>사이즈</th>" +
-                    "<th>컬러</th>" +
-                    "<th>수량</th>" +
-                    "</tr>"+
-                    "</thead>";
+
 
                 str += getInfoTable(arr);
 
-                $(".order_detail_list").append(str);
+                $(".order_detail_info_list").append(str);
+
+
+
+
 
 
 
@@ -128,12 +124,13 @@ $(document).ready(function(){
     });
 
     $(".modalClose").on('click', function(){
+        $(".order_detail_info_list td").remove();
         $(".modal").hide();
     });
 
 
     $(".shipping_btn button").on('click', function(){
-        console.log("hi");
+
         var orderNo = $('span[name=orderNo]').text();
 
         console.log("orderNo : " + orderNo);
@@ -213,17 +210,17 @@ function getInfo(orderNo, callback, error){
 }
 
 function getInfoTable(arr){
-    console.log("order Info get");
+    console.log("order Info Table get");
     var str = "";
     $(arr).each(function(i, info){
-        str += "<tr>" +
-                "<td>"+info.popNo+"</td>" +
-                "<td>"+info.pclassification+"</td>" +
-                "<td>"+info.pname+"</td>" +
-                "<td>"+info.psize+"</td>" +
-                "<td>"+info.pcolor+"</td>" +
-                "<td>"+info.orderCount+"</td>" +
-                "</tr>";
+        str +=
+            "<td>"+info.popNo+"</td>" +
+            "<td>"+info.pclassification+"</td>" +
+            "<td>"+info.pname+"</td>" +
+            "<td>"+info.psize+"</td>" +
+            "<td>"+info.pcolor+"</td>" +
+            "<td>"+info.orderCount+"</td>";
+
     })
 
     return str;
