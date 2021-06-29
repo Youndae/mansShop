@@ -119,6 +119,10 @@ public class AdminServiceImpl implements AdminService{
             productOpVO.setPStock(stock);
         }
 
+
+
+        log.info("get pSize : " + productOpVO.getPSize());
+
         StringBuffer sb = new StringBuffer();
         String pnoPattern = sb.append(productOpVO.getPClassification())
                 .append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();

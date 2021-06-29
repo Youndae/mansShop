@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +30,7 @@ import java.util.List;
 @Controller
 @Log4j
 @AllArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
 
     private AdminMapper adminMapper;
@@ -35,12 +38,9 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping("/productList")
-    /*@PreAuthorize("hasRole('ROLE_ADMIN')")*/
     public void productList(Model model, Criteria cri) throws Exception{
         //상품 목록
         log.info("pList");
-
-
 
         if(cri.getKeyword() == ""){
             cri.setKeyword(null);
@@ -60,6 +60,7 @@ public class AdminController {
         log.info("Product Total : " + total);
 
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
 
     }
 
@@ -111,6 +112,7 @@ public class AdminController {
         adminService.addProduct(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles);
 
         log.info("insert complete");
+
     }
 
     @PostMapping("/modifyProduct")
@@ -382,11 +384,13 @@ public class AdminController {
 
     @PostMapping("/QnAReply")
     @ResponseBody
-    public void QnAReply(MyQnAReplyVO myQnAReplyVO){
-        //userId는 일단 강제로 넣어주고 admin페이지 다 작성후에 시큐리티 활성화 하면서 꼭 체크할것.
-        myQnAReplyVO.setUserId("coco");
+    public void QnAReply(MyQnAReplyVO myQnAReplyVO, Principal principal){
+
+        String id = principal.getName();
+
+        myQnAReplyVO.setUserId(id);
         //replyNo는 테스트 후 oracle 시퀀스로 처리할것.
-        long replyNo = 20;
+        long replyNo = 21;
         myQnAReplyVO.setReplyNo(replyNo);
 
         log.info("QnAReply Controller : " + myQnAReplyVO);

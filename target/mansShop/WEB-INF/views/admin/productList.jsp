@@ -4,12 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/adminProduct.js"></script>
 <body>
 <div class="productList">
     <h1>ProductList</h1>
+    <a href="/admin/addProduct">상품 추가</a>
 </div>
 <div class="productList-classification">
     <a href="OUTER">OUTER</a>

@@ -16,10 +16,6 @@
                 <select id="select_Term_Year">
 
                 </select>
-                <label>월별 : </label>
-                <select id="select_Term_Month">
-
-                </select>
                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
                 <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">
@@ -47,6 +43,17 @@
             </tbody>
         </table>
 
+        <div class="salesSum_Year">
+            <c:if test="${pageMaker.cri.keyword != null && pageMaker.cri.keyword != ''}">
+                <c:set var="total" value="0"/>
+                <c:forEach items="${stList}" var="sum">
+                    <c:set var="total" value="${total + sum.salesSum}"/>
+                </c:forEach>
+
+                <span>연매출 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+            </c:if>
+        </div>
+
         <div class="paging">
             <ul class="pagination">
                 <c:if test="${pageMaker.prev}">
@@ -56,9 +63,11 @@
                 </c:if>
 
                 <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
-                    <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
-                        <a href="${num}">${num}</a>
-                    </li>
+                    <c:if test="${pageMaker.endPage >= 2}">
+                        <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
+                            <a href="${num}">${num}</a>
+                        </li>
+                    </c:if>
                 </c:forEach>
 
                 <c:if test="${pageMaker.next}">
@@ -81,22 +90,11 @@ $(document).ready(function(){
     (function(){
         $.getJSON("/admin/salesTermSelect", function(arr){
 
-            $("#select_Term_Month option").remove();
-
             var str = "";
-
-            $(arr).each(function(i, termMonth){
-                str += "<option value=\"" + termMonth.salesTerm +"\">" +
-                    termMonth.salesTerm + "</option>";
-            });
-
-            $("#select_Term_Month").append(str);
-
-            str = "";
-
             var optionYear = "";
             $(arr).each(function(i, termYear){
                 var year = termYear.salesTerm.substring(0, 4);
+
                 if(optionYear != year){
                     optionYear = year;
                     str += "<option value=\"" + optionYear +"\">" +
@@ -118,9 +116,12 @@ $(document).ready(function(){
         actionForm.submit();
     });
 
-    $("#select_Term_Month").on("propertychange change keyup paste input", function(){
+    $("#select_Term_Year").on("propertychange change keyup paste input", function(){
+
         actionForm.find("input[name='pageNum']").val("1");
-        actionForm.find("select[name='keyword']").val($("#select_Term_Month").val());
+        actionForm.find("input[name='keyword']").val($("#select_Term_Year").val());
+        actionForm.find("input[name='amount']").val("12");
+
         actionForm.submit();
     })
 

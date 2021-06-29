@@ -101,7 +101,7 @@
     </insert>
 
     <insert id="addProductThumbnail" parameterType="org.shop.domain.ThumbnailVO">
-        INSERT INTO p_thumbnail(
+        INSERT INTO productThumbnail(
             thumbNo
             , pno
             , pThumbnail
@@ -154,7 +154,7 @@
     </select>
 
     <select id="getThumbnail" resultType="org.shop.domain.ThumbnailVO">
-        SELECT * FROM p_thumbnail where pno=#{pno}
+        SELECT * FROM productThumbnail where pno=#{pno}
     </select>
 
     <select id="getInfoImg" resultType="org.shop.domain.ProductImgVO">
@@ -187,7 +187,7 @@
     </update>
 
     <delete id="deleteThumb" parameterType="String">
-        DELETE FROM p_thumbnail
+        DELETE FROM productThumbnail
         WHERE pThumbnail=#{pThumbnail}
     </delete>
 
@@ -241,7 +241,7 @@
             FROM(
                 SELECT *
                 FROM
-                    p_order
+                    productOrder
                 <include refid="orderSearch"></include>
                 ORDER BY orderDate DESC
             ) o
@@ -254,7 +254,7 @@
         SELECT
             count(*)
         FROM
-            p_order
+            productOrder
         <include refid="orderSearch"></include>
     </select>
 
@@ -268,7 +268,7 @@
             , orderMemo
             , orderStat
         FROM
-            p_order
+            productOrder
         WHERE
             orderNo=#{orderNo}
     </select>
@@ -284,7 +284,7 @@
             , pod.orderNo
             , pod.orderCount
         FROM
-            p_order_detail pod INNER JOIN product_view p
+            productOrder_detail pod INNER JOIN product_view p
             ON pod.pOpNo = p.pOpNo
         WHERE
             orderNo=#{orderNo}
@@ -292,7 +292,7 @@
 
     <update id="shippingProcessing">
         UPDATE
-            p_order
+            productOrder
         SET
             orderStat=1
         WHERE
@@ -303,7 +303,7 @@
         SELECT
             orderStat
         FROM
-            p_order
+            productOrder
         WHERE
             orderNo=#{orderNo}
     </select>

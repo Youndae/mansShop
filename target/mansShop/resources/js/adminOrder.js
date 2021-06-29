@@ -1,3 +1,6 @@
+var token = $("meta[name='_csrf']").attr("content");
+var header = $("meta[name='_csrf_header']").attr("content");
+
 $(document).ready(function(){
 
     //adminQnA
@@ -113,11 +116,6 @@ $(document).ready(function(){
                 $(".order_detail_info_list").append(str);
 
 
-
-
-
-
-
              $(".modal").show();
             })
         })();
@@ -140,6 +138,9 @@ $(document).ready(function(){
             type: 'post',
             data: {orderNo:orderNo},
             dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
             success: function(data){
 
                 console.log("return data : " + data);
@@ -166,6 +167,9 @@ function reply_del(obj){
         url: '/admin/QnAReplyDel',
         type: 'post',
         data: {replyNo : replyNo},
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
         success: function(data){
             console.log("reply delete complete");
             location.reload();
@@ -184,8 +188,10 @@ $(function(){
             url: '/admin/QnAReply',
             type: 'post',
             data: form,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
             success: function(data){
-                alert("댓글등록 성공!");//alert 삭제할것.
                 location.reload();
             },
             error : function(request, status, error){
