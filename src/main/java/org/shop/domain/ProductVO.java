@@ -15,4 +15,5 @@ public class ProductVO {
     private Date pRegDate;
     private String firstThumbnail;
     private String pClosed;
+    private Long pSalesRate;
 }

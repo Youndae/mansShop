@@ -14,7 +14,7 @@ public class ProductOpVO extends ProductVO{
     private String pno;
     private String pSize;
     private String pColor;
-    private Long pSalesRate;
+    private Long opSalesRate;
     private Long pSales;
     private Long pStock;
     private int opClosed;

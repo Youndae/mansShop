@@ -3,4 +3,39 @@
 
 <mapper namespace="org.shop.mapper.MainMapper">
 
+    <select id="mainBest" resultType="org.shop.domain.ProductVO">
+            SELECT *
+                    FROM(
+                        SELECT *
+                        FROM
+                            product
+                        ORDER BY pSalesRate DESC
+                    )
+            WHERE rownum BETWEEN 1 AND 12
+    </select>
+
+    <select id="productDetail" resultType="org.shop.domain.ProductVO">
+        SELECT *
+        FROM
+            product
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductThumb" resultType="org.shop.domain.ThumbnailVO">
+        SELECT *
+        FROM
+            productThumbnail
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductOp" resultType="org.shop.domain.ProductOpVO">
+        SELECT *
+        FROM
+            productOp
+        WHERE
+            pno=#{pno}
+    </select>
+
 </mapper>
