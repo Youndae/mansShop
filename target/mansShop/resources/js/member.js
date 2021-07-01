@@ -114,6 +114,7 @@ $(document).ready(function(){
     /*lastday();*/
 
     $("#select_year").on("propertychange change keyup paste input", function(){
+        console.log("select Year");
         lastday();
     })
 

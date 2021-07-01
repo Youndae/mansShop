@@ -1,9 +1,7 @@
 package org.shop.controller;
 
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.Criteria;
-import org.shop.domain.ProductOpVO;
-import org.shop.domain.ThumbnailVO;
+import org.shop.domain.*;
 import org.shop.mapper.MainMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -67,10 +65,25 @@ public class MainController {
     }
 
     @GetMapping("/{pno}")
-    public String productDetail(@PathVariable("pno") String pno, Model model){
+    public String productDetail(@PathVariable("pno") String pno, Model model, Criteria cri){
         log.info("detail pno : " + pno);
 
+        cri.setKeyword(pno);
+
         model.addAttribute("pDetail", mainMapper.productDetail(pno));
+
+        model.addAttribute("pReviewCount", mainMapper.pReviewCount(pno));
+
+        model.addAttribute("pQnACount", mainMapper.pQnACount(pno));
+
+        model.addAttribute("pReviewList", mainMapper.getProductReview(cri));
+
+        /*model.addAttribute("pQnA", mainMapper.getProductQnA(pno));*/
+
+        int total = mainMapper.getProductReviewTotal(cri);
+        log.info("Product Total : " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
 
         return "main/productDetail";
 
@@ -108,6 +121,32 @@ public class MainController {
         log.info("getProductOp");
 
         return new ResponseEntity<>(mainMapper.getProductOp(pno), HttpStatus.OK);
+    }
+
+    @GetMapping("/getProductInfo")
+    @ResponseBody
+    public ResponseEntity<List<ProductImgVO>> getProductInfo(String pno){
+        log.info("getProductInfo");
+
+        return new ResponseEntity<>(mainMapper.getProductInfo(pno), HttpStatus.OK);
+    }
+
+    /*@GetMapping("/getProductReview")
+    @ResponseBody
+    public ResponseEntity<List<ProductReviewVO>> getProductReview(String pno, Criteria cri){
+        log.info("getProductReview");
+
+        log.info("pno : " + pno + " cri : " + cri.getKeyword() + cri.getPageNum());
+
+        return new ResponseEntity<>(mainMapper.getProductReview(pno), HttpStatus.OK);
+    }*/
+
+    @GetMapping("/getProductQnA")
+    @ResponseBody
+    public ResponseEntity<List<ProductQnAVO>> getProductQnA(String pno){
+        log.info("getProductQnA");
+
+        return new ResponseEntity<>(mainMapper.getProductQnA(pno), HttpStatus.OK);
     }
 
 

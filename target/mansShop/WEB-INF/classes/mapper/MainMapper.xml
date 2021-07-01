@@ -38,4 +38,55 @@
             pno=#{pno}
     </select>
 
+    <select id="getProductInfo" resultType="org.shop.domain.ProductImgVO">
+        SELECT *
+        FROM
+            productImg
+        WHERE
+            pno=#{pno}
+        ORDER BY pImgStep
+    </select>
+
+    <select id="getProductReview" resultType="org.shop.domain.ProductReviewVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , r.*
+            FROM(
+                SELECT *
+                FROM
+                    productReview
+                WHERE
+                    pno=#{keyword}
+                order by rnum desc
+            )r
+        )
+        WHERE
+            rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getProductReviewTotal" resultType="int">
+        SELECT count(*)
+        FROM productReview
+        WHERE
+            pno=#{keyword}
+    </select>
+
+    <select id="pReviewCount" resultType="int">
+        SELECT count(*)
+        FROM
+            productReview
+        where
+            pno=#{pno}
+    </select>
+
+    <select id="pQnACount" resultType="int">
+        SELECT count(*)
+        FROM
+            productQnA
+        WHERE
+            pno=#{pno}
+    </select>
+
 </mapper>
