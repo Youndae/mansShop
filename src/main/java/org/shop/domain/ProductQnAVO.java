@@ -13,7 +13,6 @@ public class ProductQnAVO {
     private Long pQnANo;
     private String pno;
     private String userId;
-    private String pQnATitle;
     private String pQnAContent;
     private Date pQnARegDate;
     private int pQnAAnswer;

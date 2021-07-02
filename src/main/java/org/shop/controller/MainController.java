@@ -1,34 +1,38 @@
 package org.shop.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.*;
 import org.shop.mapper.MainMapper;
+import org.shop.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.util.List;
 
 
 @Controller
 @Log4j
 @PreAuthorize("permitAll()")
+@AllArgsConstructor
 public class MainController {
 
-    @Autowired(required = false)
+
     private MainMapper mainMapper;
+
+    private MainService mainService;
 
     @GetMapping("/")
     public String main(Model model){
@@ -72,18 +76,18 @@ public class MainController {
 
         model.addAttribute("pDetail", mainMapper.productDetail(pno));
 
-        model.addAttribute("pReviewCount", mainMapper.pReviewCount(pno));
+        model.addAttribute("pReviewCount", mainMapper.getProductReviewTotal(pno));
 
-        model.addAttribute("pQnACount", mainMapper.pQnACount(pno));
+        model.addAttribute("pQnACount", mainMapper.getProductQnATotal(pno));
 
-        model.addAttribute("pReviewList", mainMapper.getProductReview(cri));
+        /*model.addAttribute("pReviewList", mainMapper.getProductReview(cri));*/
 
         /*model.addAttribute("pQnA", mainMapper.getProductQnA(pno));*/
 
-        int total = mainMapper.getProductReviewTotal(cri);
-        log.info("Product Total : " + total);
+        /*int total = mainMapper.getProductReviewTotal(cri);*/
+        /*log.info("Product Total : " + total);
 
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+        model.addAttribute("pageMaker", new PageDTO(cri, total));*/
 
         return "main/productDetail";
 
@@ -131,23 +135,50 @@ public class MainController {
         return new ResponseEntity<>(mainMapper.getProductInfo(pno), HttpStatus.OK);
     }
 
-    /*@GetMapping("/getProductReview")
-    @ResponseBody
-    public ResponseEntity<List<ProductReviewVO>> getProductReview(String pno, Criteria cri){
+    @GetMapping(value = "/productQnAPages/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity<ProductQnADTO> getProductQnA(@PathVariable("page") int page, @PathVariable("pno") String pno){
         log.info("getProductReview");
 
-        log.info("pno : " + pno + " cri : " + cri.getKeyword() + cri.getPageNum());
+        Criteria cri = new Criteria(page, 10);
 
-        return new ResponseEntity<>(mainMapper.getProductReview(pno), HttpStatus.OK);
-    }*/
+        log.info("Review pno : " + pno);
 
-    @GetMapping("/getProductQnA")
-    @ResponseBody
-    public ResponseEntity<List<ProductQnAVO>> getProductQnA(String pno){
-        log.info("getProductQnA");
+        log.info("pno : " + pno + " cri : " + cri.getPageNum());
 
-        return new ResponseEntity<>(mainMapper.getProductQnA(pno), HttpStatus.OK);
+        return new ResponseEntity<>(mainService.getProductQnA(cri, pno), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/reviewPages/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity<ProductReviewDTO> getProductReview(@PathVariable("page") int page, @PathVariable("pno") String pno){
+        log.info("getProductReview");
+
+        Criteria cri = new Criteria(page, 10);
+
+        log.info("Review pno : " + pno);
+
+        log.info("pno : " + pno + " cri : " + cri.getPageNum());
+
+        return new ResponseEntity<>(mainService.getProductReview(cri, pno), HttpStatus.OK);
+    }
+
+    @PostMapping("/QnAInsert")
+    @ResponseBody
+    public void QnAInsert(ProductQnAVO productQnAVO, Principal principal){
+
+        //pQnANo 시퀀스 만들어야함.
+
+        log.info("pQnAContent: " + productQnAVO.getPQnAContent());
+        log.info("pno : " + productQnAVO.getPno());
+
+
+        productQnAVO.setUserId(principal.getName());
+
+        log.info("vo : "  + productQnAVO);
+
+
+
+        mainMapper.insertPQnA(productQnAVO);
+
+    }
 
 }

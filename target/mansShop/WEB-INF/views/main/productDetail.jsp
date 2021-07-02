@@ -4,6 +4,8 @@
 <html>
 <head>
     <title>Title</title>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <style>
     #firstThumb{
@@ -11,6 +13,11 @@
     }
     .thumb>img{
         width: 60px;
+    }
+
+    .QnA_content_reply{
+        text-align: left;
+        margin-left: 24px;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -78,7 +85,10 @@
                 <h2>상품 리뷰</h2>
             </div>
             <div class="product_Review_List content">
-                <c:forEach items="${pReviewList}" var="rList">
+                <ul class="review">
+
+                </ul>
+                <%--<c:forEach items="${pReviewList}" var="rList">
                     <div class="reviewContent">
                         <label><c:out value="${rList.userId}"/></label>
                         <span class="reviewContent_area">
@@ -88,60 +98,54 @@
                                 ${rList.reviewDate}
                         </span>
                     </div>
-                </c:forEach>
+                </c:forEach>--%>
             </div>
 
-            <div class="paging">
-                <ul class="pagination">
-                    <c:if test="${pageMaker.prev}">
-                        <li class="paginate_button previous">
-                            <a href="${pageMaker.startPage - 1}">Prev</a>
-                        </li>
-                    </c:if>
+            <div class="reviewPaging">
 
-                    <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
-                        <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
-                            <a href="${num}">${num}</a>
-                        </li>
-                    </c:forEach>
-
-                    <c:if test="${pageMaker.next}">
-                        <li class="paginate_button next">
-                            <a href="${pageMaker.endPage + 1}">Next</a>
-                        </li>
-                    </c:if>
-                </ul>
             </div>
 
-            <form id="pReviewActionForm" action="/getProductReview" method="get">
-                <input type="hidden" name="pno" value="<c:out value="${pDetail.pno}"/>">
-                <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
-                <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
-            </form>
+
 
         </div>
         <div class="product_QnA_List">
-            <h2>상품 문의</h2>
+            <div class="product_QnA_Header">
+                <h2>상품 문의</h2>
+            </div>
+            <div class="QnAInput">
+                <form id="QnAReplyForm">
+                    <input type="text" name="pQnAContent">
+                    <input type="hidden" name="pno" value="${pDetail.pno}">
+                </form>
+                <button type="button" id="QnAInsert">등록</button>
+                <div class="overlap" id="QnAContentOverlap"></div>
+            </div>
+            <div class="product_QnA_Content">
+                <ul class="product_QnA">
 
+                </ul>
+            </div>
+            <div class="QnAPaging">
+
+            </div>
         </div>
         <div class="product_Order_Info">
             <h2>주문 정보</h2>
         </div>
     </div>
 
-    <div class="QnAInput">
-        <input type="text" name="pQnAContent">
-        <button type="button" id="QnAinsert">등록</button>
-    </div>
+
 
 </div>
-<input type="hidden" id="pno" value="${pDetail.pno}"/><!-- 작성 위치 확인하고 삭제 -->
+<input type="hidden" id="pno" value="${pDetail.pno}"/>
 <input type="hidden" id="pPrice" value="${pDetail.PPrice}"/>
 
 
 
 
 <script>
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ready(function(){
         var pno = $("#pno").val();
         (function(){
@@ -176,12 +180,36 @@
 
                 $(".product_detail_info").append(str);
             })
+
+            showReviewList(1);
+
+            showProductQnAList(1);
+
+
+
+
         })();
+
+
+        $("#productDetail").on('click', function(e){
+            e.preventDefault();
+            document.querySelector('.product_detail_info').scrollIntoView(true);
+        });
 
         $("#productReview").on('click', function(e){
             e.preventDefault();
             document.querySelector('.product_Review_List').scrollIntoView(true);
-        })
+        });
+
+        $("#productQnA").on('click', function(e){
+            e.preventDefault();
+            document.querySelector('.product_QnA_List').scrollIntoView(true);
+        });
+
+        $("#productOrderInfo").on('click', function(e){
+            e.preventDefault();
+            document.querySelector('.product_Order_Info').scrollIntoView(true);
+        });
 
         /*$("#productDetail").on('click', function(){
 
@@ -242,27 +270,248 @@
             var str = "";
         })*/
 
+        function showProductQnAList(page){
+            var QnAUL = $(".product_QnA");
 
-        $(".paginate_button a").on('click', function(e){
+            getProductQnAList({pno:pno, page:page||1}, function(QnACount, QnAList){
+                console.log("QnACount : " + QnACount);
+                console.log("QnAList : " + QnAList);
+
+                if(QnAList == null || QnAList.length == 0){
+                    return;
+                }
+
+                var str = "";
+
+                for(var i = 0, len = QnAList.length || 0; i < len; i++){
+                    var QnARegDate = new Date(QnAList[i].pqnARegDate);
+
+                    QnAList[i].pqnARegDate = QnARegDate.getFullYear() + "/" +
+                                                (QnARegDate.getMonth() + 1) + "/" +
+                                                QnARegDate.getDate();
+
+                    if(QnAList[i].pqnAAnswer == "0"){
+                        QnAList[i].pqnAAnswer = "미답변";
+                    }else if(QnAList[i].pqnAAnswer == "1"){
+                        QnAList[i].pqnAAnswer = "답변완료";
+                    }
+
+
+
+                    if(QnAList[i].pqnAIndent == "0"){
+                        str += "<li class=\"QnA_content\">";
+                        str += "<div><div class=\"QnA_content_header\"><strong class=\"QnA_writer\">"+QnAList[i].userId+"</strong>";
+                        str += "<small class=\"pull-right text-muted\">"+QnAList[i].pqnARegDate+"</small>";
+                        str += "<small class=\"pull-right answer\">"+QnAList[i].pqnAAnswer+"</small></div>";
+                        str += "<p>"+QnAList[i].pqnAContent+"</p></div></li>";
+                    }else if(QnAList[i].pqnAIndent == "1"){
+                        str += "<div class=\"QnA_Content_Reply\">";
+                        str += "<li class=\"QnA_content\">";
+                        str += "<div><div class=\"QnA_content_header\"><strong class=\"QnA_writer\">"+QnAList[i].userId+"</strong>";
+                        str += "<small class=\"pull-right text-muted\">"+QnAList[i].pqnARegDate+"</small>";
+                        str += "<p>"+QnAList[i].pqnAContent+"</p></div></li>";
+                        str += "</div>";
+                    }
+                }
+
+                QnAUL.html(str);
+
+                showPaginate(QnACount, "q");
+            })
+        }
+
+        QnAPaginate.on('click', "li a", function(e){
             e.preventDefault();
 
-            var actionForm = $("#pReviewActionForm")[0];
+            console.log("QnA other page");
 
-            var formData = new FormData(actionForm);
+            var targetPageNum = $(this).attr("href");
+            console.log("targetpageNum : " + targetPageNum);
 
-            $("input[name=pageNum]").val($(this).attr("href"));
+            qPageNum = targetPageNum;
 
-            $.getJSON("/getProductReview", {formData: formData}, function(arr){
-                console.log(arr);
-            })
+            showProductQnAList(qPageNum);
         })
 
 
+        function showReviewList(page){
+
+            var reviewUL = $(".review");
+
+            console.log("show Review List : " + page);
+
+            getReviewList({pno:pno, page:page||1}, function(reviewCount, reviewList){
+                console.log("reviewCount : " + reviewCount);
+                console.log("reviewList : " + reviewList);
 
 
 
+                if(reviewList == null || reviewList.length == 0){
+                    return;
+                }
 
-    })
+                var str = "";
+
+                for(var i = 0, len = reviewList.length || 0; i < len; i++){
+
+
+                    var reviewRegDate = new Date(reviewList[i].reviewDate);
+
+                    reviewList[i].reviewDate = reviewRegDate.getFullYear() + "/" +
+                        (reviewRegDate.getMonth() + 1) + "/" +
+                        reviewRegDate.getDate();
+
+
+                    str += "<li class=\"review_content\">";
+                    str += "<div><div class='review_content_header'><strong class='reviewer'>"+reviewList[i].userId+"</strong>";
+                    str += "<small class='pull-right text-muted'>"+reviewList[i].reviewDate+"</small></div>";
+                    str += "<p>"+reviewList[i].reviewContent+"</p></div></li>";
+                }
+
+                reviewUL.html(str);
+
+                showPaginate(reviewCount, "r");
+            })
+        }
+
+
+
+        reviewPaginate.on('click', "li a", function(e){
+            e.preventDefault();
+
+            console.log("other page");
+
+            var targetPageNum = $(this).attr("href");
+
+            console.log("targetPageNum : " + targetPageNum);
+
+            rPageNum = targetPageNum;
+
+            showReviewList(rPageNum);
+        })
+
+
+        $("#QnAInsert").on('click', function(){
+
+
+            var content = $("#QnAReplyForm").serialize();
+
+            console.log("pQnAContent : " + $("input[name=pQnAContent]").val());
+
+            if($("input[name=pQnAContent]").val() == "" ||$("input[name=pQnAContent]").val() == null){
+                console.log("content val is null");
+                $("#QnAContentOverlap").text("문의 내용을 입력하세요");
+            }else{
+                console.log("content val is not null");
+                $.ajax({
+                  url: "/QnAInsert",
+                  type: "post",
+                  data: content,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(header, token);
+                    },
+                  success : function(data){
+                          location.reload();
+                      document.querySelector('.product_QnA_List').scrollIntoView(true);
+                  },
+                    error: function(request, status, error){
+                      alert("code : " + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " + error);
+                    }
+                });
+
+            }
+        })
+
+    });//document.ready End
+
+    function getProductQnAList(param, callback, error){
+        var pno = param.pno;
+        var page = param.page || 1;
+
+        console.log("getProductQnAList pno : " + param.pno + " page : " + param.page);
+
+        $.getJSON("/productQnAPages/" + pno + "/" + page + ".json", function(data){
+            if(callback)
+                callback(data.productQnACount, data.productQnAList);
+        }).fail(function(xhr, status, err){
+            if(error)
+                error(err);
+        })
+    }
+
+    function getReviewList(param, callback, error){
+        var pno = param.pno;
+        var page = param.page || 1;
+
+        console.log("getReviewList pno : " + param.pno + " page : " + param.page);
+
+        $.getJSON("/reviewPages/" + pno + "/" + page + ".json", function(data){
+            if(callback)
+                callback(data.reviewCount, data.reviewList);
+        }).fail(function(xhr, status, err){
+            if(error)
+                error(err);
+        });
+    }
+
+    var rPageNum = 1;
+    var qPageNum = 1;
+    var reviewPaginate = $(".reviewPaging");
+    var QnAPaginate = $(".QnAPaging");
+
+    function showPaginate(count, type){
+
+        if(type == "r") {
+            console.log("type r");
+            var endNum = Math.ceil(rPageNum / 10.0) * 10;
+        }else if(type == "q"){
+            console.log("type q");
+            var endNum = Math.ceil(qPageNum / 10.0) * 10;
+        }
+
+
+        var startNum = endNum - 9;
+        var prev = startNum != 1;
+        var next = false;
+
+        if(endNum * 10 >= count)
+            endNum = Math.ceil(count / 10.0);
+
+        if(endNum * 10 < count)
+            next = true;
+
+        var str = "<ul class=\"pagination\">";
+
+        if(prev)
+            str += "<li class=\"paginate_button previous\"><a href=\""+(startNum - 1) + "\">Prev</a></li>";
+
+        if(type == "r")
+            for(var i = startNum; i <= endNum; i++){
+                var active = rPageNum == i ? "active" : "";
+
+                str += "<li class=\"paginate_button "+active+"\"><a href=\""+i+"\">"+i+"</a></li>";
+            }
+        else if(type == "q")
+            for(var i = startNum; i <= endNum; i++){
+                var active = qPageNum == i ? "active" : "";
+
+                str += "<li class=\"paginate_button "+active+"\"><a href=\""+i+"\">"+i+"</a></li>";
+            }
+
+        if(next)
+            str += "<li class=\"paginate_button next\"><a href=\"" + (endNum + 1) + "\">Next</a></li>";
+
+        str += "</ul>";
+
+        if(type == "r")
+            reviewPaginate.html(str);
+        else if(type == "q")
+            QnAPaginate.html(str);
+    }
+
+
 
     function countUp(obj){
         console.log("count Up!");

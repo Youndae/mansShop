@@ -58,35 +58,64 @@
                 FROM
                     productReview
                 WHERE
-                    pno=#{keyword}
+                    pno=#{pno}
                 order by rnum desc
             )r
         )
         WHERE
-            rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
     </select>
 
     <select id="getProductReviewTotal" resultType="int">
         SELECT count(*)
         FROM productReview
         WHERE
-            pno=#{keyword}
-    </select>
-
-    <select id="pReviewCount" resultType="int">
-        SELECT count(*)
-        FROM
-            productReview
-        where
             pno=#{pno}
     </select>
 
-    <select id="pQnACount" resultType="int">
+    <select id="getProductQnA" resultType="org.shop.domain.ProductQnAVO">
+        SELECT *
+        FROM(
+            SELECT rownum rn, q.*
+            FROM(
+                SELECT *
+                FROM
+                    productQnA
+                ORDER BY pQnAGroupNo DESC
+                    , pQnAIndent
+                )q
+            )
+        WHERE
+            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+
+    </select>
+
+    <select id="getProductQnATotal" resultType="int">
         SELECT count(*)
         FROM
             productQnA
         WHERE
             pno=#{pno}
     </select>
+
+    <insert id="insertPQnA" parameterType="org.shop.domain.ProductQnAVO">
+        INSERT INTO productQnA(
+            pQnANo
+            , pno
+            , userId
+            , pQnAContent
+            , pQnARegDate
+            , pQnAGroupNo
+        )
+        values(
+            17
+            , #{pno}
+            , #{userId}
+            , #{pQnAContent}
+            , sysdate
+            , 17
+        )
+
+    </insert>
 
 </mapper>
