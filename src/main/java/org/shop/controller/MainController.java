@@ -181,4 +181,29 @@ public class MainController {
 
     }
 
+    @PostMapping("/likeProduct")
+    @ResponseBody
+    public void likeProduct(LikeVO likeVO, Principal principal){
+        log.info("like product");
+
+        String id = principal.getName();
+
+        likeVO.setUserId(id);
+
+        String likeNo = likeVO.getUserId()+likeVO.getPno();
+
+        likeVO.setLikeNo(likeNo);
+
+        log.info("like data : " + likeVO);
+
+        mainMapper.likeProduct(likeVO);
+
+    }
+
+    @PostMapping("/addCart")
+    @ResponseBody
+    public void addCart(@RequestParam List<String> pOpNo, @RequestParam List<String> pCount){
+        log.info("List get 1 : " + pOpNo.get(1) + ", " + pCount.get(1));
+    }
+
 }

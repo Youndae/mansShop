@@ -28,4 +28,6 @@ public interface MainMapper {
     public void mainNew();
 
     public void insertPQnA(ProductQnAVO productQnAVO);
+
+    public void likeProduct(LikeVO likeVO);
 }

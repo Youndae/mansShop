@@ -118,4 +118,17 @@
 
     </insert>
 
+    <insert id="likeProduct" parameterType="String">
+        INSERT INTO like_Product(
+            likeNo
+            , userId
+            , pno
+        )
+        VALUES(
+            #{likeNo}
+            , #{userId}
+            , #{pno}
+        )
+    </insert>
+
 </mapper>
