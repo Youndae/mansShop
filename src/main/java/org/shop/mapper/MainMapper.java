@@ -30,4 +30,6 @@ public interface MainMapper {
     public void insertPQnA(ProductQnAVO productQnAVO);
 
     public void likeProduct(LikeVO likeVO);
+
+    public void addCart(CartVO cartVO);
 }

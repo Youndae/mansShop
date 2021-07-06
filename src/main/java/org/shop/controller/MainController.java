@@ -202,8 +202,17 @@ public class MainController {
 
     @PostMapping("/addCart")
     @ResponseBody
-    public void addCart(@RequestParam List<String> pOpNo, @RequestParam List<String> pCount){
-        log.info("List get 1 : " + pOpNo.get(1) + ", " + pCount.get(1));
+    public int addCart(@RequestParam("pOpNo") List<String> pOpNo,
+                       @RequestParam("pCount") List<String> pCount,
+                       @RequestParam("pPrice") List<String> pPrice,
+                       CartVO cartVO, Principal principal){
+        log.info("addCart");
+
+        log.info("pPrice : " + pPrice);
+
+        cartVO.setUserId(principal.getName());
+
+        return mainService.addCart(pOpNo, pCount, pPrice, cartVO);
     }
 
 }

@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
+
 @RequestMapping("/myPage/")
 @Controller
 @Log4j
 @AllArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class MyPageController {
 
     //private MyPageService myPageService;
@@ -86,6 +89,17 @@ public class MyPageController {
     @PostMapping("/insertMemberReply")
     public void insertMemberReply(){
         //회원 QnA 댓글 작성 처리
+    }
+
+    @GetMapping("/cart")
+    public void cart(Model model, Principal principal){
+        //장바구니 페이지
+
+        log.info("get Cart List");
+
+        String id = principal.getName();
+
+        model.addAttribute("cartList", myPageMapper.getCartList(id));
     }
 
 }

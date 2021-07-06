@@ -26,4 +26,6 @@ public interface MyPageMapper {
 
     public void insertMemberQnAReply();
 
+    public List<CartVO> getCartList(String userId);
+
 }

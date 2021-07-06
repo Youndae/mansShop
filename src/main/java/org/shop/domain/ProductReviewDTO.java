@@ -13,5 +13,4 @@ public class ProductReviewDTO {
     private long reviewCount;
     private List<ProductReviewVO> reviewList;
 
-
 }

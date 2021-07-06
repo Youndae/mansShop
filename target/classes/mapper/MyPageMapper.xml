@@ -28,4 +28,23 @@
             mem.userId = #{userId}
     </select>
 
+    <select id="getCartList" resultType="org.shop.domain.CartVO">
+        SELECT
+            c.cartNo
+            , c.pOpNo
+            , c.cCount
+            , c.cPrice
+            , p.pName
+            , op.pSize
+            , op.pColor
+        FROM
+            cart c
+            INNER JOIN productOp op
+                ON c.pOpNo = op.pOpNo
+            INNER JOIN product p
+                ON op.pno = p.pno
+        WHERE
+            c.userId = #{userId}
+    </select>
+
 </mapper>

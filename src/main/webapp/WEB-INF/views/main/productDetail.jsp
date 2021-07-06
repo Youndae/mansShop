@@ -712,8 +712,8 @@
                 "<td>" + option_txt + "</td>" +
                 "<td>" +
                 "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\">" +
-                "<button class=\"productCountUp\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>up</button>" +
-                "<button class=\"productCountDown\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>down</button>" +
+                "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>up</button>" +
+                "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>down</button>" +
                 "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>x</button>" +
                 "</td>" +
                 "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
@@ -763,6 +763,7 @@
                 /*var formdata = new FormData();*/
                 var pOpNo = new Array();
                 var pCount = new Array();
+                var pPrice = new Array();
 
                 console.log("Num : " + num);
 
@@ -771,9 +772,13 @@
 
                     var count = $("input[name="+tVal+"]").val();
                     var opNo = $("tr[id="+tVal+"]").attr("value");
+                    var price = $("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, '');
+                    var p = price.split("원");
 
                     console.log("opNo : " + opNo);
                     console.log("count : " + count);
+                    console.log("price : " + price);
+
 
                     /*pOpNo[pOpNoNum] = opNo;
                     pCount[pCountNum] = count;
@@ -783,6 +788,7 @@
 
                     pOpNo.push(opNo);
                     pCount.push(count);
+                    pPrice.push(price);
                 }
 
                 /*for(var idx = 0; idx < Object.keys(pOpNo).length; idx++){
@@ -793,15 +799,21 @@
                     formData.append('pOpNo', pOpNo[idx]);
                 }*/
 
+                var a = pOpNo.length;
+                console.log("pOpNo length : " + a);
+
+                console.log("pOpNo : " + pOpNo);
+
+                $.ajaxSettings.traditional = true;
                 $.ajax({
                     url: '/addCart',
                     type: 'post',
-                    data: {pOpNo: pOpNo, pCount: pCount},
+                    data: {pOpNo: pOpNo, pCount: pCount, pPrice: pPrice},
                     beforeSend:function(xhr){
                         xhr.setRequestHeader(header, token);
                     },
                     success: function(data){
-
+                            alert("장바구니에 상품이 담겼습니다.");
                     },
                     error: function(request, status, error){
                         alert("code : " + request.status + "\n"

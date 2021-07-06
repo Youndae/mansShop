@@ -131,4 +131,21 @@
         )
     </insert>
 
+    <insert id="addCart" parameterType="org.shop.domain.CartVO">
+        INSERT INTO cart(
+            cartNo
+            , userId
+            , pOpNo
+            , cCount
+            , cPrice
+        )
+        VALUES(
+            #{cartNo}
+            , #{userId}
+            , #{pOpNo}
+            , #{cCount}
+            , #{cPrice}
+        )
+    </insert>
+
 </mapper>

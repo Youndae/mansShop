@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartVO {
+public class CartVO extends ProductOpVO{
     private String cartNo;
     private String userId;
     private String pOpNo;
