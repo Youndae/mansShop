@@ -1,5 +1,6 @@
 package org.shop.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.shop.domain.*;
 
 import java.util.List;
@@ -27,5 +28,7 @@ public interface MyPageMapper {
     public void insertMemberQnAReply();
 
     public List<CartVO> getCartList(String userId);
+
+    public void deleteCart(@Param("userId") String userId, @Param("pOpNo") String pOpNo);
 
 }

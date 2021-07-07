@@ -4,6 +4,8 @@
 <html>
 <head>
     <title>Title</title>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <body>
@@ -26,7 +28,7 @@
                 <c:forEach items="${cartList}" var="cList">
                     <c:set var="total" value="${total + cList.CPrice}"/>
                     <tr>
-                        <td><input type="checkbox" name="check" checked></td>
+                        <td><input type="checkbox" name="check" value="${cList.POpNo}" checked></td>
                         <td><c:out value="${cList.PName}"/></td>
                         <td>
                             <c:choose>
@@ -54,14 +56,14 @@
                             <button class="productCount up" name="up">up</button>
                             <button class="productCount down" name="down">down</button>
                         </td>
-                        <td name="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
+                        <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
     </div>
     <div>
-        <span>총 주문 금액 : <p class="total_price"><fmt:formatNumber value="${total}" pattern="#,###"/></p> 원</span>
+        <span class="total_price">총 주문 금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
     </div>
     <div>
         <button type="button" id="select_delete">선택상품 삭제</button>
@@ -69,16 +71,72 @@
     </div>
 </div>
 <script>
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ready(function(){
         $("button[name=up]").on('click', function(){
             console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
 
-            var a = $(this).siblings("span").text();
-            a = parseInt(a) + 1;
+            var totalPrice = $(".total_price").text().replace(/\D/g, '');
+            var count = $(this).siblings("span").text();
+            var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
+            pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
+            totalPrice = parseInt(totalPrice) + pPrice;
 
-            $(this).siblings("span").text(a);
+            count = parseInt(count) + 1;
+            pPrice = pPrice * count;
 
-            console.log("test price : " + $(this).parent("td[name=cPrice]").text().replace(/\D/g, ''));
+            $(this).siblings("span").text(count);
+            $(this).parent('td').next().text(pPrice.toLocaleString());
+            $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
+
+            console.log("test price : " + $(this).parent("td").next().text());
+        });
+
+        $("button[name=down]").on('click', function(){
+            console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
+
+            var totalPrice = $(".total_price").text().replace(/\D/g, '');
+            var count = $(this).siblings("span").text();
+            var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
+            pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
+            totalPrice = parseInt(totalPrice) - pPrice;
+
+            count = parseInt(count) - 1;
+            pPrice = pPrice * count;
+
+            $(this).siblings("span").text(count);
+            $(this).parent('td').next().text(pPrice.toLocaleString());
+            $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
+
+            console.log("test price : " + $(this).parent("td").next().text());
+        });
+
+        $("#select_delete").on('click', function(){
+            var pOpNoArr = new Array();
+            $("input[name=check]:checked").each(function(){
+                pOpNoArr.push($(this).attr("value"));
+            });
+
+
+
+            $.ajaxSettings.traditional = true;
+            $.ajax({
+                url : '/myPage/deleteCart',
+                type: 'post',
+                data: {pOpNo: pOpNoArr},
+                beforeSend:function(xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error: function(request, status, error){
+                    alert("code : " + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " + error);
+                }
+            })
         })
     })
 </script>

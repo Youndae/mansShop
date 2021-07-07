@@ -5,23 +5,23 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.MemberVO;
 import org.shop.domain.MyQnAVO;
 import org.shop.mapper.MyPageMapper;
+import org.shop.service.MyPageService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RequestMapping("/myPage/")
 @Controller
 @Log4j
 @AllArgsConstructor
-@PreAuthorize("isAuthenticated()")
+/*@PreAuthorize("isAuthenticated()")*/
 public class MyPageController {
 
-    //private MyPageService myPageService;
+    private MyPageService myPageService;
 
     private MyPageMapper myPageMapper;
 
@@ -92,14 +92,26 @@ public class MyPageController {
     }
 
     @GetMapping("/cart")
-    public void cart(Model model, Principal principal){
+    public void cart(Model model){
         //장바구니 페이지
 
         log.info("get Cart List");
 
-        String id = principal.getName();
+        /*String id = principal.getName();*/
+        String id = "user1";
 
         model.addAttribute("cartList", myPageMapper.getCartList(id));
+    }
+
+    @PostMapping("/deleteCart")
+    @ResponseBody
+    public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList){
+        log.info("delete Cart : " + pOpNoList);
+
+        String id = "user1";
+
+        myPageService.deleteCart(id, pOpNoList);
+
     }
 
 }
