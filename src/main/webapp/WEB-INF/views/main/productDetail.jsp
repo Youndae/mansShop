@@ -773,7 +773,6 @@
                     var count = $("input[name="+tVal+"]").val();
                     var opNo = $("tr[id="+tVal+"]").attr("value");
                     var price = $("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, '');
-                    var p = price.split("원");
 
                     console.log("opNo : " + opNo);
                     console.log("count : " + count);

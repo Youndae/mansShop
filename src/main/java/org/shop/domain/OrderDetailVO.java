@@ -14,4 +14,5 @@ public class OrderDetailVO extends ProductOpVO{
     private int orderCount;
     private int odPrice;
 
+
 }

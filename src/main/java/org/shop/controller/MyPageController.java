@@ -92,13 +92,13 @@ public class MyPageController {
     }
 
     @GetMapping("/cart")
-    public void cart(Model model){
+    public void cart(Model model, Principal principal){
         //장바구니 페이지
 
         log.info("get Cart List");
 
-        /*String id = principal.getName();*/
-        String id = "user1";
+        String id = principal.getName();
+        /*String id = "user1";*/
 
         model.addAttribute("cartList", myPageMapper.getCartList(id));
     }

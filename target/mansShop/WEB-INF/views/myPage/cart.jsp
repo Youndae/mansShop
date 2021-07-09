@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <title>Title</title>
@@ -28,7 +29,16 @@
                 <c:forEach items="${cartList}" var="cList">
                     <c:set var="total" value="${total + cList.CPrice}"/>
                     <tr>
-                        <td><input type="checkbox" name="check" value="${cList.POpNo}" checked></td>
+                        <td>
+                            <input type="checkbox" name="check"
+                                   value="${cList.POpNo}"
+                                   data_pName="${cList.PName}"
+                                   data_pSize="${cList.PSize}"
+                                   data_pColor="${cList.PColor}"
+                                   data_cCount="${cList.CCount}"
+                                   data_cPrice="${cList.CPrice}"
+                                   checked>
+                        </td>
                         <td><c:out value="${cList.PName}"/></td>
                         <td>
                             <c:choose>
@@ -69,11 +79,55 @@
         <button type="button" id="select_delete">선택상품 삭제</button>
         <button type="button" id="select_order">선택상품 주문</button>
     </div>
+    <form id="order_form" method="post">
+        <input type="hidden" name="pOpNo">
+        <input type="hidden" name="pName">
+        <input type="hidden" name="pSize">
+        <input type="hidden" name="pColor">
+        <input type="hidden" name="cCount">
+        <input type="hidden" name="cPrice">
+        <sec:csrfInput/>
+    </form>
 </div>
 <script>
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ready(function(){
+
+        $("#select_order").on('click', function(){
+            var noArr = new Array();
+            var nameArr = new Array();
+            var sizeArr = new Array();
+            var colorArr = new Array();
+            var countArr = new Array();
+            var priceArr = new Array();
+
+            $("input[name=check]:checked").each(function(){
+                noArr.push($(this).attr("value"));
+                nameArr.push($(this).attr("data_pName"));
+                sizeArr.push($(this).attr("data_pSize"));
+                colorArr.push($(this).attr("data_pColor"));
+                countArr.push($(this).attr("data_cCount"));
+                priceArr.push($(this).attr("data_cPrice"));
+            });
+
+            $("input[name=pOpNo]").val(noArr);
+            $("input[name=pName]").val(nameArr);
+            $("input[name=pSize]").val(sizeArr);
+            $("input[name=pColor]").val(colorArr);
+            $("input[name=cCount]").val(countArr);
+            $("input[name=cPrice]").val(priceArr);
+
+            $("#order_form").attr("action", "/order/orderPayment");
+            $("#order_form").submit();
+
+        })
+
+
+
+
+
+
         $("button[name=up]").on('click', function(){
             console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
 

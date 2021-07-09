@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.OrderMapper">
+
+    <insert id="orderPayment" parameterType="org.shop.domain.OrderVO">
+        INSERT INTO productOrder(
+            orderNo
+            , userId
+            , addr
+            , orderPhone
+            , orderMemo
+            , orderPrice
+            , orderDate
+            , orderPayment
+            , recipient
+        )
+        VALUES(
+            #{orderNo}
+            , #{userId}
+            , #{addr}
+            , #{orderPhone}
+            , #{orderMemo}
+            , #{orderPrice}
+            , sysdate
+            , #{orderPayment}
+            , #{recipient}
+        )
+    </insert>
+
+    <insert id="orderPaymentOp" parameterType="org.shop.domain.OrderDetailVO">
+        INSERT INTO productOrder_Detail(
+            odNo
+            , orderNo
+            , pOpNo
+            , orderCount
+            , odPrice
+        )
+        VALUES(
+            #{odNo}
+            , #{orderNo}
+            , #{pOpNo}
+            , #{orderCount}
+            , #{odPrice}
+        )
+    </insert>
+
+    <update id="productSales" parameterType="org.shop.domain.OrderDetailVO">
+        UPDATE
+            product
+        SET
+            pSalesRate = pSalesRate + #{odPrice}
+        WHERE
+            pno=(
+                SELECT
+                    op.pno
+                FROM
+                    product p INNER JOIN productOp op
+                    ON p.pno = op.pno
+                WHERE
+                    op.pOpNo=#{pOpNo}
+            )
+    </update>
+
+    <update id="productOpSales" parameterType="org.shop.domain.OrderDetailVO">
+        UPDATE
+            productOp
+        SET
+            opSalesRate = opSalesRate + #{odPrice}
+            , pSales = pSales + #{orderCount}
+            , pStock = pStock - #{orderCount}
+        WHERE
+            pOpNo=#{pOpNo}
+    </update>
+
+    <insert id="addTotalSales" parameterType="org.shop.domain.SalesVO">
+        INSERT INTO SALES(
+            salesTerm
+            , salesSum
+            , salesOrders
+        )
+        VALUES(
+            #{salesTerm}
+            , #{salesSum}
+            , #{salesOrders}
+        )
+    </insert>
+
+    <update id="updateTotalSales" parameterType="org.shop.domain.SalesVO">
+        UPDATE
+            sales
+        SET
+            salesSum = salesSum + #{salesSum}
+            , salesOrders = salesOrders + #{salesOrders}
+        WHERE
+            salesTerm=#{salesTerm}
+    </update>
+
+    <select id="maxSalesTerm" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            sales
+        WHERE
+            salesTerm=#{term}
+    </select>
+
+    <delete id="deleteOrderCart" parameterType="String">
+        DELETE FROM
+            cart
+        WHERE
+            userId=#{userId} AND pOpNo=#{pOpNo}
+    </delete>
+</mapper>

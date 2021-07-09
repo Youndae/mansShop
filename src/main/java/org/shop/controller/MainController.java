@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.*;
 import org.shop.mapper.MainMapper;
 import org.shop.service.MainService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -178,6 +179,115 @@ public class MainController {
 
 
         mainMapper.insertPQnA(productQnAVO);
+
+    }
+
+    @PostMapping("/test")
+    public void test(@RequestParam HashMap<String, Object> commandMap) throws Exception{
+
+
+
+
+        String[] no_array = null;
+
+        String pOpNo = commandMap.get("pOpNo").toString();
+        no_array = pOpNo.split(",");
+
+        log.info("pOpNo : " + pOpNo);
+        log.info("no_array0 : " + no_array[0]);
+        log.info("no_array1 : " + no_array[1]);
+        log.info("no_array2 : " + no_array[2]);
+
+
+
+        String[] name_array = null;
+
+        String pName = commandMap.get("pName").toString();
+        name_array = pName.split(",");
+
+
+
+        String[] size_array = null;
+
+        String pSize = commandMap.get("pSize").toString();
+        size_array = pSize.split(",");
+
+
+
+        String[] color_array = null;
+
+        String pColor = commandMap.get("pColor").toString();
+        color_array = pColor.split(",");
+
+
+
+        String[] count_array = null;
+
+        String cCount = commandMap.get("cCount").toString();
+        count_array = cCount.split(",");
+
+
+
+        String[] price_array = null;
+
+        String cPrice = commandMap.get("cPrice").toString();
+        price_array = cPrice.split(",");
+
+        List<CartVO> vo = new ArrayList<>();
+
+        for(int i = 0; i < no_array.length; i++){
+
+            CartVO cartVO = new CartVO();
+
+            log.info("for i : " + i);
+
+            cartVO.setPOpNo(no_array[i]);
+            log.info("arr_pOpNo : " + no_array[i]);
+            log.info("vo pOpNo : " + cartVO.getPOpNo());
+
+            cartVO.setPName(name_array[i]);
+            log.info("arr_pName : " + name_array[i]);
+            log.info("vo pName : " + cartVO.getPName());
+
+            cartVO.setPSize(size_array[i]);
+            log.info("arr_pSize : " + size_array[i]);
+            log.info("vo pSize : " + cartVO.getPSize());
+
+            cartVO.setPColor(color_array[i]);
+            log.info("arr_pColor : " + color_array[i]);
+            log.info("vo pColor : " + cartVO.getPColor());
+
+            cartVO.setCCount(Long.parseLong(count_array[i]));
+            log.info("arr_cCount : " + count_array[i]);
+            log.info("vo cCount : " + cartVO.getCCount());
+
+            cartVO.setCPrice(Long.parseLong(price_array[i]));
+            log.info("arr_cPrice : " + price_array[i]);
+            log.info("vo cPrice : " + cartVO.getCPrice());
+
+            vo.add(cartVO);
+            log.info("for cartVo : " + vo);
+        }
+
+        log.info("Last VO : " + vo);
+
+        /*HashMap<String, Object> resendMap = new HashMap<String, Object>();
+
+        for(int i = 0; i < no_array.length; i++){
+            resendMap.put("pOpNo", no_array[i]);
+            resendMap.put("pName", name_array[i]);
+            resendMap.put("pSize", size_array[i]);
+            resendMap.put("pColor", color_array[i]);
+            resendMap.put("cCount", count_array[i]);
+            resendMap.put("cPrice", price_array[i]);
+        }
+
+        log.info("resendMap pOpNo : " + resendMap.get("pOpNo").toString());
+        log.info("resendMap pName : " + resendMap.get("pName").toString());
+        log.info("resendMap pSize : " + resendMap.get("pSize").toString());
+        log.info("resendMap pColor : " + resendMap.get("pColor").toString());
+        log.info("resendMap cCount : " + resendMap.get("cCount").toString());
+        log.info("resendMap cPrice : " + resendMap.get("cPrice").toString());*/
 
     }
 
