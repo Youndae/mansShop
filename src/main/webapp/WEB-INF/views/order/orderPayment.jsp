@@ -10,6 +10,7 @@
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <body>
 <div>
     <div class="header">
@@ -26,8 +27,21 @@
                 <input type="text" name="orderPhone">
             </div>
             <div>
-                <label>배송지주소</label>
-                <input type="text" name="addr">
+                <%--<label>배송지주소</label>
+                <input type="text" name="addr">--%>
+                <div>
+                    <label>배송지주소</label>
+                </div>
+                <div>
+                    <input type="text" id="postCode" placeholder="우편번호" readonly>
+                    <button type="button" id="searchAddr">우편번호 찾기</button>
+                </div>
+                <div>
+                    <input style="width: 700px" type="text" id="address" placeholder="주소" readonly>
+                </div>
+                <div>
+                    <input type="text" id="addrDetail" placeholder="상세주소">
+                </div>
             </div>
             <div>
                 <label>배송메모</label>
@@ -35,6 +49,8 @@
             </div>
             <input type="hidden" name="orderPrice">
             <input type="hidden" name="orderPayment">
+            <input type="hidden" name="addr">
+            <input type="hidden" name="oType" value="<c:out value="${orderType}"/>">
             <sec:csrfInput/>
         </form>
             <table class="order_table" border="1">
@@ -51,7 +67,8 @@
                         <c:set var="total" value="${total + list.CPrice}"/>
                         <tr data_opNo="${list.POpNo}"
                             data_cCount="${list.CCount}"
-                            data_cprice="${list.CPrice}">
+                            data_cprice="${list.CPrice}"
+                            data_pName="${list.PName}">
                             <td>
                                 <c:out value="${list.PName}"/>
                             </td>
@@ -116,33 +133,97 @@
 
             }
         })
-    })
+
+        $("#searchAddr").on('click', function(){
+            daum_address();
+        })
+    });
+
+    function daum_address(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+
+                var addr = '';
+                var extraAddr = '';
+
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+
+
+                if(data.userSelectedType === 'R'){
+
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+
+                    addr += extraAddr;
+
+                }
+
+
+                document.getElementById('postCode').value = data.zonecode;
+                document.getElementById("address").value = addr;
+                document.getElementById("addrDetail").focus();
+            }
+        }).open();
+    }
 
     function order() {
         var IMP = window.IMP;
         IMP.init('imp78285136');
         var totalPrice = parseInt($("input[name=orderPrice]").val());
-                var name = $("input[name=recipient]").val();
-                var addr = $("input[name=addr]").val();
-                var phone = $("input[name=orderPhone]").val();
+        var name = $("input[name=recipient]").val();
+        var phone = $("input[name=orderPhone]").val();
+        var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
+        var payAddr = $("#address").val() + " " + $("#addrDetail").val();
 
-                var table_tbody = $("#order_payment_list");
-                var table_tr = table_tbody.children();
+        console.log(saveAddr);
 
-                if(phone.length == 11){
-                    phone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-                }else if(phone.length == 10){
-                    phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-                }
+        $("input[name=addr]").val(saveAddr);
 
-                var form = $("#order_form")[0];
-                var formData = new FormData(form);
+        var addr = $("input[name=addr]").val();
 
-                for(var i = 0; i < table_tr.length; i++){
-                    formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
-                    formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
-                    formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
-                }
+
+        var table_tbody = $("#order_payment_list");
+        var table_tr = table_tbody.children();
+
+        if(phone.length == 11){
+            phone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+        }else if(phone.length == 10){
+            phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
+
+        var form = $("#order_form")[0];
+        var formData = new FormData(form);
+
+        for(var i = 0; i < table_tr.length; i++){
+            formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
+            formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
+            formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
+        }
+
+        var pName = table_tr.eq(0).attr("data_pName");
+
+        if(table_tr.length == 1){
+            var orderName = pName;
+        }else{
+            var orderName = pName + " 외 " + (table_tr.length - 1) + " 건";
+        }
+
+
+
+
 
 
 
@@ -151,13 +232,13 @@
             pg: 'danal', // version 1.1.0부터 지원.
             pay_method: 'card',
             merchant_uid: 'merchant_' + new Date().getTime(),
-            name: '주문명:결제테스트',
+            name: orderName,
             amount: totalPrice,
             buyer_email: '',
             buyer_name: name,
             buyer_tel: phone,
-            buyer_addr: addr,
-            buyer_postcode: '123-456',
+            buyer_addr: payAddr,
+            buyer_postcode: $("#postCode").val(),
             /*m_redirect_url : '/order/orderComplete'
             * 결제가 성공햇을 경우 이동할 페이지 url
             * 가이드와 다르게 ajax로 데이터를 넘겨주는 형태로 바꿔서 그런지

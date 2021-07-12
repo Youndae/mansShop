@@ -31,6 +31,7 @@ public class OrderController {
 
         log.info("order payments");
         model.addAttribute("oList", orderService.orderProduct(commandMap));
+        model.addAttribute("orderType", commandMap.get("oType").toString());
 
     }
 
@@ -40,14 +41,32 @@ public class OrderController {
     }
 
     @PostMapping("/payment")
-    public void payment(OrderVO orderVO,
+    public void payment(OrderVO orderVO, @RequestParam("oType") String oType,
                         @RequestParam("pOpNo") List<String> pOpNo,
                         @RequestParam("orderCount")List<String> orderCount,
                         @RequestParam("odPrice")List<String> odPrice,
                         Principal principal){
         //결제처리
 
-        orderVO.setUserId(principal.getName());
+        String id = null;
+
+        log.info("oType : " + oType);
+
+        log.info("payments");
+        log.info(principal == null);
+        log.info("next");
+
+
+        if(principal == null){
+            id = "Anonymous";
+        }else{
+            id = principal.getName();
+        }
+
+
+        orderVO.setUserId(id);
+
+        log.info("userId : " + orderVO.getUserId());
 
         log.info("payment : " + orderVO);
 
@@ -55,7 +74,7 @@ public class OrderController {
         log.info("orderCount : " + orderCount);
         log.info("odPrice : " + odPrice);
 
-        orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice);
+        orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, oType);
 
     }
 

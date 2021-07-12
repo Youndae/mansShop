@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService{
 
 
     @Override
-    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice) {
+    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice, String oType) {
         StringBuffer sb =  new StringBuffer();
 
         String orderNo = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
@@ -145,11 +145,11 @@ public class OrderServiceImpl implements OrderService{
 
         //카트에서 결제된 상품은 삭제
 
-        for(int i = 0; i < pOpNo.size(); i++){
-            orderMapper.deleteOrderCart(orderVO.getUserId(), pOpNo.get(i));
+        if(oType != "d"){
+            for(int i = 0; i < pOpNo.size(); i++){
+                orderMapper.deleteOrderCart(orderVO.getUserId(), pOpNo.get(i));
+            }
         }
-
-
 
     }
 }

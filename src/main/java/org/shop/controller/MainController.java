@@ -36,7 +36,7 @@ public class MainController {
     private MainService mainService;
 
     @GetMapping("/")
-    public String main(Model model){
+    public String main(Model model, Principal principal){
         //메인페이지
         //BEST상품 12개, NEW 상품 12개 출력.
 

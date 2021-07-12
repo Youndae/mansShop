@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <html>
 <head>
     <title>Title</title>
@@ -49,7 +50,7 @@
             <table class="tempOrderTable" border="1">
                 <thead>
                     <tr>
-                        <th>상품명</th>
+                        <th>옵  션</th>
                         <th>상품수</th>
                         <th>가  격</th>
                     </tr>
@@ -67,6 +68,16 @@
                 총 금액 : <p>0 원</p>
             </span>
         </div>
+        <form id="order_form" method="post">
+            <input type="hidden" name="pOpNo">
+            <input type="hidden" name="pName">
+            <input type="hidden" name="pSize">
+            <input type="hidden" name="pColor">
+            <input type="hidden" name="cCount">
+            <input type="hidden" name="cPrice">
+            <input type="hidden" name="oType" value="d">
+            <sec:csrfInput/>
+        </form>
     </div>
 
 
@@ -226,8 +237,11 @@
 
             $.getJSON("/getProductOp", {pno:pno}, function(arr){
                 var str = "<option value=\"default\">------</option>";
+
+                // 수정사항. 가방같은 경우는 사이즈가 없기 때문에 옵션에서 사이즈를 출력하지 않도록 수정해야함.
+
                 $(arr).each(function(i, op){
-                    str += "<option value=\"" + op.popNo + "/" + op.pcolor + op.psize + "\">" +
+                    str += "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
                             "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
                 })
 
@@ -696,6 +710,8 @@
 
             var option_val = $("#option_select_box option:selected").val();
 
+            var option = option_val.split('/');
+
             var idx = option_val.indexOf("/");
 
             var optionNo = option_val.substring(0, idx);
@@ -706,9 +722,11 @@
 
             console.log("price : " + p);
 
+
+
             var dataStr = "";
 
-            dataStr += "<tr class=\"product_temp_cart\" id=\"productCount" + num +"\" value=\"" + optionNo +"\">" +
+            dataStr += "<tr class=\"product_temp_cart\" id=\"productCount" + num +"\" value=\"" + option[0] +"\">" +
                 "<td>" + option_txt + "</td>" +
                 "<td>" +
                 "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\">" +
@@ -717,6 +735,8 @@
                 "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>x</button>" +
                 "</td>" +
                 "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
+                "<input type=\"hidden\" name=\"size\" value=\""+option[1] + "\">" +
+                "<input type=\"hidden\" name=\"color\" value=\""+option[2] + "\">" +
                 "</tr>";
 
             num++;
@@ -820,6 +840,39 @@
                             + "\n" + "error : " + error);
                     }
                 });
+            })
+        })
+
+        $(function(){
+            $("#buy").on('click', function(){
+                var noArr = new Array();
+                var nameArr = new Array();
+                var sizeArr = new Array();
+                var colorArr = new Array();
+                var countArr = new Array();
+                var priceArr = new Array();
+
+                for(var i = 1; i < num; i++){
+                    var tVal = "productCount" + i;
+
+                    noArr.push($("tr[id="+tVal+"]").attr("value"));
+                    nameArr.push($(".name").text());
+                    sizeArr.push($("tr[id="+tVal+"] input[name=size]").val());
+                    colorArr.push($("tr[id="+tVal+"] input[name=color]").val());
+                    countArr.push($("input[name="+tVal+"]").val());
+                    priceArr.push($("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, ''));
+                }
+
+                $("input[name=pOpNo]").val(noArr);
+                $("input[name=pName]").val(nameArr);
+                $("input[name=pSize]").val(sizeArr);
+                $("input[name=pColor]").val(colorArr);
+                $("input[name=cCount]").val(countArr);
+                $("input[name=cPrice]").val(priceArr);
+
+
+                $("#order_form").attr("action", "/order/orderPayment");
+                $("#order_form").submit();
             })
         })
 

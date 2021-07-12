@@ -11,5 +11,5 @@ public interface OrderService {
 
     public List<CartVO> orderProduct(HashMap<String, Object> commandMap);
 
-    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice);
+    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice, String oType);
 }
