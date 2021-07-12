@@ -17,6 +17,11 @@
 * JQuery
 * Ajax
 * 사용 IDE  :  IntelliJ
+* I'mport API
+* Daum 주소 API
+#
+### 상품 데이터 및 참고 사이트
+* 자뎅(https://zardins.com)
 #
 ### 작업과정
 
