@@ -27,9 +27,9 @@ public class MyPageController {
 
     @GetMapping("/ModifyInfo")
     /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
-    public void getModifyInfo(Model model){
+    public void getModifyInfo(Model model, Principal principal){
         //정보 수정 창
-        String userId = "coco";
+        String userId = principal.getName();
 
         log.info("MyPage Controller " + myPageMapper.getModifyInfo(userId));
 

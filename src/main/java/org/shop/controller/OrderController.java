@@ -8,6 +8,7 @@ import org.shop.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
@@ -35,17 +36,23 @@ public class OrderController {
 
     }
 
-    @GetMapping("/orderComplete")
-    public void orderComplete(){
+    @GetMapping("/orderComplete/{oType}")
+    public String orderComplete(@PathVariable("oType") String oType, Model model){
+        log.info("orderComplete");
+        model.addAttribute("type", oType);
 
+        return "order/orderComplete";
     }
 
+
+
     @PostMapping("/payment")
+    @ResponseBody
     public void payment(OrderVO orderVO, @RequestParam("oType") String oType,
-                        @RequestParam("pOpNo") List<String> pOpNo,
-                        @RequestParam("orderCount")List<String> orderCount,
-                        @RequestParam("odPrice")List<String> odPrice,
-                        Principal principal){
+                          @RequestParam("pOpNo") List<String> pOpNo,
+                          @RequestParam("orderCount")List<String> orderCount,
+                          @RequestParam("odPrice")List<String> odPrice,
+                          Principal principal){
         //결제처리
 
         String id = null;
@@ -74,7 +81,11 @@ public class OrderController {
         log.info("orderCount : " + orderCount);
         log.info("odPrice : " + odPrice);
 
-        orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, oType);
+        /*orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, oType);*/
+
+
+
+
 
     }
 

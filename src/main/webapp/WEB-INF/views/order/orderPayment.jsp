@@ -27,8 +27,6 @@
                 <input type="text" name="orderPhone">
             </div>
             <div>
-                <%--<label>배송지주소</label>
-                <input type="text" name="addr">--%>
                 <div>
                     <label>배송지주소</label>
                 </div>
@@ -103,7 +101,17 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+            <c:choose>
+                <c:when test="${total <= 100000}">
+                    <span class="delivery_price">배송비 : 2,500원</span>
+                    <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total + 2500}" pattern="#,###"/> 원</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="delivery_price">배송비 : 0원</span>
+                    <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+                </c:otherwise>
+            </c:choose>
+
     </div>
     <div>
         <label>결제수단</label>
@@ -130,7 +138,42 @@
             if(type == 'card'){
                 $("input[name=orderPayment]").val("C");
                 order();
+            }else if(type == 'cash'){
+                $("input[name=orderPayment]").val("H");
+                var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
+                $("input[name=addr]").val(saveAddr);
 
+                var table_tbody = $("#order_payment_list");
+                var table_tr = table_tbody.children();
+                var form = $("#order_form")[0];
+                var formData = new FormData(form);
+
+                for(var i = 0; i < table_tr.length; i++){
+                    formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
+                    formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
+                    formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
+                }
+
+                $.ajax({
+                    url: '/order/payment',
+                    type: 'post',
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    data: formData,
+                    beforeSend: function(xhr){
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function(data){
+                        var oType = "H";
+                        location.href='orderComplete/'+oType;
+                    },
+                    error: function(request, status, error){
+                        alert("code : " + request.status + "\n"
+                                + "message : " + request.responseText
+                                + "\n" + "error : " + error);
+                    }
+                })
             }
         })
 
@@ -192,8 +235,6 @@
 
         $("input[name=addr]").val(saveAddr);
 
-        var addr = $("input[name=addr]").val();
-
 
         var table_tbody = $("#order_payment_list");
         var table_tr = table_tbody.children();
@@ -220,12 +261,6 @@
         }else{
             var orderName = pName + " 외 " + (table_tr.length - 1) + " 건";
         }
-
-
-
-
-
-
 
 
         IMP.request_pay({
@@ -256,7 +291,8 @@
                         xhr.setRequestHeader(header, token);
                     },
                     success: function(data){
-                        location.href='orderComplete';
+                        var oType = "C";
+                        location.href='orderComplete/'+oType;
                     },
                     error: function(request, status, error){
                         alert("code : " + request.status + "\n"
