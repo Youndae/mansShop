@@ -3,6 +3,7 @@ package org.shop.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.shop.domain.*;
 
+import java.util.Date;
 import java.util.List;
 
 public interface MyPageMapper {
@@ -11,7 +12,7 @@ public interface MyPageMapper {
 
     public MemberVO getModifyInfo(String userId);
 
-    public List<OrderVO> memberOrderList();
+    public List<MemberOrderListDTO> memberOrderList(@Param("userId") String userId, @Param("regDate") Date regDate);
 
     public void insertReview();
 

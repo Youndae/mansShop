@@ -291,7 +291,8 @@
                         xhr.setRequestHeader(header, token);
                     },
                     success: function(data){
-                        location.href='orderComplete';
+                        var oType = "C";
+                        location.href='orderComplete/'+oType;
                     },
                     error: function(request, status, error){
                         alert("code : " + request.status + "\n"

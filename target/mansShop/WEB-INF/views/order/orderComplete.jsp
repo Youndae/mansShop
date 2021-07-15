@@ -13,7 +13,7 @@
         <c:when test="${type == 'H'}">
 
             <h3>입금이 확인되는대로 상품이 발송됩니다.</h3>
-            <h5>입금계좌</h5>
+            <span>입금계좌</span>
             <ul>
                 <li>농협 : 000-0000000-000</li>
                 <li>기업은행 : 0000-00000-000</li>
@@ -27,6 +27,10 @@
             <span>빠르게 준비해서 발송하겠습니다.</span>
         </c:otherwise>
     </c:choose>
+</div>
+<div>
+    <button type="button" id="orderList">주문내역 보기</button>
+    <!-- orderList 페이지로 연결 -->
 </div>
 </body>
 </html>

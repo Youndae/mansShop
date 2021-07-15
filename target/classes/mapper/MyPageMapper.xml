@@ -55,4 +55,16 @@
             pOpNo=#{pOpNo}
     </delete>
 
+    <select id="memberOrderList" resultType="org.shop.domain.MemberOrderListDTO">
+        <![CDATA[
+            SELECT *
+            FROM
+                memberOrderList_view
+            WHERE
+                userId=#{userId}
+                AND
+                orderDate >= #{regDate}
+        ]]>
+    </select>
+
 </mapper>

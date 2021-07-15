@@ -2,16 +2,22 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.shop.domain.MemberOrderListDTO;
 import org.shop.domain.MemberVO;
 import org.shop.domain.MyQnAVO;
 import org.shop.mapper.MyPageMapper;
 import org.shop.service.MyPageService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @RequestMapping("/myPage/")
@@ -42,8 +48,24 @@ public class MyPageController {
     }
 
     @GetMapping("/memberOrderList")
-    public void memberOrderList(Model model){
+    public void memberOrderList(){
         //회원 주문 내역
+    }
+
+    @GetMapping("/selectOrderList")
+    @ResponseBody
+    public ResponseEntity<List<MemberOrderListDTO>> getOrderList(String regDate, Principal principal) throws ParseException {
+
+        log.info("select OrderList");
+        log.info("regDate : " + regDate);
+
+        String userId = principal.getName();
+        log.info("userId : " + userId);
+
+        SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = fm.parse(regDate);
+
+        return new ResponseEntity<>(myPageMapper.memberOrderList(userId, date), HttpStatus.OK);
     }
 
     @GetMapping("/memberReviewList")
@@ -51,9 +73,10 @@ public class MyPageController {
         //회원 리뷰 내역
     }
 
-    @GetMapping("/insertReview")
-    public void getInsertReview(Model model){
+    @GetMapping("/insertReview/{pOpNo}")
+    public void getInsertReview(Model model, @PathVariable String pOpNo){
         //리뷰 작성 페이지
+        log.info("popNo : " + pOpNo);
     }
 
     @PostMapping("/insertReview")
