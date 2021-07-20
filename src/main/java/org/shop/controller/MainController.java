@@ -138,7 +138,7 @@ public class MainController {
 
     @GetMapping(value = "/productQnAPages/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseEntity<ProductQnADTO> getProductQnA(@PathVariable("page") int page, @PathVariable("pno") String pno){
-        log.info("getProductReview");
+        log.info("getProductQnA");
 
         Criteria cri = new Criteria(page, 10);
 

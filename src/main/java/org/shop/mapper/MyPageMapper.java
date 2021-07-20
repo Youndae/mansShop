@@ -14,7 +14,9 @@ public interface MyPageMapper {
 
     public List<MemberOrderListDTO> memberOrderList(@Param("userId") String userId, @Param("regDate") Date regDate);
 
-    public void insertReview();
+    public ProductOpVO reviewProductInfo(String pOpNo);
+
+    public void insertProductReview(ProductReviewVO productReviewVO);
 
     public List<MyQnAVO> memberQnAList();
 

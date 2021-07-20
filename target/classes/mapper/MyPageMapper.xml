@@ -67,4 +67,29 @@
         ]]>
     </select>
 
+    <select id="reviewProductInfo" resultType="org.shop.domain.ProductOpVO">
+        SELECT *
+        FROM
+            product_view
+        WHERE
+            pOpNo=#{pOpNo}
+    </select>
+
+    <insert id="insertProductReview" parameterType="org.shop.domain.ProductReviewVO">
+        INSERT INTO productReview(
+            rNum
+            , pno
+            , userId
+            , reviewContent
+            , reviewDate
+        )
+        VALUES(
+            #{rNum}
+            , #{pno}
+            , #{userId}
+            , #{reviewContent}
+            , sysdate
+        )
+    </insert>
+
 </mapper>

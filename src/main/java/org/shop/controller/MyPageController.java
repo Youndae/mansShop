@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.MemberOrderListDTO;
 import org.shop.domain.MemberVO;
 import org.shop.domain.MyQnAVO;
+import org.shop.domain.ProductReviewVO;
 import org.shop.mapper.MyPageMapper;
 import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
@@ -73,15 +74,33 @@ public class MyPageController {
         //회원 리뷰 내역
     }
 
-    @GetMapping("/insertReview/{pOpNo}")
-    public void getInsertReview(Model model, @PathVariable String pOpNo){
+    @GetMapping("/orderReview/{pOpNo}")
+    public String getInsertReview(Model model, @PathVariable String pOpNo){
         //리뷰 작성 페이지
         log.info("popNo : " + pOpNo);
+
+        model.addAttribute("pInfo", myPageMapper.reviewProductInfo(pOpNo));
+
+        return "/myPage/orderReview";
     }
 
-    @PostMapping("/insertReview")
-    public void insertReview(){
+    @PostMapping("/orderReview")
+    public String insertReview(ProductReviewVO productReviewVO, Principal principal){
         //리뷰작성 처리
+
+        log.info("order Review");
+
+        productReviewVO.setUserId(principal.getName());
+
+        long n = 21;
+
+        productReviewVO.setRNum(n);
+
+        log.info(productReviewVO);
+
+        myPageMapper.insertProductReview(productReviewVO);
+
+        return "redirect:/myPage/memberOrderList";
     }
 
     @GetMapping("/memberQnAList")

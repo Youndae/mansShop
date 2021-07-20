@@ -443,7 +443,7 @@
 
             console.log("review Insert : " + pOpNo);
 
-            location.href="/myPage/insertReview/"+pOpNo;
+            location.href="/myPage/orderReview/"+pOpNo;
 
     }
 </script>
