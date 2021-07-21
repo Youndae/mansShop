@@ -92,4 +92,61 @@
         )
     </insert>
 
+    <update id="reviewStatUp" parameterType="org.shop.domain.ProductReviewVO">
+        UPDATE
+            productOrder_Detail
+        SET
+            reviewStat=1
+        WHERE
+            orderNo=#{orderNo}
+            AND
+            pno=#{pno}
+    </update>
+
+    <select id="memberQnAList" resultType="org.shop.domain.MyQnAVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , qno
+                , userid
+                , qtitle
+                , qcontent
+                , qstat
+                , qregdate
+        FROM
+            my_QnA
+        WHERE
+            userId=#{keyword}
+        ORDER BY qno DESC
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getQnATotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            my_QnA
+        WHERE
+            userId=#{keyword}
+    </select>
+
+    <select id="memberQnADetail" resultType="org.shop.domain.MyQnAVO">
+        SELECT *
+        FROM
+            my_QnA
+        WHERE
+            qno=#{qno}
+    </select>
+
+    <select id="memberQnAReply" resultType="org.shop.domain.MyQnAReplyVO">
+        SELECT *
+        FROM
+            my_QnA_Reply
+        WHERE
+            qno=#{qno}
+    </select>
+
 </mapper>

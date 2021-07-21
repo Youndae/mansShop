@@ -20,4 +20,5 @@ public class MemberOrderListDTO {
     private String pName;
     private String firstThumbnail;
     private String pOpNo;
+    private String pno;
 }

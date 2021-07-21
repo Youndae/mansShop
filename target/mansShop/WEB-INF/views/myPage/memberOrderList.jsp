@@ -336,7 +336,7 @@
                     }else if(attach.orderStat == 2){
                         str += "<td>배송완료";
                         if(attach.reviewStat == 0){
-                            str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
+                            str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "/" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
                         }else{
                             str += "</td>";
                         }
@@ -367,7 +367,7 @@
                         }else if(attach.orderStat == 2){
                             str += "<td>배송완료";
                             if(attach.reviewStat == 0){
-                                str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
+                                str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "/" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
                             }else{
                                 str += "</td>";
                             }
@@ -417,7 +417,7 @@
                         }else if(attach.orderStat == 2){
                             str += "<td>배송완료";
                             if(attach.reviewStat == 0){
-                                str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
+                                str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.popNo + "/" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
                             }else{
                                 str += "</td>";
                             }
@@ -439,11 +439,11 @@
     }
 
     function insertReview(obj){
-            var pOpNo = obj.attributes['value'].value;
+            var val = obj.attributes['value'].value;
 
-            console.log("review Insert : " + pOpNo);
+            var no = val.split("/");
 
-            location.href="/myPage/orderReview/"+pOpNo;
+        location.href="/myPage/orderReview/"+no[0] + "/" + no[1] + "/" + no[2];
 
     }
 </script>

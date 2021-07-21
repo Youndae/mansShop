@@ -30,7 +30,8 @@
                 <label>리뷰작성</label><br>
                 <textarea name="reviewContent"></textarea>
             </div>
-            <input type="hidden" name="pno" value="${pInfo.pno}">
+            <input type="hidden" name="pno" value="${pno}">
+            <input type="hidden" name="orderNo" value="${orderNo}">
             <sec:csrfInput/>
         </form>
     </div>

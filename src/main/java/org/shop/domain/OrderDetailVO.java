@@ -13,6 +13,6 @@ public class OrderDetailVO extends ProductOpVO{
     private String pOpNo;
     private int orderCount;
     private int odPrice;
-
+    private String pno;
 
 }

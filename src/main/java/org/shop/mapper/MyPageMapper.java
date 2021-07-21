@@ -18,15 +18,19 @@ public interface MyPageMapper {
 
     public void insertProductReview(ProductReviewVO productReviewVO);
 
-    public List<MyQnAVO> memberQnAList();
+    public void reviewStatUp(ProductReviewVO productReviewVO);
 
-    public void memberQnADetail();
+    public List<MyQnAVO> memberQnAList(Criteria cri);
+
+    public int getQnATotal(Criteria cri);
+
+    public MyQnAVO memberQnADetail(long qno);
+
+    public List<MyQnAReplyVO> memberQnAReply(long qno);
 
     public void insertMemberQnA();
 
     public List<LikeVO> likeList();
-
-    public List<MyQnAReplyVO> memberQnAReply();
 
     public void insertMemberQnAReply();
 

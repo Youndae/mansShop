@@ -2,10 +2,7 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.MemberOrderListDTO;
-import org.shop.domain.MemberVO;
-import org.shop.domain.MyQnAVO;
-import org.shop.domain.ProductReviewVO;
+import org.shop.domain.*;
 import org.shop.mapper.MyPageMapper;
 import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
@@ -66,6 +63,8 @@ public class MyPageController {
         SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
         Date date = fm.parse(regDate);
 
+        log.info(myPageMapper.memberOrderList(userId, date));
+
         return new ResponseEntity<>(myPageMapper.memberOrderList(userId, date), HttpStatus.OK);
     }
 
@@ -74,10 +73,14 @@ public class MyPageController {
         //회원 리뷰 내역
     }
 
-    @GetMapping("/orderReview/{pOpNo}")
-    public String getInsertReview(Model model, @PathVariable String pOpNo){
+    @GetMapping("/orderReview/{pOpNo}/{pno}/{orderNo}")
+    public String getInsertReview(Model model, @PathVariable String pOpNo,
+                                  @PathVariable String pno, @PathVariable String orderNo){
         //리뷰 작성 페이지
-        log.info("popNo : " + pOpNo);
+        log.info("orderReview VO : " + pOpNo);
+
+        model.addAttribute("pno", pno);
+        model.addAttribute("orderNo", orderNo);
 
         model.addAttribute("pInfo", myPageMapper.reviewProductInfo(pOpNo));
 
@@ -100,17 +103,35 @@ public class MyPageController {
 
         myPageMapper.insertProductReview(productReviewVO);
 
+        myPageMapper.reviewStatUp(productReviewVO);
+
         return "redirect:/myPage/memberOrderList";
     }
 
     @GetMapping("/memberQnAList")
-    public void memberQnAList(Model model){
+    public void memberQnAList(Model model, Principal principal, Criteria cri){
         //회원 QnA 목록
+        log.info("memberQnAList");
+
+        cri.setKeyword(principal.getName());
+
+        model.addAttribute("qList", myPageMapper.memberQnAList(cri));
+
+        int total = myPageMapper.getQnATotal(cri);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
-    @GetMapping("/memberQnADetail")
-    public void memberQnADetail(MyQnAVO myQnAVO){
+    @GetMapping("/memberQnADetail/{qno}")
+    public String memberQnADetail(@PathVariable long qno, Model model){
         //회원 QnA Detail
+        log.info("myQnADetail qno : " + qno);
+
+        model.addAttribute("qDetail", myPageMapper.memberQnADetail(qno));
+
+        model.addAttribute("qReply", myPageMapper.memberQnAReply(qno));
+
+        return "/myPage/memberQnADetail";
     }
 
     @GetMapping("/insertMemberQnA")
