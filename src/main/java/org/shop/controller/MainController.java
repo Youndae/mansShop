@@ -70,7 +70,7 @@ public class MainController {
     }
 
     @GetMapping("/{pno}")
-    public String productDetail(@PathVariable("pno") String pno, Model model, Criteria cri){
+    public String productDetail(@PathVariable("pno") String pno, Model model, Criteria cri, Principal principal){
         log.info("detail pno : " + pno);
 
         cri.setKeyword(pno);
@@ -80,6 +80,12 @@ public class MainController {
         model.addAttribute("pReviewCount", mainMapper.getProductReviewTotal(pno));
 
         model.addAttribute("pQnACount", mainMapper.getProductQnATotal(pno));
+
+        if(principal == null){
+            model.addAttribute("likeStat", 2);
+        }else{
+            model.addAttribute("likeStat", mainMapper.getLikeProductStat(pno, principal.getName()));
+        }
 
         /*model.addAttribute("pReviewList", mainMapper.getProductReview(cri));*/
 
@@ -182,7 +188,7 @@ public class MainController {
 
     }
 
-    @PostMapping("/test")
+   /* @PostMapping("/test")
     public void test(@RequestParam HashMap<String, Object> commandMap) throws Exception{
 
 
@@ -271,7 +277,7 @@ public class MainController {
 
         log.info("Last VO : " + vo);
 
-        /*HashMap<String, Object> resendMap = new HashMap<String, Object>();
+        *//*HashMap<String, Object> resendMap = new HashMap<String, Object>();
 
         for(int i = 0; i < no_array.length; i++){
             resendMap.put("pOpNo", no_array[i]);
@@ -287,9 +293,9 @@ public class MainController {
         log.info("resendMap pSize : " + resendMap.get("pSize").toString());
         log.info("resendMap pColor : " + resendMap.get("pColor").toString());
         log.info("resendMap cCount : " + resendMap.get("cCount").toString());
-        log.info("resendMap cPrice : " + resendMap.get("cPrice").toString());*/
+        log.info("resendMap cPrice : " + resendMap.get("cPrice").toString());*//*
 
-    }
+    }*/
 
     @PostMapping("/likeProduct")
     @ResponseBody
@@ -308,6 +314,18 @@ public class MainController {
 
         mainMapper.likeProduct(likeVO);
 
+    }
+
+    @PostMapping("/deLikeProduct")
+    @ResponseBody
+    public void deLikeProduct(LikeVO likeVO, Principal principal){
+        log.info("deLikeProduct");
+
+        String id = principal.getName();
+
+        likeVO.setUserId(id);
+
+        mainMapper.deLikeProduct(likeVO);
     }
 
     @PostMapping("/addCart")

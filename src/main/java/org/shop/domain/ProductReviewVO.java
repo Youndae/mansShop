@@ -9,7 +9,7 @@ import java.sql.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductReviewVO {
+public class ProductReviewVO extends ProductVO{
     private Long rNum;
     private String pno;
     private String userId;

@@ -62,7 +62,17 @@
         </div>
         <button type="button" id="buy">바로구매</button>
         <button type="button" id="cart">장바구니</button>
-        <button type="button" id="like">관심상품</button><!-- 관심상품으로 등록 시 버튼 처리 어떻게 할지 고민-->
+        <c:choose>
+            <c:when test="${likeStat == 2}">
+                <button type="button" id="anonymous">관심상품</button>
+            </c:when>
+            <c:when test="${likeStat == 0}">
+                <button type="button" id="like">관심상품</button>
+            </c:when>
+            <c:when test="${likeStat == 1}">
+                <button type="button" id="deLike">관심상품해제</button>
+            </c:when>
+        </c:choose>
         <div class="totalPrice">
             <span>
                 총 금액 : <p>0 원</p>
@@ -525,11 +535,40 @@
                     location.reload();
                 },
                 error: function(request, status, error){
-                    alert("code : " + request.stats + "\n"
+                    alert("code : " + request.status + "\n"
                         + "message : " + request.responseText
                         + "\n" + "error : " + error);
                 }
             });
+        })
+
+        $("#deLike").on('click', function(){
+            var pno = $("input[name=pno]").val();
+
+            $.ajax({
+                url: "/deLikeProduct",
+                type: 'post',
+                data: {pno: pno},
+                beforeSend: function(xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error: function(request, status, error){
+                    alert("code : " + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " + error);
+                }
+            });
+        })
+
+        $("#anonymous").on('click', function(){
+            var result = confirm("관심상품으로 등록하기 위해서는 로그인이 필요합니다.\n 로그인 하시겠습니까?");
+
+            if(result){
+                location.href='/member/login';
+            }
         })
 
     });//document.ready End

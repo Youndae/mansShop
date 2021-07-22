@@ -29,6 +29,29 @@ public class MyPageController {
 
     private MyPageMapper myPageMapper;
 
+    @GetMapping("/modifyCheck")
+    public void modifyCheck(){
+
+    }
+
+    @PostMapping("/modifyCheck")
+    @ResponseBody
+    public String modifyCheckProc(MemberVO memberVO, Principal principal){
+
+        memberVO.setUserId(principal.getName());
+
+        log.info("modifyCheck : " + memberVO);
+
+        if(myPageService.modifyCheckProc(memberVO) == 0){
+            log.info("modify check controller return false");
+            return "0";
+        }else{
+            log.info("modify check controller return true");
+            return "1";
+        }
+
+    }
+
     @GetMapping("/ModifyInfo")
     /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
     public void getModifyInfo(Model model, Principal principal){
@@ -69,8 +92,56 @@ public class MyPageController {
     }
 
     @GetMapping("/memberReviewList")
-    public void memberReviewList(Model model){
+    public void memberReviewList(Model model, Principal principal, Criteria cri){
         //회원 리뷰 내역
+
+        cri.setKeyword(principal.getName());
+
+        log.info("member Review List : " + myPageMapper.memberReviewList(cri));
+
+        model.addAttribute("rList", myPageMapper.memberReviewList(cri));
+
+        int total = myPageMapper.getReviewTotal(cri);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+
+    }
+
+    @GetMapping("/memberReviewDetail/{rNum}")
+    public String memberReviewDetail(Model model, @PathVariable long rNum){
+
+        model.addAttribute("rDetail", myPageMapper.memberReviewDetail(rNum));
+
+        return "/myPage/memberReviewDetail";
+    }
+
+    @GetMapping("/memberReviewModify/{rNum}")
+    public String memberReviewModify(Model model, @PathVariable long rNum){
+
+        model.addAttribute("rModify", myPageMapper.memberReviewDetail(rNum));
+
+        return "/myPage/memberReviewModify";
+    }
+
+    @PostMapping("/memberReviewModify")
+    public String memberReviewModifyProc(ProductReviewVO productReviewVO){
+
+        log.info("modify rNum : " + productReviewVO.getRNum());
+
+        myPageMapper.memberReviewModify(productReviewVO);
+
+        return "redirect:/myPage/memberReviewDetail/"+productReviewVO.getRNum();
+    }
+
+    @GetMapping("/memberReviewDelete/{rNum}")
+    public String memberReviewDelete(@PathVariable long rNum){
+
+        log.info("memberReviewDelete");
+
+        myPageMapper.deleteReview(rNum);
+
+        return "redirect:/myPage/memberReviewList";
     }
 
     @GetMapping("/orderReview/{pOpNo}/{pno}/{orderNo}")
@@ -140,13 +211,31 @@ public class MyPageController {
     }
 
     @PostMapping("/insertMemberQnA")
-    public void insertMemberQnA(){
+    public String insertMemberQnA(MyQnAVO myQnAVO, Principal principal){
         //회원 QnA 작성 처리
+
+        long a = 21;//시퀀스 처리.
+
+        myQnAVO.setQno(a);
+
+        myQnAVO.setUserId(principal.getName());
+
+        myPageMapper.insertMemberQnA(myQnAVO);
+
+        return "redirect:/myPage/memberQnAList";
     }
 
     @GetMapping("/likeList")
-    public void likeList(Model model){
+    public void likeList(Model model, Principal principal, Criteria cri){
         //찜목록
+
+        cri.setKeyword(principal.getName());
+
+        model.addAttribute("lList", myPageMapper.likeList(cri));
+
+        int total = myPageMapper.getLikeTotal(cri);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
     @PostMapping("/insertMemberReply")

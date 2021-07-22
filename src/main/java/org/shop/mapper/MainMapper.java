@@ -31,5 +31,9 @@ public interface MainMapper {
 
     public void likeProduct(LikeVO likeVO);
 
+    public void deLikeProduct(LikeVO likeVO);
+
     public void addCart(CartVO cartVO);
+
+    public int getLikeProductStat(@Param("pno") String pno, @Param("userId") String userId);
 }

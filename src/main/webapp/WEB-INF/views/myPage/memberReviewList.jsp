@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <html>
 <head>
     <title>Title</title>
@@ -9,36 +8,26 @@
 <body>
 <div>
     <div class="header">
-        <h1>문의사항</h1>
-        <button type="button" id="insertMemberQnA">문의하기</button>
+        <h1>리뷰 목록</h1>
     </div>
     <div>
         <table border="1">
             <thead>
                 <tr>
-                    <th>상태</th>
-                    <th>제목</th>
+                    <th>상품명</th>
                     <th>작성일</th>
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${qList}" var="list">
+                <c:forEach items="${rList}" var="list">
                     <tr>
-                        <c:choose>
-                            <c:when test="${list.QStat == 0}">
-                                <td>미답변</td>
-                            </c:when>
-                            <c:when test="${list.QStat == 1}">
-                                <td>답변완료</td>
-                            </c:when>
-                            <c:when test="${list.QStat == 2}">
-                                <td>공지</td>
-                            </c:when>
-                        </c:choose>
                         <td>
-                            <a href="<c:url value="/myPage/memberQnADetail/${list.qno}"/>"><c:out value="${list.QTitle}"/></a>
+                            <a href="<c:url value="/myPage/memberReviewDetail/${list.RNum}"/>">
+                                <img src="/display?image=${list.firstThumbnail}">
+                                <label>${list.PName}</label>
+                            </a>
                         </td>
-                        <td><c:out value="${list.QRegDate}"/></td>
+                        <td>${list.reviewDate}</td>
                     </tr>
                 </c:forEach>
             </tbody>
@@ -71,22 +60,17 @@
         </form>
     </div>
 </div>
-
 <script>
-$(document).ready(function(){
-    var actionForm = $("#actionForm");
+    $(document).ready(function(){
+        var actionForm = $("#actionForm");
 
-    $(".paginate_button a").on("click", function (e) {
-        e.preventDefault();
+        $(".paginate_button a").on("click", function (e) {
+            e.preventDefault();
 
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    });
-
-    $("#insertMemberQnA").on('click', function(){
-        location.href='/myPage/insertMemberQnA';
+            actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+            actionForm.submit();
+        });
     })
-})
 </script>
 </body>
 </html>

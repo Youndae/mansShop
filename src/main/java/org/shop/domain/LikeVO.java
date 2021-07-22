@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LikeVO {
+public class LikeVO extends ProductVO{
     private String likeNo;
     private String userId;
     private String pno;

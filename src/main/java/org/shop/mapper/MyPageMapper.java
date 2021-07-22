@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MyPageMapper {
 
-    public void modifyInfo();
+    public String modifyCheck(MemberVO memberVO);
 
     public MemberVO getModifyInfo(String userId);
 
@@ -20,6 +20,16 @@ public interface MyPageMapper {
 
     public void reviewStatUp(ProductReviewVO productReviewVO);
 
+    public List<ProductReviewVO> memberReviewList(Criteria cri);
+
+    public ProductReviewVO memberReviewDetail(long rNum);
+
+    public void memberReviewModify(ProductReviewVO productReviewVO);
+
+    public int getReviewTotal(Criteria cri);
+
+    public void deleteReview(long rNum);
+
     public List<MyQnAVO> memberQnAList(Criteria cri);
 
     public int getQnATotal(Criteria cri);
@@ -28,9 +38,11 @@ public interface MyPageMapper {
 
     public List<MyQnAReplyVO> memberQnAReply(long qno);
 
-    public void insertMemberQnA();
+    public void insertMemberQnA(MyQnAVO myQnAVO);
 
-    public List<LikeVO> likeList();
+    public List<LikeVO> likeList(Criteria cri);
+
+    public int getLikeTotal(Criteria cri);
 
     public void insertMemberQnAReply();
 

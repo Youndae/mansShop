@@ -28,6 +28,15 @@
             mem.userId = #{userId}
     </select>
 
+    <select id="modifyCheck" resultType="string">
+        SELECT
+            userPw
+        FROM
+            member
+        WHERE
+            userId=#{userId}
+    </select>
+
     <select id="getCartList" resultType="org.shop.domain.CartVO">
         SELECT
             c.cartNo
@@ -103,6 +112,13 @@
             pno=#{pno}
     </update>
 
+    <delete id="deleteReview" parameterType="long">
+        DELETE FROM
+            productReview
+        WHERE
+            rNum=#{rNum}
+    </delete>
+
     <select id="memberQnAList" resultType="org.shop.domain.MyQnAVO">
         SELECT *
         FROM(
@@ -147,6 +163,108 @@
             my_QnA_Reply
         WHERE
             qno=#{qno}
+    </select>
+
+    <insert id="insertMemberQnA" parameterType="org.shop.domain.MyQnAVO">
+        INSERT INTO my_QnA(
+            qno
+            , userId
+            , qTitle
+            , qContent
+            , qRegDate
+        )
+        VALUES(
+            #{qno}
+            , #{userId}
+            , #{qTitle}
+            , #{qContent}
+            , sysdate
+        )
+    </insert>
+
+    <select id="memberReviewList" resultType="org.shop.domain.ProductReviewVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , r.pno
+                , r.rNum
+                , p.pname
+                , p.firstThumbnail
+                , r.reviewDate
+            FROM
+                productReview r INNER JOIN product p
+            ON r.pno = p.pno
+            WHERE
+                userid=#{keyword}
+            ORDER BY rNum DESC
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getReviewTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            productReview
+        WHERE
+            userId=#{keyword}
+    </select>
+
+    <select id="memberReviewDetail" resultType="org.shop.domain.ProductReviewVO">
+        SELECT
+            r.reviewContent
+            , r.reviewDate
+            , r.rNum
+            , p.firstThumbnail
+            , p.pName
+        FROM
+            productReview r INNER JOIN product p
+            ON r.pno = p.pno
+        WHERE
+            r.rNum=#{rNum}
+    </select>
+
+    <update id="memberReviewModify" parameterType="org.shop.domain.ProductReviewVO">
+        UPDATE
+            productReview
+        SET
+            reviewContent=#{reviewContent}
+        WHERE
+            rNum=#{rNum}
+    </update>
+
+    <select id="likeList" resultType="org.shop.domain.LikeVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , l.userid
+                , l.pno
+                , p.firstThumbnail
+                , p.pName
+                , p.pPrice
+            FROM
+                like_product l INNER JOIN product p
+            ON l.pno = p.pno
+            WHERE
+                l.userId=#{keyword}
+                AND
+                p.pclosed=0
+            ORDER BY l.likeno DESC
+        )
+        WHERE
+            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getLikeTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            like_product
+        WHERE
+            userId=#{keyword}
     </select>
 
 </mapper>

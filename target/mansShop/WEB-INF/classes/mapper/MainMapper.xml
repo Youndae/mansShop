@@ -131,6 +131,15 @@
         )
     </insert>
 
+    <delete id="deLikeProduct" parameterType="String">
+        DELETE FROM
+            like_product
+        WHERE
+            userId=#{userId}
+            AND
+            pno=#{pno}
+    </delete>
+
     <insert id="addCart" parameterType="org.shop.domain.CartVO">
         INSERT INTO cart(
             cartNo
@@ -147,5 +156,16 @@
             , #{cPrice}
         )
     </insert>
+
+    <select id="getLikeProductStat" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            like_product
+        WHERE
+            userId=#{userId}
+            AND
+            pno=#{pno}
+    </select>
 
 </mapper>

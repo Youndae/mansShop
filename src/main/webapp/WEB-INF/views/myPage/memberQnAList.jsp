@@ -82,6 +82,10 @@ $(document).ready(function(){
         actionForm.find("input[name='pageNum']").val($(this).attr("href"));
         actionForm.submit();
     });
+
+    $("#insertMemberQnA").on('click', function(){
+        location.href='/myPage/insertMemberQnA';
+    })
 })
 </script>
 </body>
