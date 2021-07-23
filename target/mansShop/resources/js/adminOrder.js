@@ -44,7 +44,7 @@ $(document).ready(function(){
 
 
 
-    var actionForm = $("#orderActionForm");
+    /*var actionForm = $("#orderActionForm");
     var ordersearchForm = $("#orderSearchForm");
 
     $(".paginate_button a").on('click', function(e){
@@ -63,7 +63,7 @@ $(document).ready(function(){
         e.preventDefault();
 
         ordersearchForm.submit();
-    })
+    })*/
 
 
     $("#tbl_orderList a").on('click', function(e){

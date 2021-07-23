@@ -6,6 +6,8 @@
     <title>Title</title>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/myPage.js"></script>
+<script type="text/javascript" src="/js/page.js"></script>
 <body>
 <div>
     <div class="header">
@@ -65,14 +67,14 @@
             </ul>
         </div>
 
-        <form id="actionForm" action="/myPage/memberQnAList" method="get">
+        <form id="pageActionForm" action="/myPage/memberQnAList" method="get">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>
     </div>
 </div>
 
-<script>
+<%--<script>
 $(document).ready(function(){
     var actionForm = $("#actionForm");
 
@@ -87,6 +89,6 @@ $(document).ready(function(){
         location.href='/myPage/insertMemberQnA';
     })
 })
-</script>
+</script>--%>
 </body>
 </html>

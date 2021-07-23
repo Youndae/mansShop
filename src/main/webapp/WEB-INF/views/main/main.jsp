@@ -11,6 +11,7 @@
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/main.js"></script>
 <body>
 <div>
     <div class="header">
@@ -29,7 +30,7 @@
     </div>
 </div>
 
-<script>
+<%--<script>
     $(document).ready(function(){
         $(".thumbnail").on('click', function(e){
             var pno = $(this).href;
@@ -37,6 +38,6 @@
             location.href="/"+pno;
         })
     })
-</script>
+</script>--%>
 </body>
 </html>

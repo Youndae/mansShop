@@ -22,10 +22,10 @@
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/product.js"></script>
 <body>
 <div>
     <h1>Product Detail Page</h1>
-
     <div class="thumbnail">
         <div class="firstThumbnail">
             <img id="firstThumb" src="/display?image=${pDetail.firstThumbnail}">
@@ -234,7 +234,7 @@
 
 
 
-<script>
+<%--<script>
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
 
@@ -927,6 +927,6 @@
 
 
     })
-</script>
+</script>--%>
 </body>
 </html>

@@ -35,6 +35,8 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
         HttpSession session = request.getSession();
 
+        log.info("auth session : " + session);
+
         if(session != null){
             String redirectUrl = (String) session.getAttribute("prevPage");
             log.info("RedirectUrl : " + redirectUrl);

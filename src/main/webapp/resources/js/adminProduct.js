@@ -137,9 +137,7 @@ function deleteOldPreview(obj) {
 
 $(document).ready(function () {
 
-    var actionForm = $("#actionForm");
-
-    var n = null;
+    /*var actionForm = $("#actionForm");
 
     $(".paginate_button a").on("click", function (e) {
         e.preventDefault();
@@ -166,7 +164,7 @@ $(document).ready(function () {
         e.preventDefault();
 
         searchForm.submit();
-    })
+    })*/
 
 
     var classification = $("#classification").val();

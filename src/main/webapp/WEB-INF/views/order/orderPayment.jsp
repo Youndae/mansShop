@@ -11,6 +11,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="/js/orderPayment.js"></script>
 <body>
 <div>
     <div class="header">
@@ -124,7 +125,7 @@
 </div>
 
 
-<script>
+<%--<script>
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ready(function(){
@@ -316,6 +317,6 @@
     }
 
 
-</script>
+</script>--%>
 </body>
 </html>

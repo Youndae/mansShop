@@ -9,69 +9,6 @@
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/adminProduct.js"></script>
-<%--<script>
-    $(document).ready(function () {
-        var classification = $("#classification").val();
-        var size = $("#size").val();
-
-        $('select[name=pClassification]').val(classification);
-        $('select[name=pSize]').val(size);
-
-        var pno = $('input[name=pno]').val();
-
-        (function(){
-            $.getJSON("/admin/getFirstThumb", {pno:pno}, function(arr){
-                console.log(arr);
-
-                var append = img("f", arr);
-
-                $("#firstThumbPreview").html(append);
-            })
-        })();
-
-        (function(){
-            $.getJSON("/admin/getThumbnail", {pno:pno}, function(arr){
-                var append = img("t", arr);
-
-                $("#thumbPreview").html(append);
-            })
-        })();
-
-        (function(){
-            $.getJSON("/admin/getInfoImage", {pno:pno}, function(arr){
-                var append = img("i", arr);
-
-                $("#infoPreview").html(append);
-            })
-        })();
-
-        function img(type, arr){
-            var num = 1;
-            var str = "";
-            console.log("each start");
-            $(arr).each(function(i, attach){
-                var imgNum = type + num;
-                console.log("imgNum : " + imgNum);
-                str += "<div class=\"preview-box\" value=\"" + imgNum +"\">";
-                if(type == "f"){
-                    str += "<img class=\"firstThumb\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
-                }else if(type == "t"){
-                    str += "<img class=\"thumb\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
-                }else if(type == "i"){
-                    str += "<img class=\"infoImg\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
-                }
-                str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">";
-                str += "삭제" + "</a>";
-                str += "</div>";
-                num++;
-            });
-
-            return str;
-        }
-
-    });
-</script>--%>
-
 <style>
     img{
         width: 50px;
@@ -128,7 +65,6 @@
             <input type="text" name="pStock" placeholder="입력하지 않으면 0으로 등록됩니다." value="${info.PStock}">
             <div class="overlap" id="checkPStock"></div>
         </div>
-        <%--<sec:csrfInput/>--%>
         <input type="hidden" name="pno" value="${info.pno}">
         <input type="hidden" name="pOpNo" value="${info.POpNo}">
         <sec:csrfInput/>
@@ -158,14 +94,7 @@
     <div class="button-area">
         <button type="button" id="addProductOp">옵션 추가</button>
         <button type="button" id="modifyProduct">수정</button>
-        <%--<button type="button" id="closedProductOp">옵션 비공개</button>
-        <button type="button" id="openProductOp">옵션 공개</button>
-        <button type="button" id="closedProduct">상품 비공개</button>
-        <button type="button" id="openProduct">상품 공개</button>--%>
     </div>
-
 </div>
-
-
 </body>
 </html>

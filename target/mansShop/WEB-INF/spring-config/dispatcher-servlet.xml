@@ -15,7 +15,6 @@
 
     <annotation-driven/>
 
-    <resources mapping="/IMG/**" location="/resources/img/"/>
     <resources mapping="/resources/**" location="/resources/" />
     <resources mapping="/js/**" location="/resources/js/"/>
 

@@ -6,6 +6,7 @@
     <title>Title</title>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/myPage.js"></script>
 <body>
 <div>
     <div class="header">
@@ -27,7 +28,7 @@
     </div>
     <button type="button" id="reviewModifyProc">리뷰 수정</button>
 </div>
-<script>
+<%--<script>
     $(function(){
         $("#reviewModifyProc").on('click', function(){
             var form = $("#reviewModifyForm");
@@ -36,6 +37,6 @@
             form.submit();
         })
     })
-</script>
+</script>--%>
 </body>
 </html>

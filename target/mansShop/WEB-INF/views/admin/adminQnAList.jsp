@@ -6,6 +6,7 @@
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/adminOrder.js"></script>
+<script type="text/javascript" src="/js/page.js"></script>
 <body>
 <div>
     <div>
@@ -62,7 +63,7 @@
             </ul>
         </div>
 
-        <form id="orderActionForm" action="/admin/adminQnAList" method="get">
+        <form id="pageActionForm" action="/admin/adminQnAList" method="get">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>

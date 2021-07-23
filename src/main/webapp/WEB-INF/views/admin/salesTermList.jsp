@@ -5,13 +5,15 @@
 <head>
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/adminSales.js"></script>
+    <script type="text/javascript" src="/js/page.js"></script>
 </head>
 <body>
 <div>
     <div class="header">
         <h1>기간별 매출</h1>
         <div class="select">
-            <form id="salesProductActionForm" action="/admin/salesTermList" method="get">
+            <form id="pageActionForm" action="/admin/salesTermList" method="get">
                 <label>연도별 : </label>
                 <select id="select_Term_Year">
 
@@ -82,7 +84,7 @@
     </div>
 </div>
 
-<script>
+<%--<script>
 $(document).ready(function(){
 
     var actionForm = $("#salesProductActionForm");
@@ -126,6 +128,6 @@ $(document).ready(function(){
     })
 
 })
-</script>
+</script>--%>
 </body>
 </html>

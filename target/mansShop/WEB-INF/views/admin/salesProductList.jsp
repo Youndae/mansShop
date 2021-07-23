@@ -5,6 +5,8 @@
     <title>Title</title>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/adminSales.js"></script>
+<script type="text/javascript" src="/js/page.js"></script>
 <body>
 <div>
     <div class="header">
@@ -62,7 +64,7 @@
             </ul>
         </div>
 
-        <form id="salesProductActionForm" action="/admin/salesProductList" method="get">
+        <form id="pageActionForm" action="/admin/salesProductList" method="get">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
             <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">
@@ -72,7 +74,7 @@
 
         <div class="search">
             <div>
-                <form id="salesProductSearchForm" action="/admin/salesProductList" method="get">
+                <form id="searchActionForm" action="/admin/salesProductList" method="get">
                     <select name="type">
                         <option value="classification">상품분류</option>
                         <option value="pName">상품명</option>
@@ -90,7 +92,7 @@
     </div>
 </div>
 
-<script>
+<%--<script>
     $(document).ready(function(){
 
         var actionForm = $("#salesProductActionForm");
@@ -116,7 +118,7 @@
         });
 
         $("#sales").on('click', function(e){
-           if($(this).val() == 1) //1이 아니라면 2나 null인 상태.
+           if($(this).val() == 1)
                $('input[name=sortType]').val("2");//2는 오름차순. null이거나
            else
                $('input[name=sortType]').val("1");
@@ -135,6 +137,6 @@
             actionForm.submit();
         })
     })
-</script>
+</script>--%>
 </body>
 </html>

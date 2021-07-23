@@ -52,7 +52,7 @@ public class MyPageController {
 
     }
 
-    @GetMapping("/ModifyInfo")
+    @GetMapping("/modifyInfo")
     /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
     public void getModifyInfo(Model model, Principal principal){
         //정보 수정 창
@@ -63,7 +63,7 @@ public class MyPageController {
         model.addAttribute("info", myPageMapper.getModifyInfo(userId));
     }
 
-    @PostMapping("/ModifyInfo")
+    @PostMapping("/modifyInfo")
     public void modifyInfo(MemberVO memberVO){
         //정보 수정 처리
     }

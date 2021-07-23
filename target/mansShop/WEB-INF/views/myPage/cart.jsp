@@ -9,6 +9,7 @@
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/myPageOrder.js"></script>
 <body>
 <div>
     <div class="header">
@@ -90,7 +91,7 @@
         <sec:csrfInput/>
     </form>
 </div>
-<script>
+<%--<script>
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ready(function(){
@@ -123,11 +124,6 @@
             $("#order_form").submit();
 
         })
-
-
-
-
-
 
         $("button[name=up]").on('click', function(){
             console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
@@ -194,6 +190,6 @@
             })
         })
     })
-</script>
+</script>--%>
 </body>
 </html>
