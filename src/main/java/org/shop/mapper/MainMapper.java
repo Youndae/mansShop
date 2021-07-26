@@ -35,5 +35,11 @@ public interface MainMapper {
 
     public void addCart(CartVO cartVO);
 
+    public int checkCart(String cartNo);
+
+    public void updateCart(CartVO cartVO);
+
+    public List<MemberOrderListDTO> getNonOrderList(@Param("recipient") String recipient, @Param("orderPhone") String orderPhone);
+
     public int getLikeProductStat(@Param("pno") String pno, @Param("userId") String userId);
 }

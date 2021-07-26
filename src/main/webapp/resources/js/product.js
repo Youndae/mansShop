@@ -7,6 +7,7 @@ var colorArr = new Array();
 var countArr = new Array();
 var priceArr = new Array();
 var numArr = new Array();
+var pnoArr = new Array();
 
 $(document).ready(function(){
 
@@ -593,6 +594,7 @@ $(function(){
                 var tVal = "productCount"+n;
                 countArr.push($("input[name="+tVal+"]").val());
                 priceArr.push($("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, ''));
+
             }
 
             /*for(var idx = 0; idx < Object.keys(pOpNo).length; idx++){
@@ -649,11 +651,13 @@ $(function(){
                 priceArr.push($("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, ''));
             }*/
 
+
             for(var i = 0; i < numArr.length; i++){
                 var n = numArr[i];
                 var tVal = "productCount"+n;
                 countArr.push($("input[name="+tVal+"]").val());
                 priceArr.push($("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, ''));
+                pnoArr.push($("#pno").val());
             }
 
             $("input[name=pOpNo]").val(noArr);
@@ -662,6 +666,7 @@ $(function(){
             $("input[name=pColor]").val(colorArr);
             $("input[name=cCount]").val(countArr);
             $("input[name=cPrice]").val(priceArr);
+            $("input[name=pno]").val(pnoArr);
 
 
             $("#order_form").attr("action", "/order/orderPayment");

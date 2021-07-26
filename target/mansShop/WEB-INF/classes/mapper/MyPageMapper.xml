@@ -44,6 +44,7 @@
             , c.cCount
             , c.cPrice
             , p.pName
+            , p.pno
             , op.pSize
             , op.pColor
         FROM
@@ -63,6 +64,30 @@
             AND
             pOpNo=#{pOpNo}
     </delete>
+
+    <update id="cartUp" parameterType="org.shop.domain.CartVO">
+        UPDATE
+            cart
+        SET
+            cCount=cCount + 1
+            , cPrice=cPrice + #{cPrice}
+        WHERE
+            userId=#{userId}
+            AND
+            pOpNo=#{pOpNo}
+    </update>
+
+    <update id="cartDown" parameterType="org.shop.domain.CartVO">
+        UPDATE
+            cart
+        SET
+            cCount=cCount - 1
+            , cPrice=cPrice - #{cPrice}
+        WHERE
+            userId=#{userId}
+            AND
+            pOpNo=#{pOpNo}
+    </update>
 
     <select id="memberOrderList" resultType="org.shop.domain.MemberOrderListDTO">
         <![CDATA[

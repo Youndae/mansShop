@@ -85,6 +85,7 @@
             <input type="hidden" name="pColor">
             <input type="hidden" name="cCount">
             <input type="hidden" name="cPrice">
+            <input type="hidden" name="pno">
             <input type="hidden" name="oType" value="d">
             <sec:csrfInput/>
         </form>

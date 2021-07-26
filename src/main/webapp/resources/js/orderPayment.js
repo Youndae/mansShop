@@ -10,6 +10,7 @@ $(document).ready(function(){
             $("input[name=orderPayment]").val("C");
             order();
         }else if(type == 'cash'){
+            console.log("cash pay");
             $("input[name=orderPayment]").val("H");
             var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
             $("input[name=addr]").val(saveAddr);
@@ -23,6 +24,7 @@ $(document).ready(function(){
                 formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
                 formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
                 formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
+                formData.append('pno', table_tr.eq(i).attr("data_pno"));
             }
 
             $.ajax({
@@ -120,6 +122,7 @@ function order() {
         formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
         formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
         formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
+        formData.append('pno', table_tr.eq(i).attr("data_pno"));
     }
 
     var pName = table_tr.eq(0).attr("data_pName");

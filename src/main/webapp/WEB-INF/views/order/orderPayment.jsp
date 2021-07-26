@@ -67,7 +67,8 @@
                         <tr data_opNo="${list.POpNo}"
                             data_cCount="${list.CCount}"
                             data_cprice="${list.CPrice}"
-                            data_pName="${list.PName}">
+                            data_pName="${list.PName}"
+                            data_pno="${list.pno}">
                             <td>
                                 <c:out value="${list.PName}"/>
                             </td>

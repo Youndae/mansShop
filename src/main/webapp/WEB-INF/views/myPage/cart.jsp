@@ -38,6 +38,7 @@
                                    data_pColor="${cList.PColor}"
                                    data_cCount="${cList.CCount}"
                                    data_cPrice="${cList.CPrice}"
+                                   data_pno="${cList.pno}"
                                    checked>
                         </td>
                         <td><c:out value="${cList.PName}"/></td>
@@ -64,6 +65,7 @@
                         </td>
                         <td>
                             <span><c:out value="${cList.CCount}"/></span>
+                            <input type="hidden" value="<c:out value="${cList.POpNo}"/>">
                             <button class="productCount up" name="up">up</button>
                             <button class="productCount down" name="down">down</button>
                         </td>
@@ -87,6 +89,7 @@
         <input type="hidden" name="pColor">
         <input type="hidden" name="cCount">
         <input type="hidden" name="cPrice">
+        <input type="hidden" name="pno">
         <input type="hidden" name="oType" value="c">
         <sec:csrfInput/>
     </form>

@@ -18,7 +18,7 @@ public interface MyPageMapper {
 
     public void insertProductReview(ProductReviewVO productReviewVO);
 
-    public void reviewStatUp(ProductReviewVO productReviewVO);
+    public void reviewStatUp(@Param("pno") String pno, @Param("orderNo") String orderNo);
 
     public List<ProductReviewVO> memberReviewList(Criteria cri);
 
@@ -49,5 +49,9 @@ public interface MyPageMapper {
     public List<CartVO> getCartList(String userId);
 
     public void deleteCart(@Param("userId") String userId, @Param("pOpNo") String pOpNo);
+
+    public void cartUp(CartVO cartVO);
+
+    public void cartDown(CartVO cartVO);
 
 }

@@ -70,7 +70,7 @@ $(function(){
             },
             success: function(data){
                 if(data == "1"){
-                    location.href='/myPage/ModifyInfo';
+                    location.href='/myPage/modifyInfo';
                 }else{
                     $(".pwOverlap").text("비밀번호가 틀렸습니다.");
                 }

@@ -35,6 +35,7 @@
             , pOpNo
             , orderCount
             , odPrice
+            , pno
         )
         VALUES(
             #{odNo}
@@ -42,6 +43,7 @@
             , #{pOpNo}
             , #{orderCount}
             , #{odPrice}
+            , #{pno}
         )
     </insert>
 

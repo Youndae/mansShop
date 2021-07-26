@@ -1,6 +1,17 @@
 var token = $("meta[name='_csrf']").attr("content");
 var header = $("meta[name='_csrf_header']").attr("content");
+var pOpNoArr = new Array();
 $(document).ready(function(){
+    //orderComplete
+    $("#orderList").on('click', function(){
+       location.href='/myPage/memberOrderList';
+    });
+
+    $("#orderInfoCheck").on('click', function(){
+        $("#orderInfoCheckForm").attr("action", "/nonOrderList");
+        $("#orderInfoCheckForm").submit();
+    })
+
     //cart
     $("#select_order").on('click', function(){
         var noArr = new Array();
@@ -9,6 +20,7 @@ $(document).ready(function(){
         var colorArr = new Array();
         var countArr = new Array();
         var priceArr = new Array();
+        var pnoArr = new Array();
 
         $("input[name=check]:checked").each(function(){
             noArr.push($(this).attr("value"));
@@ -17,6 +29,7 @@ $(document).ready(function(){
             colorArr.push($(this).attr("data_pColor"));
             countArr.push($(this).attr("data_cCount"));
             priceArr.push($(this).attr("data_cPrice"));
+            pnoArr.push($(this).attr("data_pno"));
         });
 
         $("input[name=pOpNo]").val(noArr);
@@ -25,13 +38,14 @@ $(document).ready(function(){
         $("input[name=pColor]").val(colorArr);
         $("input[name=cCount]").val(countArr);
         $("input[name=cPrice]").val(priceArr);
+        $("input[name=pno]").val(pnoArr);
 
         $("#order_form").attr("action", "/order/orderPayment");
         $("#order_form").submit();
 
     })
 
-    $("button[name=up]").on('click', function(){
+    /*$("button[name=up]").on('click', function(){
 
         var totalPrice = $(".total_price").text().replace(/\D/g, '');
         var count = $(this).siblings("span").text();
@@ -46,27 +60,70 @@ $(document).ready(function(){
         $(this).parent('td').next().text(pPrice.toLocaleString());
         $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
 
+    });*/
+
+    $("button[name=up]").on('click', function(){
+
+        var pOpNo = $(this).siblings("input").val();
+        var count = $(this).siblings("span").text();
+        var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
+        pPrice = parseInt(pPrice) / parseInt(count);
+
+        var countType = "up";
+
+        $.ajaxSettings.traditional = true;
+        $.ajax({
+            url: '/myPage/cartCount',
+            type: 'post',
+            data: {pOpNo: pOpNo, cPrice: pPrice, countType: countType},
+            beforeSend:function(xhr){
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(data){
+                location.reload();
+            },
+            error: function(request, status, error){
+                alert("code : " + request.status + "\n"
+                    + "message : " + request.responseText
+                    + "\n" + "error : " + error);
+            }
+        })
+
+
     });
 
     $("button[name=down]").on('click', function(){
 
-        var totalPrice = $(".total_price").text().replace(/\D/g, '');
+        var pOpNo = $(this).siblings("input").val();
         var count = $(this).siblings("span").text();
         var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
-        pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
-        totalPrice = parseInt(totalPrice) - pPrice;
+        pPrice = parseInt(pPrice) / parseInt(count);
 
-        count = parseInt(count) - 1;
-        pPrice = pPrice * count;
+        var countType = "down";
 
-        $(this).siblings("span").text(count);
-        $(this).parent('td').next().text(pPrice.toLocaleString());
-        $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
+        $.ajaxSettings.traditional = true;
+        $.ajax({
+            url: '/myPage/cartCount',
+            type: 'post',
+            data: {pOpNo: pOpNo, cPrice: pPrice, countType: countType},
+            beforeSend:function(xhr){
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(data){
+                location.reload();
+            },
+            error: function(request, status, error){
+                alert("code : " + request.status + "\n"
+                    + "message : " + request.responseText
+                    + "\n" + "error : " + error);
+            }
+        })
 
     });
 
     $("#select_delete").on('click', function(){
-        var pOpNoArr = new Array();
+        console.log("select_delete");
+        /*var pOpNoArr = new Array();*/
         $("input[name=check]:checked").each(function(){
             pOpNoArr.push($(this).attr("value"));
         });
@@ -104,6 +161,8 @@ $(document).ready(function(){
     }
 
     var regDate = date.getFullYear() + "/" + month + "/01";
+
+    console.log("order RegDate : " + regDate);
 
     getList(regDate);
 });

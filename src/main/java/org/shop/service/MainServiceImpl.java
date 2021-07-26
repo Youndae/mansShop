@@ -52,9 +52,16 @@ public class MainServiceImpl implements MainService{
             cartVO.setPOpNo(pOpNo.get(i));
             cartVO.setCCount(Long.parseLong(pCount.get(i)));
             cartVO.setCPrice(Long.parseLong(pPrice.get(i)));
-            log.info("add cart data insert VO");
-            mainMapper.addCart(cartVO);
-            log.info("add cart data mapper");
+
+            if(mainMapper.checkCart(cartVO.getCartNo()) == 0){
+                log.info("add cart data insert VO");
+                mainMapper.addCart(cartVO);
+                log.info("add cart data mapper");
+            }else{
+                mainMapper.updateCart(cartVO);
+            }
+
+
         }
 
         return 0;

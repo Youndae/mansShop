@@ -42,7 +42,24 @@ $(document).ready(function(){
         actionForm.submit();
     })
 
-    (function(){
+    $.getJSON("/admin/salesTermSelect", function(arr){
+
+        var str = "";
+        var optionYear = "";
+        $(arr).each(function(i, termYear){
+            var year = termYear.salesTerm.substring(0, 4);
+
+            if(optionYear != year){
+                optionYear = year;
+                str += "<option value=\"" + optionYear +"\">" +
+                    optionYear + "</option>";
+            }
+        });
+
+        $("#select_Term_Year").append(str);
+    })
+
+    /*(function(){
         $.getJSON("/admin/salesTermSelect", function(arr){
 
             var str = "";
@@ -59,7 +76,7 @@ $(document).ready(function(){
 
             $("#select_Term_Year").append(str);
         })
-    })();
+    })();*/
 
     /*$("#select_Term_Year").on("propertychange change keyup paste input", function(){
 

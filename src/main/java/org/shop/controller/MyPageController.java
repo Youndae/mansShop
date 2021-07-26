@@ -7,7 +7,6 @@ import org.shop.mapper.MyPageMapper;
 import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +68,14 @@ public class MyPageController {
     }
 
     @GetMapping("/memberOrderList")
-    public void memberOrderList(){
+    public String memberOrderList(Principal principal){
         //회원 주문 내역
+
+        if(principal == null){
+            return "/main/orderInfoCheck";
+        }else{
+            return "/myPage/memberOrderList";
+        }
     }
 
     @GetMapping("/selectOrderList")
@@ -85,6 +90,8 @@ public class MyPageController {
 
         SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
         Date date = fm.parse(regDate);
+
+        log.info("orderList controller date : " + date);
 
         log.info(myPageMapper.memberOrderList(userId, date));
 
@@ -159,7 +166,7 @@ public class MyPageController {
     }
 
     @PostMapping("/orderReview")
-    public String insertReview(ProductReviewVO productReviewVO, Principal principal){
+    public String insertReview(ProductReviewVO productReviewVO, @RequestParam("orderNo") String orderNo, Principal principal){
         //리뷰작성 처리
 
         log.info("order Review");
@@ -170,11 +177,15 @@ public class MyPageController {
 
         productReviewVO.setRNum(n);
 
-        log.info(productReviewVO);
+        log.info("orderReview reviewVO : " + productReviewVO);
+        log.info("orderReview pno : " + productReviewVO.getPno());
+        log.info("orderReview orderNo : " + orderNo);
+
+
 
         myPageMapper.insertProductReview(productReviewVO);
 
-        myPageMapper.reviewStatUp(productReviewVO);
+        myPageMapper.reviewStatUp(productReviewVO.getPno(), orderNo);
 
         return "redirect:/myPage/memberOrderList";
     }
@@ -257,13 +268,23 @@ public class MyPageController {
 
     @PostMapping("/deleteCart")
     @ResponseBody
-    public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList){
+    public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList, Principal principal){
         log.info("delete Cart : " + pOpNoList);
 
-        String id = "user1";
+        myPageService.deleteCart(principal.getName(), pOpNoList);
 
-        myPageService.deleteCart(id, pOpNoList);
+    }
 
+    @PostMapping("/cartCount")
+    @ResponseBody
+    public void cartUp(@RequestParam("pOpNo")String pOpNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType, Principal principal){
+        log.info("cartUp!");
+
+        log.info("popno List : " + pOpNo);
+        log.info("cPrice List : " + cPrice);
+        log.info("type : " + countType);
+
+        myPageService.cartCount(pOpNo, cPrice, countType, principal);
     }
 
 }

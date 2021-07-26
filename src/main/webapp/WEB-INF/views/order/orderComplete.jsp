@@ -4,6 +4,8 @@
 <head>
     <title>Title</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/myPageOrder.js"></script>
 <body>
 <div>
     <h1>주문이 완료되었습니다.</h1>

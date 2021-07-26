@@ -157,6 +157,25 @@
         )
     </insert>
 
+    <select id="checkCart" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            cart
+        WHERE
+            cartNo=#{cartNo}
+    </select>
+
+    <update id="updateCart" parameterType="org.shop.domain.CartVO">
+        UPDATE
+            cart
+        SET
+            cCount=cCount + #{cCount}
+            , cPrice=cPrice + #{cPrice}
+        WHERE
+            cartNo=#{cartNo}
+    </update>
+
     <select id="getLikeProductStat" resultType="int">
         SELECT
             count(*)
@@ -166,6 +185,20 @@
             userId=#{userId}
             AND
             pno=#{pno}
+    </select>
+
+    <select id="getNonOrderList" resultType="org.shop.domain.MemberOrderListDTO">
+        SELECT
+            v.*
+        FROM
+            productOrder o INNER JOIN memberOrderList_view v
+            ON o.orderNo = v.orderNo
+        WHERE
+            v.userId='Anonymous'
+            AND
+            o.recipient=#{recipient}
+            AND
+            o.orderPhone=#{orderPhone}
     </select>
 
 </mapper>

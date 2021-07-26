@@ -2,6 +2,7 @@ package org.shop.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.shop.domain.CartVO;
 import org.shop.domain.MemberVO;
 import org.shop.mapper.MyPageMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,33 @@ public class MyPageServiceImpl implements MyPageService{
             return 0;
         }
 
+    }
 
+    @Override
+    public void cartCount(String pOpNo, String cPrice, String countType, Principal principal) {
+
+        CartVO cartVO = new CartVO();
+
+        log.info("count impl type : " + countType);
+
+        if(countType.equals("up")){
+            log.info("up?");
+
+                cartVO.setPOpNo(pOpNo);
+                cartVO.setUserId(principal.getName());
+                cartVO.setCPrice(Long.parseLong(cPrice));
+                log.info("up!");
+                myPageMapper.cartUp(cartVO);
+
+        }else if(countType.equals("down")){
+            log.info("down");
+                cartVO.setPOpNo(pOpNo);
+                cartVO.setUserId(principal.getName());
+                cartVO.setCPrice(Long.parseLong(cPrice));
+                myPageMapper.cartDown(cartVO);
+
+        }
+
+        log.info("impl complete");
     }
 }

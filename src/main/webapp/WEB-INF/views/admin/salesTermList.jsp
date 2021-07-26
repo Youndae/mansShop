@@ -16,7 +16,7 @@
             <form id="pageActionForm" action="/admin/salesTermList" method="get">
                 <label>연도별 : </label>
                 <select id="select_Term_Year">
-
+                    <option value="default">연도 선택</option>
                 </select>
                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">

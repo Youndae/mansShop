@@ -61,6 +61,10 @@ public class OrderServiceImpl implements OrderService{
         String cPrice = commandMap.get("cPrice").toString();
         price_array = cPrice.split(",");
 
+        String[] pno_array = null;
+        String pno = commandMap.get("pno").toString();
+        pno_array = pno.split(",");
+
         List<CartVO> vo = new ArrayList<>();
 
         for(int i = 0; i < no_array.length; i++){
@@ -72,6 +76,7 @@ public class OrderServiceImpl implements OrderService{
             cartVO.setPName(name_array[i]);
             cartVO.setCCount(Long.parseLong(count_array[i]));
             cartVO.setCPrice(Long.parseLong(price_array[i]));
+            cartVO.setPno(pno_array[i]);
 
             if(size_array.length != 0 && size_array[i] != null){
                 cartVO.setPSize(size_array[i]);
@@ -91,7 +96,7 @@ public class OrderServiceImpl implements OrderService{
 
 
     @Override
-    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice, String oType) {
+    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice, List<String> pno, String oType) {
         StringBuffer sb =  new StringBuffer();
 
         String orderNo = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
@@ -112,6 +117,7 @@ public class OrderServiceImpl implements OrderService{
             orderDetailVO.setPOpNo(pOpNo.get(i));
             orderDetailVO.setOrderCount(Integer.parseInt(orderCount.get(i)));
             orderDetailVO.setOdPrice(Integer.parseInt(odPrice.get(i)));
+            orderDetailVO.setPno(pno.get(i));
 
             orderMapper.orderPaymentOp(orderDetailVO);
             orderMapper.productSales(orderDetailVO);

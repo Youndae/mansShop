@@ -343,4 +343,25 @@ public class MainController {
         return mainService.addCart(pOpNo, pCount, pPrice, cartVO);
     }
 
+    @GetMapping("/nonOrderList")
+    public String nonOrderList(OrderVO orderVO, Model model){
+
+        log.info("nonOrderList : " + orderVO);
+
+        orderVO.setUserId("Anonymous");
+
+        model.addAttribute("oList", orderVO);
+
+        return "/main/nonOrderList";
+    }
+
+    @GetMapping("/getNonOrderList")
+    @ResponseBody
+    public ResponseEntity<List<MemberOrderListDTO>> getNonOrderList(String recipient, String orderPhone){
+
+        log.info("getNonOrderList recipient : " + recipient + ", orderPhone : " + orderPhone);
+
+        return new ResponseEntity<>(mainMapper.getNonOrderList(recipient, orderPhone),HttpStatus.OK);
+    }
+
 }

@@ -52,6 +52,7 @@ public class OrderController {
                           @RequestParam("pOpNo") List<String> pOpNo,
                           @RequestParam("orderCount")List<String> orderCount,
                           @RequestParam("odPrice")List<String> odPrice,
+                          @RequestParam("pno")List<String> pno,
                           Principal principal){
         //결제처리
 
@@ -81,7 +82,7 @@ public class OrderController {
         log.info("orderCount : " + orderCount);
         log.info("odPrice : " + odPrice);
 
-        /*orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, oType);*/
+        orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, pno, oType);
 
 
 
