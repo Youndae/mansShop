@@ -9,7 +9,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/myPage.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h1>문의하기</h1>
     </div>
@@ -27,6 +28,7 @@
         </form>
         <button type="button" id="insertMyQnA">작성</button>
     </div>
+</div>
 </div>
 <%--<script>
     $(function(){

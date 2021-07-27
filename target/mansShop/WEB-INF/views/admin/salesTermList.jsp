@@ -9,7 +9,8 @@
     <script type="text/javascript" src="/js/page.js"></script>
 </head>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h1>기간별 매출</h1>
         <div class="select">
@@ -83,7 +84,7 @@
 
     </div>
 </div>
-
+</div>
 <%--<script>
 $(document).ready(function(){
 

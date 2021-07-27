@@ -16,7 +16,8 @@
     }
 </style>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <form id="modifyProductForm" method="post" action="/admin/addProductOp">
         <div>
             <label>상품 분류</label>
@@ -95,6 +96,7 @@
         <button type="button" id="addProductOp">옵션 추가</button>
         <button type="button" id="modifyProduct">수정</button>
     </div>
+</div>
 </div>
 </body>
 </html>

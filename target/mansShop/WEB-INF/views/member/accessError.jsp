@@ -6,11 +6,13 @@
     <title>Title</title>
 </head>
 <body>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
+    <h1>Access Denied page</h1>
 
-<h1>Access Denied page</h1>
-
-<h2><c:out value="${SPRING_SECURITY_403_EXCEPTION.getMessage()}"/></h2>
-<h2><c:out value="${msg}"/></h2>
-
+    <h2><c:out value="${SPRING_SECURITY_403_EXCEPTION.getMessage()}"/></h2>
+    <h2><c:out value="${msg}"/></h2>
+</div>
+</div>
 </body>
 </html>

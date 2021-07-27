@@ -9,7 +9,8 @@
 <script type="text/javascript" src="/js/myPage.js"></script>
 <script type="text/javascript" src="/js/page.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h1>문의사항</h1>
         <button type="button" id="insertMemberQnA">문의하기</button>
@@ -73,7 +74,7 @@
         </form>
     </div>
 </div>
-
+</div>
 <%--<script>
 $(document).ready(function(){
     var actionForm = $("#actionForm");

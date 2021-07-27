@@ -8,7 +8,8 @@
 <script type="text/javascript" src="/js/adminSales.js"></script>
 <script type="text/javascript" src="/js/page.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h3>상품별 매출</h3>
         <button type="button" id="sales" value="${pageMaker.cri.sortType}">매출순</button>
@@ -91,7 +92,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <%--<script>
     $(document).ready(function(){
 

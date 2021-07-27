@@ -30,7 +30,8 @@
     }
 </style>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h3>회원목록</h3>
     </div>
@@ -139,7 +140,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
 <%--<script>
     $(document).ready(function(){

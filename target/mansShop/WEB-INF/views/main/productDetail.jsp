@@ -24,7 +24,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/product.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <h1>Product Detail Page</h1>
     <div class="thumbnail">
         <div class="firstThumbnail">
@@ -231,7 +232,7 @@
 </div>
 <input type="hidden" id="pno" value="${pDetail.pno}"/>
 <input type="hidden" id="pPrice" value="${pDetail.PPrice}"/>
-
+</div>
 
 
 

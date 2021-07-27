@@ -13,7 +13,8 @@
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/orderPayment.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h1>상품 결제</h1>
     </div>
@@ -123,6 +124,7 @@
     <div>
         <button type="button" id="orderPay">결제하기</button>
     </div>
+</div>
 </div>
 
 

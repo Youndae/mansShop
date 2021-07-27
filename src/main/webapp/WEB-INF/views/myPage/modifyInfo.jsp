@@ -5,17 +5,21 @@
     <title>Title</title>
 </head>
 <body>
-<div class="nav">
-    <h1>정보수정</h1>
-</div>
-
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
 <div class="content">
-    <form name="userInfo">
-        <label>아이디</label><input type="text" name="userId" value="${info.userId}" readonly>
-        <label>이름</label><input type="text" name="userName" value="${info.userName}" readonly>
-        <label>이메일</label><input type="text" name="userEmail" value="${info.userEmail}">
-    </form>
-    <a href="/member/login">로그인</a>
+    <div class="">
+        <h1>정보수정</h1>
+    </div>
+
+    <div class="">
+        <form name="userInfo">
+            <label>아이디</label><input type="text" name="userId" value="${info.userId}" readonly>
+            <label>이름</label><input type="text" name="userName" value="${info.userName}" readonly>
+            <label>이메일</label><input type="text" name="userEmail" value="${info.userEmail}">
+        </form>
+        <a href="/member/login">로그인</a>
+    </div>
+</div>
 </div>
 </body>
 </html>

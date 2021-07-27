@@ -8,7 +8,8 @@
 <script type="text/javascript" src="/js/adminOrder.js"></script>
 <script type="text/javascript" src="/js/page.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div>
         <h3>문의사항</h3>
     </div>
@@ -68,6 +69,7 @@
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>
     </div>
+</div>
 </div>
 </body>
 </html>

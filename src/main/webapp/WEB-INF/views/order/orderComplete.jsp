@@ -7,32 +7,36 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/myPageOrder.js"></script>
 <body>
-<div>
-    <h1>주문이 완료되었습니다.</h1>
-</div>
-<div>
-    <c:choose>
-        <c:when test="${type == 'H'}">
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
+    <div>
+        <h1>주문이 완료되었습니다.</h1>
+    </div>
+    <div>
+        <c:choose>
+            <c:when test="${type == 'H'}">
 
-            <h3>입금이 확인되는대로 상품이 발송됩니다.</h3>
-            <span>입금계좌</span>
-            <ul>
-                <li>농협 : 000-0000000-000</li>
-                <li>기업은행 : 0000-00000-000</li>
+                <h3>입금이 확인되는대로 상품이 발송됩니다.</h3>
+                <span>입금계좌</span>
+                <ul>
+                    <li>농협 : 000-0000000-000</li>
+                    <li>기업은행 : 0000-00000-000</li>
 
-                <li>
-                    입금계좌는 상품 상세페이지 내 배송정보에서 확인하실 수 있습니다.
-                </li>
-            </ul>
-        </c:when>
-        <c:otherwise>
-            <span>빠르게 준비해서 발송하겠습니다.</span>
-        </c:otherwise>
-    </c:choose>
+                    <li>
+                        입금계좌는 상품 상세페이지 내 배송정보에서 확인하실 수 있습니다.
+                    </li>
+                </ul>
+            </c:when>
+            <c:otherwise>
+                <span>빠르게 준비해서 발송하겠습니다.</span>
+            </c:otherwise>
+        </c:choose>
+    </div>
+    <div>
+        <button type="button" id="orderList">주문내역 보기</button>
+        <!-- orderList 페이지로 연결 -->
+    </div>
 </div>
-<div>
-    <button type="button" id="orderList">주문내역 보기</button>
-    <!-- orderList 페이지로 연결 -->
 </div>
 </body>
 </html>

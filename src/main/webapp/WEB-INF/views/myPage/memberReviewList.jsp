@@ -8,7 +8,8 @@
 <script type="text/javascript" src="/js/myPage.js"></script>
 <script type="text/javascript" src="/js/page.js"></script>
 <body>
-<div>
+<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="content">
     <div class="header">
         <h1>리뷰 목록</h1>
     </div>
@@ -61,6 +62,7 @@
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>
     </div>
+</div>
 </div>
 <%--<script>
     $(document).ready(function(){
