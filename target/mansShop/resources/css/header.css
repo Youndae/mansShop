@@ -3,9 +3,24 @@
     padding: 0px;
 }
 
-a{
+a:link{
     text-decoration: none;
-    font-color: black;
+    color: black;
+}
+
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+
+a:active{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    text-decoration: none;
+    color: black;
 }
 
 .container{
@@ -14,10 +29,7 @@ a{
     margin: auto;
 }
 
-.container div{
-    text-align: center;
-    display: table;
-}
+
 
 .header{
     margin-top: 20px;
