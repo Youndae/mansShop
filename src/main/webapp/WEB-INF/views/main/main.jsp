@@ -11,7 +11,33 @@
     }
     .container div{
         text-align: center;
+
+    }
+
+    .content div{
         display: table;
+    }
+
+    .content{
+        padding: 20px 0 0 0;
+        margin: 0 0 0 100px;
+    }
+
+    .content .product_header{
+        width: 200px;
+        display: contents;
+    }
+
+    .content .product_content{
+        margin-top: 100px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .product_content  div{
+        width: 100%;
+        height: 250px;
+        flex : 0 0 33.33333%;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

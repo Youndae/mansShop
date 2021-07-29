@@ -31,7 +31,7 @@ $(document).ready(function(){
                     "<tr>" +
                     "<td>" +
                     "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
-                    attach.pname + "</td>";
+                    "<p>" +attach.pname + "</p></td>";
                 if(attach.psize != null){
                     if(attach.pcolor != null){
                         str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";

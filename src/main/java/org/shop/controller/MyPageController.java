@@ -37,7 +37,9 @@ public class MyPageController {
     @ResponseBody
     public String modifyCheckProc(MemberVO memberVO, Principal principal){
 
-        memberVO.setUserId(principal.getName());
+        /*memberVO.setUserId(principal.getName());*/
+
+        memberVO.setUserId("coco");
 
         log.info("modifyCheck : " + memberVO);
 
@@ -195,7 +197,8 @@ public class MyPageController {
         //회원 QnA 목록
         log.info("memberQnAList");
 
-        cri.setKeyword(principal.getName());
+        /*cri.setKeyword(principal.getName());*/
+        cri.setKeyword("coco");
 
         model.addAttribute("qList", myPageMapper.memberQnAList(cri));
 
@@ -242,6 +245,10 @@ public class MyPageController {
 
         cri.setKeyword(principal.getName());
 
+        /*cri.setKeyword("coco");*/
+
+        cri.setAmount(8);
+
         model.addAttribute("lList", myPageMapper.likeList(cri));
 
         int total = myPageMapper.getLikeTotal(cri);
@@ -261,7 +268,7 @@ public class MyPageController {
         log.info("get Cart List");
 
         String id = principal.getName();
-        /*String id = "user1";*/
+
 
         model.addAttribute("cartList", myPageMapper.getCartList(id));
     }

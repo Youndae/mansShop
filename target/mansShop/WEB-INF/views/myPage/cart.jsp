@@ -8,92 +8,141 @@
     <meta name="_csrf" content="${_csrf.token}">
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
+<style>
+    .container header{
+        text-align: center;
+    }
+
+    .side_nav{
+        margin: 0 0 0 30%;
+    }
+
+    .content{
+        display: inline-flex;
+        padding: 100px 0 0 0;
+        margin: 0 0 0 106px;
+    }
+
+    .cart_header{
+        margin: 40px 0 50px 200px;
+    }
+
+    .cart_content{
+        margin: 50px 0 50px 200px;
+        width: 100%;
+        height: 100%;
+    }
+
+    .cart_List table{
+        font-size: large;
+        margin: 25px 0 25px 0;
+        width: 1000px;
+        height: 200px;
+    }
+
+    .cart_content_footer{
+        float: right;
+        padding-right: 200px;
+    }
+
+    .cart_content_btn button{
+        width: 100px;
+        height: 25px;
+    }
+</style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/myPageOrder.js"></script>
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
 <div class="content">
-    <div class="header">
-        <h1>장바구니</h1>
-    </div>
-    <div class="cart_List">
-        <table class="cart_Table" border="1">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>상품명</th>
-                    <th>옵션</th>
-                    <th>수량</th>
-                    <th>가격</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach items="${cartList}" var="cList">
-                    <c:set var="total" value="${total + cList.CPrice}"/>
+
+    <jsp:include page="/WEB-INF/views/layout/sidenav.jsp"/>
+    <div class="content_area">
+        <div class="cart_header">
+            <h1>장바구니</h1>
+        </div>
+        <div class="cart_content">
+            <div class="cart_List">
+                <table class="cart_Table" border="1">
+                    <thead>
                     <tr>
-                        <td>
-                            <input type="checkbox" name="check"
-                                   value="${cList.POpNo}"
-                                   data_pName="${cList.PName}"
-                                   data_pSize="${cList.PSize}"
-                                   data_pColor="${cList.PColor}"
-                                   data_cCount="${cList.CCount}"
-                                   data_cPrice="${cList.CPrice}"
-                                   data_pno="${cList.pno}"
-                                   checked>
-                        </td>
-                        <td><c:out value="${cList.PName}"/></td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${cList.PSize == null}">
-                                    <c:choose>
-                                        <c:when test="${cList.PColor != null}">
-                                            색상 : <c:out value="${cList.PColor}"/>
-                                        </c:when>
-                                    </c:choose>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:choose>
-                                        <c:when test="${cList.PColor == null}">
-                                            사이즈 : <c:out value="${cList.PSize}"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            사이즈 : <c:out value="${cList.PSize}"/>  색상 : <c:out value="${cList.PColor}"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <span><c:out value="${cList.CCount}"/></span>
-                            <input type="hidden" value="<c:out value="${cList.POpNo}"/>">
-                            <button class="productCount up" name="up">up</button>
-                            <button class="productCount down" name="down">down</button>
-                        </td>
-                        <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
+                        <th></th>
+                        <th>상품명</th>
+                        <th>옵션</th>
+                        <th>수량</th>
+                        <th>가격</th>
                     </tr>
-                </c:forEach>
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${cartList}" var="cList">
+                        <c:set var="total" value="${total + cList.CPrice}"/>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="check"
+                                       value="${cList.POpNo}"
+                                       data_pName="${cList.PName}"
+                                       data_pSize="${cList.PSize}"
+                                       data_pColor="${cList.PColor}"
+                                       data_cCount="${cList.CCount}"
+                                       data_cPrice="${cList.CPrice}"
+                                       data_pno="${cList.pno}"
+                                       checked>
+                            </td>
+                            <td><c:out value="${cList.PName}"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${cList.PSize == null}">
+                                        <c:choose>
+                                            <c:when test="${cList.PColor != null}">
+                                                색상 : <c:out value="${cList.PColor}"/>
+                                            </c:when>
+                                        </c:choose>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:choose>
+                                            <c:when test="${cList.PColor == null}">
+                                                사이즈 : <c:out value="${cList.PSize}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                사이즈 : <c:out value="${cList.PSize}"/>  색상 : <c:out value="${cList.PColor}"/>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <span><c:out value="${cList.CCount}"/></span>
+                                <input type="hidden" value="<c:out value="${cList.POpNo}"/>">
+                                <button class="productCount up" name="up">up</button>
+                                <button class="productCount down" name="down">down</button>
+                            </td>
+                            <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <div class="cart_content_footer">
+                <span class="total_price">총 주문 금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+                <div class="cart_content_btn">
+                    <button type="button" id="select_delete">선택상품 삭제</button>
+                    <button type="button" id="select_order">선택상품 주문</button>
+                </div>
+            </div>
+
+        </div>
+        <form id="order_form" method="post">
+            <input type="hidden" name="pOpNo">
+            <input type="hidden" name="pName">
+            <input type="hidden" name="pSize">
+            <input type="hidden" name="pColor">
+            <input type="hidden" name="cCount">
+            <input type="hidden" name="cPrice">
+            <input type="hidden" name="pno">
+            <input type="hidden" name="oType" value="c">
+            <sec:csrfInput/>
+        </form>
     </div>
-    <div>
-        <span class="total_price">총 주문 금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
-    </div>
-    <div>
-        <button type="button" id="select_delete">선택상품 삭제</button>
-        <button type="button" id="select_order">선택상품 주문</button>
-    </div>
-    <form id="order_form" method="post">
-        <input type="hidden" name="pOpNo">
-        <input type="hidden" name="pName">
-        <input type="hidden" name="pSize">
-        <input type="hidden" name="pColor">
-        <input type="hidden" name="cCount">
-        <input type="hidden" name="cPrice">
-        <input type="hidden" name="pno">
-        <input type="hidden" name="oType" value="c">
-        <sec:csrfInput/>
-    </form>
 </div>
 </div>
 <%--<script>

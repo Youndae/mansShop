@@ -1,0 +1,15 @@
+.side_nav{
+
+    width: 400px;
+}
+
+.side_nav ul{
+    width: 300px;
+}
+
+.side_nav li{
+    list-style: none;
+    margin: 40px;
+    font-size: x-large;
+    font-weight: bold;
+}

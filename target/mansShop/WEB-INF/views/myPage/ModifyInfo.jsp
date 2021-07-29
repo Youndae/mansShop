@@ -4,22 +4,107 @@
 <head>
     <title>Title</title>
 </head>
+<style>
+    .container header{
+        text-align: center;
+    }
+
+    .content{
+        display: inline-flex;
+        padding: 100px 0 0 0;
+        margin: 0 0 0 100px;
+    }
+
+    .modifyInfo_header{
+        margin: 40px 0 50px 200px;
+    }
+
+    .modifyInfo_content{
+        margin: 50px 0 50px 400px;
+        width: 100%;
+        height: 100%;
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .modifyInfo_content .modifyInfo_userInfo{
+        margin: 25px 0 25px 20px;
+        width: 800px;
+    }
+
+    .modifyInfo_content input{
+        width: 270px;
+        height: 30px;
+    }
+
+    .modifyInfo_content button{
+        text-align: center;
+        width: 100px;
+        height: 30px;
+        margin-left: 10%;
+    }
+
+    .modifyInfo_userInfo form{
+        margin: 10px;
+    }
+
+    .modifyInfo_userInfo form div{
+        padding-top: 10px;
+    }
+
+</style>
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
-<div class="content">
-    <div class="">
-        <h1>정보수정</h1>
-    </div>
+    <div class="content">
 
-    <div class="">
-        <form name="userInfo">
-            <label>아이디</label><input type="text" name="userId" value="${info.userId}" readonly>
-            <label>이름</label><input type="text" name="userName" value="${info.userName}" readonly>
-            <label>이메일</label><input type="text" name="userEmail" value="${info.userEmail}">
-        </form>
-        <a href="/member/login">로그인</a>
+        <jsp:include page="/WEB-INF/views/layout/sidenav.jsp"/>
+
+        <div class="content_area">
+            <div class="modifyInfo_header">
+                <h1>정보수정</h1>
+            </div>
+
+            <div class="modifyInfo_content">
+                <div class="modifyInfo_userInfo">
+                    <form name="userInfo">
+                        <div>
+                            <div>
+                                <label>아이디</label>
+                            </div>
+                            <div>
+                                <input type="text" name="userId" value="${info.userId}" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <label>이름</label>
+                            </div>
+                            <div>
+                                <input type="text" name="userName" value="${info.userName}" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <label>연락처</label>
+                            </div>
+                            <div>
+                                <input type="text" name="userPhone" value="${info.userPhone}">
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <label>이메일</label>
+                            </div>
+                            <div>
+                                <input type="text" name="userEmail" value="${info.userEmail}">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <button type="button" id="modify_info">정보수정</button>
+            </div>
+        </div>
     </div>
-</div>
 </div>
 </body>
 </html>

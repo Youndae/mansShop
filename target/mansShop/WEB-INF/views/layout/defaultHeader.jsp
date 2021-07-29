@@ -4,7 +4,7 @@
     <title>Title</title>
 </head>
 <style>
-    .content{
+    /*.content{
     padding: 20px 0 0 0;
     margin: 0 0 0 100px;
     }
@@ -24,7 +24,7 @@
         width: 100%;
         height: 250px;
         flex : 0 0 33.33333%;
-    }
+    }*/
 
 </style>
 <link rel="stylesheet" href="/css/header.css">
@@ -39,6 +39,7 @@
                 <ul class="menu_nav">
                     <li><a href="#">로그인</a></li>
                     <li><a href="#">장바구니</a></li>
+                    <li><a href="#">주문조회</a></li>
                     <li><input type="text" id="productSearchInput"><button type="button" id="productSearchBtn">검색</button></li>
                 </ul>
             </div>
