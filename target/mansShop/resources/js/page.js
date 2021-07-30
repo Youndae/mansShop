@@ -20,7 +20,7 @@ $(document).ready(function(){
         searchForm.submit();
     });
 
-    $(".productList-classification a").on('click', function (e) {
+    $(".productList_classification a").on('click', function (e) {
         e.preventDefault();
 
         actionForm.find("input[name='classification']").val($(this).attr("href"));

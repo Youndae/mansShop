@@ -9,6 +9,52 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/adminProduct.js"></script>
 <style>
+    .container .header{
+        text-align: center;
+    }
+
+    .side_nav{
+        margin: 0 0 0 221px;
+    }
+
+    .content_area{
+        margin-left: 100px;
+        height: 100%;
+    }
+
+    .content{
+        display: inline-flex;
+        padding: 100px 0 0 0;
+        margin: 0 0 0 359px;
+    }
+
+    .addProduct_header{
+        margin: 40px 0 50px 0;
+        width: 100%;
+    }
+
+    .addProduct_header button{
+        float: right;
+        margin-right: 20%;
+    }
+
+    .addProduct_content{
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .addProduct_content div{
+        margin: 25px 0 25px 0;
+    }
+
+    .addProduct_content input{
+        width: 250px;
+    }
+
+    .addProduct_content select{
+        width: 250px;
+    }
+
     img{
         width: 300px;
         height: 300px;
@@ -16,86 +62,126 @@
 
     .overlap{
         font-size: 12px;
+        font-weight: 100;
         color: red;
+    }
+
+    .addProduct_img_area{
+        width: 1200px;
+    }
+
+    .label_t2 label{
+        margin-right: 80px;
+    }
+
+    .label_t3 label{
+        margin-right: 62px;
+    }
+
+    .label_t4 label{
+        margin-right: 44px;
+    }
+
+    #infoPreview{
+        float: left;
+    }
+
+    #infoPreview img{
+        width: 100%;
+        height: 10%;
     }
 </style>
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
-<div class="content">
-    <h1>상품추가</h1>
-    <div>
-        <form id="addProductForm" method="post">
-            <div>
-                <label>상품 분류</label>
-                <select name="pClassification">
-                    <option value="default">------</option>
-                    <option value="OUTER">OUTER</option>
-                    <option value="TOP">TOP</option>
-                    <option value="PANTS">PANTS</option>
-                    <option value="SHOES">SHOES</option>
-                    <option value="BAGS">BAGS</option>
-                </select>
-                <div class="overlap" id="checkClassification"></div>
+    <div class="content">
+
+        <jsp:include page="/WEB-INF/views/layout/adminSidenav.jsp"/>
+
+        <div class="content_area">
+            <div class="addProduct_header">
+                <h1>상품추가</h1>
+                <button type="button" id="addSubmit">등록</button>
             </div>
-            <div>
-                <label>상품명</label>
-                <input type="text" name="pName">
-                <div class="overlap" id="checkPName"></div>
-            </div>
-            <div>
-                <label>사이즈</label>
-                <select name="pSize">
-                    <option value="default">------</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                    <option value="FREE">FREE</option>
-                </select>
-                <div class="overlap" id="checkPSize"></div>
-            </div>
-            <div>
-                <label>컬러</label>
-                <input type="text" id="pColor" name="pColor">
-                <div class="overlap" id="checkPColor"></div>
-            </div>
-            <div>
-                <label>가격</label>
-                <input type="text" name="pPrice">
-                <div class="overlap" id="checkPPrice"></div>
-            </div>
-            <div>
-                <label>재고</label>
-                <input type="text" name="pStock" placeholder="입력하지 않으면 0으로 등록됩니다.">
-                <div class="overlap" id="checkPStock"></div>
-            </div>
-            <sec:csrfInput/>
-        </form>
-            <div id="firstThumb">
-                <label>대표이미지</label>
-                <input type="file" name="firstThumbnail" value="파일 선택">
-                <div id="firstThumbPreview"></div>
-                <div class="overlap" id="checkFirstThumb"></div>
-            </div>
-            <div id="thumb">
-                <label>썸네일</label>
-                <input type="file" name="thumbnail" value="파일 선택" multiple>
-                <div id="thumbPreview"></div>
-                <div class="overlap" id="checkThumb">
-                    썸네일을 등록하지 않아도 업로드가 가능합니다.
+            <div class="addProduct_content">
+               <div class="addProduct_form">
+                   <form id="addProductForm" method="post">
+                       <div class="label_t4">
+                           <label>상품분류</label>
+                           <select name="pClassification">
+                               <option value="default">------</option>
+                               <option value="OUTER">OUTER</option>
+                               <option value="TOP">TOP</option>
+                               <option value="PANTS">PANTS</option>
+                               <option value="SHOES">SHOES</option>
+                               <option value="BAGS">BAGS</option>
+                           </select>
+                           <div class="overlap" id="checkClassification"></div>
+                       </div>
+                       <div class="label_t3">
+                           <label>상품명</label>
+                           <input type="text" name="pName">
+                           <div class="overlap" id="checkPName"></div>
+                       </div>
+                       <div class="label_t3">
+                           <label>사이즈</label>
+                           <select name="pSize">
+                               <option value="default">------</option>
+                               <option value="S">S</option>
+                               <option value="M">M</option>
+                               <option value="L">L</option>
+                               <option value="XL">XL</option>
+                               <option value="XXL">XXL</option>
+                               <option value="FREE">FREE</option>
+                           </select>
+                           <div class="overlap" id="checkPSize"></div>
+                       </div>
+                       <div class="label_t2">
+                           <label>컬러</label>
+                           <input type="text" id="pColor" name="pColor">
+                           <div class="overlap" id="checkPColor"></div>
+                       </div>
+                       <div class="label_t2">
+                           <label>가격</label>
+                           <input type="text" name="pPrice">
+                           <div class="overlap" id="checkPPrice"></div>
+                       </div>
+                       <div class="label_t2">
+                           <label>재고</label>
+                           <input type="text" name="pStock" placeholder="입력하지 않으면 0으로 등록됩니다.">
+                           <div class="overlap" id="checkPStock"></div>
+                       </div>
+                       <sec:csrfInput/>
+                   </form>
+               </div>
+                <div class="addProduct_img_area">
+                    <div id="firstThumb">
+                        <label>대표이미지</label>
+                        <input type="file" name="firstThumbnail" value="파일 선택">
+                        <div id="firstThumbPreview"></div>
+                        <div class="overlap" id="checkFirstThumb"></div>
+                    </div>
+                    <div id="thumb">
+                        <label>썸네일</label>
+                        <input type="file" name="thumbnail" value="파일 선택" multiple>
+                        <div id="thumbPreview"></div>
+                        <div class="overlap" id="checkThumb">
+                            썸네일을 등록하지 않아도 업로드가 가능합니다.
+                        </div>
+                    </div>
+                    <div id="productInfo">
+                        <div>
+                            <label>상품정보</label>
+                            <input type="file" name="pImg" value="파일 선택" multiple>
+                        </div>
+                        <div id="infoPreview"></div>
+                        <div class="overlap" id="checkInfo"></div>
+                    </div>
+
                 </div>
             </div>
-            <div id="productInfo">
-                <label>상품정보</label>
-                <input type="file" name="pImg" value="파일 선택" multiple>
-                <div id="infoPreview"></div>
-                <div class="overlap" id="checkInfo"></div>
-            </div>
+        </div>
 
-        <button type="button" id="addSubmit">등록</button>
     </div>
-</div>
 </div>
 </body>
 </html>

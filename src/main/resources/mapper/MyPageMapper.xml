@@ -212,17 +212,21 @@
         FROM(
             SELECT
                 rownum rn
-                , r.pno
+                , r.*
+            FROM(
+                SELECT
+                r.pno
                 , r.rNum
                 , p.pname
                 , p.firstThumbnail
                 , r.reviewDate
-            FROM
-                productReview r INNER JOIN product p
-            ON r.pno = p.pno
-            WHERE
-                userid=#{keyword}
-            ORDER BY rNum DESC
+                FROM
+                    productReview r INNER JOIN product p
+                    ON r.pno = p.pno
+                WHERE
+                    userid=#{keyword}
+                ORDER BY rNum DESC
+            )r
         )
         WHERE
             rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}

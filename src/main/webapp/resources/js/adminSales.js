@@ -125,15 +125,20 @@ $(document).ready(function(){
         getUserInfo(userId, function(info){
             $(".modal-body span[name=userId]").text(info.userId);
             $(".modal-body span[name=userName]").text(info.userName);
-            $(".modal-body span[name=userBirth]").text(info.userBirth);
+
             $(".modal-body span[name=userEmail]").text(info.userEmail);
 
             var date = new Date(info.joinRegDate);
 
-
-            info.joinRegDate = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+            info.joinRegDate = date.getFullYear() + "/" + (date.getMonth()+1) + "/" + date.getDate();
 
             $(".modal-body span[name=joinRegDate]").text(info.joinRegDate);
+
+            var birth = new Date(info.userBirth);
+
+            info.userBirth = birth.getFullYear() + "/" + (birth.getMonth()+1) + "/" + birth.getDate();
+
+            $(".modal-body span[name=userBirth]").text(info.userBirth);
 
 
 

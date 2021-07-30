@@ -30,7 +30,7 @@ import java.util.List;
 @Controller
 @Log4j
 @AllArgsConstructor
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+/*@PreAuthorize("hasRole('ROLE_ADMIN')")*/
 public class AdminController {
 
     private AdminMapper adminMapper;

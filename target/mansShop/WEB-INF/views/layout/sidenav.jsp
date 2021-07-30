@@ -7,11 +7,12 @@
 <body>
     <div class="side_nav">
         <ul>
-        <li><a href="#">정보수정</a></li>
-        <li><a href="#">배송조회/구매내역</a></li>
-        <li><a href="#">문의사항</a></li>
-        <li><a href="#">찜한상품</a></li>
-        <li><a href="#">내가 쓴 리뷰</a></li>
+        <li><a href="/myPage/modifyCheck">정보수정</a></li>
+        <li><a href="/myPage/memberOrderList">주문목록</a></li>
+        <li><a href="/myPage/memberQnAList">문의사항</a></li>
+        <li><a href="/myPage/likeList">찜한상품</a></li>
+        <li><a href="/myPage/memberReviewList">내가 쓴 리뷰</a></li>
+        <li><a href="">URL : <%=request.getServletPath()%></a></li>
         </ul>
     </div>
 </body>

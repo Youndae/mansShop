@@ -8,14 +8,29 @@ $(document).ready(function(){
     (function(){
         console.log("replyList get");
         $.getJSON("/admin/getQnAReply", {qno:qno}, function(arr){
-            var str = "";
+            var str = "<ul>";
             $(arr).each(function(i, reply){
                 console.log("reply get");
-                str += "<div class=\"QnAReplyContent\">" +
+
+                var date = new Date(reply.qrRegDate);
+
+                var regDate = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+
+                str += "<li class=\"QnADetail_reply_content\">" +
+                        "<div class=\"QnADetail_reply_header\">" +
+                        "<strong class=\"replyer\">" + reply.userId + "</strong>" +
+                        "<small class=\"pull-right text-muted\">" + regDate + "</small>" +
+                        "</div>" +
+                        "<div class=\"QnADetail_reply_content_content\">" +
+                        "<p>" + reply.qrContent + "</p>" +
+                        "</div></li>";
+
+
+               /* str += "<div class=\"QnAReplyContent\">" +
                         "<label>"+reply.userId+"</label>" +
                         "<span>"+reply.qrContent+"</span>" +
                         "<button type=\"button\" onclick=\"reply_del(this)\" value=\""+reply.replyNo+"\">삭제</button>" +
-                        "</div>";
+                        "</div>";*/
             })
             $(".QnAReply").append(str);
         })
@@ -78,10 +93,16 @@ $(document).ready(function(){
            /*alert("data : " + info.orderNo + ", " + info.userId + ", " + info.orderPhone + ", " + info.addr + ", " + info.orderMemo);*/
             $(".modal-body span[name=orderNo]").text(info.orderNo);
             $(".modal-body span[name=recipient]").text(info.recipient);
-            $(".modal-body span[name=userId]").text(info.userId);
+            /*$(".modal-body span[name=userId]").text(info.userId);*/
             $(".modal-body span[name=orderPhone]").text(info.orderPhone);
             $(".modal-body span[name=addr]").text(info.addr);
             $(".modal-body span[name=orderMemo]").text(info.orderMemo);
+
+            if(info.userId == "Anonymous"){
+                $(".modal-body span[name=userId]").text("비회원");
+            }else{
+                $(".modal-body span[name=userId]").text(info.userId);
+            }
 
 
 

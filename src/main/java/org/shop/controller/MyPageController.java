@@ -104,7 +104,8 @@ public class MyPageController {
     public void memberReviewList(Model model, Principal principal, Criteria cri){
         //회원 리뷰 내역
 
-        cri.setKeyword(principal.getName());
+        /*cri.setKeyword(principal.getName());*/
+        cri.setKeyword("coco");
 
         log.info("member Review List : " + myPageMapper.memberReviewList(cri));
 

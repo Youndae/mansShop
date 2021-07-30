@@ -137,6 +137,12 @@ function deleteOldPreview(obj) {
 
 $(document).ready(function () {
 
+    //productList
+
+    $("#addProduct").on('click', function(){
+        location.href='/admin/addProduct';
+    })
+
     /*var actionForm = $("#actionForm");
 
     $(".paginate_button a").on("click", function (e) {
