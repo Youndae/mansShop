@@ -1,5 +1,9 @@
 $(document).ready(function(){
 
+    var side_li = "<ul class=\"sales_category\"><li><a href=\"/admin/salesProductList\">상품별매출</a></li><li><a href=\"/admin/salesTermList\">기간별매출</a></li></ul>"
+
+    $(".side_nav ul").append(side_li);
+
    /* var actionForm = $("#salesProductActionForm");
     var SearchForm = $("#salesProductSearchForm");
 
@@ -22,7 +26,7 @@ $(document).ready(function(){
         SearchForm.submit();
     });*/
 
-    $("#sales").on('click', function(e){
+    $("#salesRate").on('click', function(e){
         if($(this).val() == 1)
             $('input[name=sortType]').val("2");//2는 오름차순. null이거나
         else
@@ -32,7 +36,7 @@ $(document).ready(function(){
         actionForm.submit();
     });
 
-    $("#salesRate").on('click', function(e){
+    $("#sales").on('click', function(e){
         if($(this).val() == 3)
             $('input[name=sortType]').val("4");
         else
@@ -89,8 +93,8 @@ $(document).ready(function(){
 
 
 
-    var actionForm = $("#userActionForm");
-    var userSearchForm = $("#userSearchForm");
+    var actionForm = $("#pageActionForm");
+    var userSearchForm = $("#searchActionForm");
 
     $("#shipping").on('click', function(){
         var orderSearchForm = $("#userOrderSearch");
@@ -106,7 +110,7 @@ $(document).ready(function(){
         orderSearchForm.submit();
     });
 
-    $("#userSearchForm button").on('click', function(e){
+    $("#searchActionForm button").on('click', function(e){
         if(!userSearchForm.find("input[name='keyword']").val()){
             alert('키워드 입력');
         }

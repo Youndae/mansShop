@@ -87,3 +87,10 @@ a:hover{
 .top a{
     margin: 0 2%;
 }
+
+#logoutForm button{
+    background-color: white;
+    border: 0;
+    padding: 9px;
+    font-size: medium;
+}

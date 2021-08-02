@@ -51,7 +51,7 @@
         UPDATE
             product
         SET
-            pSalesRate = pSalesRate + #{odPrice}
+            pSales = pSales + #{odPrice}
         WHERE
             pno=(
                 SELECT
@@ -68,8 +68,8 @@
         UPDATE
             productOp
         SET
-            opSalesRate = opSalesRate + #{odPrice}
-            , pSales = pSales + #{orderCount}
+            opSales = opSales + #{odPrice}
+            , opSalesRate = opSalesRate + #{orderCount}
             , pStock = pStock - #{orderCount}
         WHERE
             pOpNo=#{pOpNo}

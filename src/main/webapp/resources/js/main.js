@@ -4,4 +4,18 @@ $(document).ready(function(){
 
         location.href="/"+pno;
     })
+
+    var actionForm = $("#pageActionForm");
+
+    $(".paginate_button a").on("click", function (e) {
+        e.preventDefault();
+
+        var keyword = $("input[name='keyword']").val();
+
+
+        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+        actionForm.attr('action', '/main/'+keyword);
+        actionForm.submit();
+    });
 })
+

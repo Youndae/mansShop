@@ -65,8 +65,14 @@ public class MyPageController {
     }
 
     @PostMapping("/modifyInfo")
-    public void modifyInfo(MemberVO memberVO){
+    public String modifyInfo(MemberVO memberVO){
         //정보 수정 처리
+
+        log.info("modify memberVO : " + memberVO);
+
+        myPageMapper.modifyInfo(memberVO);
+
+        return "redirect:/myPage/modifyInfo";
     }
 
     @GetMapping("/memberOrderList")
@@ -78,6 +84,7 @@ public class MyPageController {
         }else{
             return "/myPage/memberOrderList";
         }
+
     }
 
     @GetMapping("/selectOrderList")
@@ -87,8 +94,10 @@ public class MyPageController {
         log.info("select OrderList");
         log.info("regDate : " + regDate);
 
-        String userId = principal.getName();
-        log.info("userId : " + userId);
+        /*String userId = principal.getName();
+        log.info("userId : " + userId);*/
+
+        String userId = "coco";
 
         SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
         Date date = fm.parse(regDate);

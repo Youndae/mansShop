@@ -28,6 +28,16 @@
             mem.userId = #{userId}
     </select>
 
+    <update id="modifyInfo" parameterType="org.shop.domain.MemberVO">
+        UPDATE
+            member
+        SET
+            userPhone=#{userPhone}
+            , userEmail=#{userEmail}
+        WHERE
+            userId = #{userId}
+    </update>
+
     <select id="modifyCheck" resultType="string">
         SELECT
             userPw

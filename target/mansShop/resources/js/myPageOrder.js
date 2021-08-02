@@ -208,7 +208,7 @@ function getList(regDate){
 
                 var od = new Date(attach.orderDate);
                 attach.orderDate = od.getFullYear() + "/" + (od.getMonth() + 1) + "/" + od.getDate();
-                str += "<div>" +
+                str += "<div class=\"orderList_tbl\">" +
                     "<label>" + attach.orderDate + "</label>" +
                     "<table border=\"1\">" +
                     "<tr>" +
@@ -222,8 +222,13 @@ function getList(regDate){
                     "<tbody>" +
                     "<tr>" +
                     "<td>" +
+                    "<a class=\"tbl_order_a\" href=\"/" + attach.pno + "\">" +
+                    "<div class=\"tbl_firstThumbnail\">" +
                     "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
-                    attach.pname + "</td>";
+                    "</div>" +
+                    "<div class=\"tbl_productName\">"+
+                    attach.pname +
+                    "</div></a></td>";
                 if(attach.psize != null){
                     if(attach.pcolor != null){
                         str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
@@ -255,8 +260,13 @@ function getList(regDate){
                 if(date == attach.orderDate){
                     str += "<tr>" +
                         "<td>" +
+                        "<a class=\"tbl_order_a\" href=\"/" + attach.pno + "\">" +
+                        "<div class=\"tbl_firstThumbnail\">" +
                         "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
-                        attach.pname + "</td>";
+                        "</div>" +
+                        "<div class=\"tbl_productName\">"+
+                        attach.pname +
+                        "</div></a></td>";
                     if(attach.psize != null){
                         if(attach.pcolor != null){
                             str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
@@ -288,8 +298,8 @@ function getList(regDate){
                     var od = new Date(attach.orderDate);
                     attach.orderDate = od.getFullYear() + "/" + (od.getMonth() + 1) + "/" + od.getDate();
 
-                    str +=  "</tbody></table><span>총 금액 : " + totalPrice + " 원</span></div>"+
-                        "<div>" +
+                    str +=  "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>"+
+                        "<div class=\"orderList_tbl\">" +
                         "<label>" + attach.orderDate + "</label>" +
                         "<table border=\"1\">" +
                         "<tr>" +
@@ -303,8 +313,13 @@ function getList(regDate){
                         "<tbody>" +
                         "<tr>" +
                         "<td>" +
+                        "<a class=\"tbl_order_a\" href=\"/" + attach.pno + "\">" +
+                        "<div class=\"tbl_firstThumbnail\">" +
                         "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
-                        attach.pname + "</td>";
+                        "</div>" +
+                        "<div class=\"tbl_productName\">"+
+                        attach.pname +
+                        "</div></a></td>";
                     if(attach.psize != null){
                         if(attach.pcolor != null){
                             str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
@@ -338,7 +353,7 @@ function getList(regDate){
             console.log("i : " + i);
 
             if(i == arr.length - 1){
-                str +=  "</tbody></table><span>총 금액 : " + totalPrice + " 원</span></div>";
+                str +=  "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>";
             }
 
         })

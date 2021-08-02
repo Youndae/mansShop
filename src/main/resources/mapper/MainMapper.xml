@@ -9,9 +9,74 @@
                         SELECT *
                         FROM
                             product
-                        ORDER BY pSalesRate DESC
+                        ORDER BY pSales DESC
                     )
             WHERE rownum BETWEEN 1 AND 12
+    </select>
+
+    <select id="mainNew" resultType="org.shop.domain.ProductVO">
+            SELECT *
+                    FROM(
+                        SELECT *
+                        FROM
+                            product
+                        ORDER BY pRegDate DESC
+                    )
+            WHERE rownum BETWEEN 1 AND 12
+    </select>
+
+    <select id="mainClassification" resultType="org.shop.domain.ProductVO">
+            SELECT *
+                    FROM(
+                        SELECT
+                            rownum rn
+                            , p.*
+                        FROM(
+                            SELECT *
+                            FROM
+                                product
+                            WHERE
+                                pClassification = #{keyword}
+                            ORDER BY pRegDate DESC
+                        )p
+                    )
+            WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getProductTotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            product
+        WHERE
+            pClassification=#{keyword}
+    </select>
+
+    <select id="searchProduct" resultType="org.shop.domain.ProductVO">
+            SELECT *
+                    FROM(
+                        SELECT
+                            rownum rn
+                            , p.*
+                        FROM(
+                            SELECT *
+                            FROM
+                                product
+                            WHERE
+                                pName like '%'||#{keyword}||'%'
+                            ORDER BY pRegDate DESC
+                        )p
+                    )
+            WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getSearchProduct" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            product
+        WHERE
+            pName like '%'||#{keyword}||'%'
     </select>
 
     <select id="productDetail" resultType="org.shop.domain.ProductVO">

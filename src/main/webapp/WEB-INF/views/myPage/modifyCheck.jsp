@@ -7,8 +7,12 @@
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
 <style>
-    .container header{
+    .container .header{
         text-align: center;
+    }
+
+    .side_nav{
+        margin: 0 0 0 30%;
     }
 
     .content{

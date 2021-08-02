@@ -10,6 +10,8 @@ public interface MyPageMapper {
 
     public String modifyCheck(MemberVO memberVO);
 
+    public void modifyInfo(MemberVO memberVO);
+
     public MemberVO getModifyInfo(String userId);
 
     public List<MemberOrderListDTO> memberOrderList(@Param("userId") String userId, @Param("regDate") Date regDate);

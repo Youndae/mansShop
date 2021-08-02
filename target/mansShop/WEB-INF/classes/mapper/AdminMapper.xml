@@ -436,10 +436,10 @@
 
     <sql id="salesSortProduct">
         <trim prefix="ORDER BY ">
-            <if test="sortType == '1'.toString()">pSales ASC</if>
-            <if test="sortType == '2'.toString()">pSales DESC</if>
-            <if test="sortType == '3'.toString()">pSalesRate ASC</if>
-            <if test="sortType == '4'.toString()">pSalesRate DESC</if>
+            <if test="sortType == '1'.toString()">opSalesRate ASC</if>
+            <if test="sortType == '2'.toString()">opSalesRate DESC</if>
+            <if test="sortType == '3'.toString()">opSales ASC</if>
+            <if test="sortType == '4'.toString()">opSales DESC</if>
         </trim>
     </sql>
 

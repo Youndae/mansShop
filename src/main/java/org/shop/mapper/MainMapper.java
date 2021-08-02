@@ -9,6 +9,16 @@ public interface MainMapper {
 
     public List<ProductOpVO> mainBest();
 
+    public List<ProductOpVO> mainNew();
+
+    public List<ProductOpVO> mainClassification(Criteria cri);
+
+    public List<ProductOpVO> searchProduct(Criteria cri);
+
+    public int getSearchProduct(Criteria cri);
+
+    public int getProductTotal(Criteria cri);
+
     public ProductVO productDetail(String pno);
 
     public List<ThumbnailVO> getProductThumb(String pno);
@@ -24,8 +34,6 @@ public interface MainMapper {
     public int getProductReviewTotal(String pno);
 
     public int getProductQnATotal(String pno);
-
-    public void mainNew();
 
     public void insertPQnA(ProductQnAVO productQnAVO);
 
