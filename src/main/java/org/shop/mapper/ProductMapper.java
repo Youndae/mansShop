@@ -1,39 +1,41 @@
 package org.shop.mapper;
 
-import org.shop.domain.ProductOpVO;
-import org.shop.domain.ProductQnAVO;
-import org.shop.domain.ProductReviewVO;
-import org.shop.domain.ThumbnailVO;
+import org.apache.ibatis.annotations.Param;
+import org.shop.domain.*;
 
 import java.util.List;
 
 public interface ProductMapper {
 
-    public List<ProductOpVO> productMenu();
+    public ProductVO productDetail(String pno);
 
-    public void productDetail();
+    public List<ThumbnailVO> getProductThumb(String pno);
 
-    public List<ThumbnailVO> productThumbnail();
+    public List<ProductOpVO> getProductOp(String pno);
 
-    public List<ProductReviewVO> productReview();
+    public List<ProductImgVO> getProductInfo(String pno);
 
-    public List<ProductQnAVO> productQnAList();
+    public List<ProductReviewVO> getProductReview(@Param("cri") Criteria cri, @Param("pno") String pno);
 
-    public void productQnA();
+    public int getProductReviewTotal(String pno);
 
-    //답변완료인지 미완료인지 체크.
-    //답글이 있다면 답변완료 없다면 미완료로 출력될것.
-    public void checkQnA();
+    public int getProductQnATotal(String pno);
 
-    public void getProductReview();
+    public int getLikeProductStat(@Param("pno") String pno, @Param("userId") String userId);
 
-    public void modifyProductReview();
+    public List<ProductQnAVO> getProductQnA(@Param("cri") Criteria cri, @Param("pno")String pno);
 
-    public void deleteProductReview();
+    public int checkCart(String cartNo);
 
-    public void likeProduct();
+    public void addCart(CartVO cartVO);
 
-    public void addCart();
+    public void updateCart(CartVO cartVO);
 
-    public void deleteCart();
+    public void insertPQnA(ProductQnAVO productQnAVO);
+
+    public void likeProduct(LikeVO likeVO);
+
+    public void deLikeProduct(LikeVO likeVO);
+
+
 }

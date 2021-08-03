@@ -7,6 +7,7 @@ import org.shop.mapper.MyPageMapper;
 import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import java.util.List;
 @Controller
 @Log4j
 @AllArgsConstructor
-/*@PreAuthorize("isAuthenticated()")*/
 public class MyPageController {
 
     private MyPageService myPageService;
@@ -54,7 +54,7 @@ public class MyPageController {
     }
 
     @GetMapping("/modifyInfo")
-    /*@PreAuthorize("hasRole('ROLE_MEMBER')")*/
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void getModifyInfo(Model model, Principal principal){
         //정보 수정 창
         String userId = principal.getName();
@@ -65,6 +65,7 @@ public class MyPageController {
     }
 
     @PostMapping("/modifyInfo")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String modifyInfo(MemberVO memberVO){
         //정보 수정 처리
 
@@ -94,10 +95,8 @@ public class MyPageController {
         log.info("select OrderList");
         log.info("regDate : " + regDate);
 
-        /*String userId = principal.getName();
-        log.info("userId : " + userId);*/
-
-        String userId = "coco";
+        String userId = principal.getName();
+        log.info("userId : " + userId);
 
         SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
         Date date = fm.parse(regDate);
@@ -110,11 +109,11 @@ public class MyPageController {
     }
 
     @GetMapping("/memberReviewList")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void memberReviewList(Model model, Principal principal, Criteria cri){
         //회원 리뷰 내역
 
-        /*cri.setKeyword(principal.getName());*/
-        cri.setKeyword("coco");
+        cri.setKeyword(principal.getName());
 
         log.info("member Review List : " + myPageMapper.memberReviewList(cri));
 
@@ -128,6 +127,7 @@ public class MyPageController {
     }
 
     @GetMapping("/memberReviewDetail/{rNum}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDetail(Model model, @PathVariable long rNum){
 
         model.addAttribute("rDetail", myPageMapper.memberReviewDetail(rNum));
@@ -136,6 +136,7 @@ public class MyPageController {
     }
 
     @GetMapping("/memberReviewModify/{rNum}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewModify(Model model, @PathVariable long rNum){
 
         model.addAttribute("rModify", myPageMapper.memberReviewDetail(rNum));
@@ -144,6 +145,7 @@ public class MyPageController {
     }
 
     @PostMapping("/memberReviewModify")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewModifyProc(ProductReviewVO productReviewVO){
 
         log.info("modify rNum : " + productReviewVO.getRNum());
@@ -154,6 +156,7 @@ public class MyPageController {
     }
 
     @GetMapping("/memberReviewDelete/{rNum}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDelete(@PathVariable long rNum){
 
         log.info("memberReviewDelete");
@@ -164,6 +167,7 @@ public class MyPageController {
     }
 
     @GetMapping("/orderReview/{pOpNo}/{pno}/{orderNo}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String getInsertReview(Model model, @PathVariable String pOpNo,
                                   @PathVariable String pno, @PathVariable String orderNo){
         //리뷰 작성 페이지
@@ -178,16 +182,13 @@ public class MyPageController {
     }
 
     @PostMapping("/orderReview")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String insertReview(ProductReviewVO productReviewVO, @RequestParam("orderNo") String orderNo, Principal principal){
         //리뷰작성 처리
 
         log.info("order Review");
 
         productReviewVO.setUserId(principal.getName());
-
-        long n = 21;
-
-        productReviewVO.setRNum(n);
 
         log.info("orderReview reviewVO : " + productReviewVO);
         log.info("orderReview pno : " + productReviewVO.getPno());
@@ -203,6 +204,7 @@ public class MyPageController {
     }
 
     @GetMapping("/memberQnAList")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void memberQnAList(Model model, Principal principal, Criteria cri){
         //회원 QnA 목록
         log.info("memberQnAList");
@@ -218,6 +220,7 @@ public class MyPageController {
     }
 
     @GetMapping("/memberQnADetail/{qno}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberQnADetail(@PathVariable long qno, Model model){
         //회원 QnA Detail
         log.info("myQnADetail qno : " + qno);
@@ -230,17 +233,15 @@ public class MyPageController {
     }
 
     @GetMapping("/insertMemberQnA")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void getInsertMemberQnA(){
         //회원 QnA 작성 페이지
     }
 
     @PostMapping("/insertMemberQnA")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String insertMemberQnA(MyQnAVO myQnAVO, Principal principal){
         //회원 QnA 작성 처리
-
-        long a = 21;//시퀀스 처리.
-
-        myQnAVO.setQno(a);
 
         myQnAVO.setUserId(principal.getName());
 
@@ -250,6 +251,7 @@ public class MyPageController {
     }
 
     @GetMapping("/likeList")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void likeList(Model model, Principal principal, Criteria cri){
         //찜목록
 
@@ -267,11 +269,13 @@ public class MyPageController {
     }
 
     @PostMapping("/insertMemberReply")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void insertMemberReply(){
         //회원 QnA 댓글 작성 처리
     }
 
     @GetMapping("/cart")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void cart(Model model, Principal principal){
         //장바구니 페이지
 
@@ -285,6 +289,7 @@ public class MyPageController {
 
     @PostMapping("/deleteCart")
     @ResponseBody
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList, Principal principal){
         log.info("delete Cart : " + pOpNoList);
 
@@ -294,6 +299,7 @@ public class MyPageController {
 
     @PostMapping("/cartCount")
     @ResponseBody
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void cartUp(@RequestParam("pOpNo")String pOpNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType, Principal principal){
         log.info("cartUp!");
 

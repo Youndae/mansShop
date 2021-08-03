@@ -30,7 +30,7 @@ import java.util.List;
 @Controller
 @Log4j
 @AllArgsConstructor
-/*@PreAuthorize("hasRole('ROLE_ADMIN')")*/
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
 
     private AdminMapper adminMapper;
@@ -389,9 +389,6 @@ public class AdminController {
         String id = principal.getName();
 
         myQnAReplyVO.setUserId(id);
-        //replyNo는 테스트 후 oracle 시퀀스로 처리할것.
-        long replyNo = 21;
-        myQnAReplyVO.setReplyNo(replyNo);
 
         log.info("QnAReply Controller : " + myQnAReplyVO);
 
@@ -463,14 +460,34 @@ public class AdminController {
         return new ResponseEntity<>(adminMapper.salesTermSelect(), HttpStatus.OK);
     }
 
-    @GetMapping("/replyProductQnA")
-    public void getReplyProductQnA(){
-        //상품 문의 답글 작성 페이지
-        //admin한테만 답글 작성 권한이 있으므로 여기서 처리
+    @GetMapping("/productQnAList")
+    public void productQnAList(Model model, Criteria cri){
+
+        model.addAttribute("list", adminMapper.productQnAList(cri));
+
+        int total = adminMapper.getProductQnATotal(cri);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
-    @PostMapping("/replyProductQnA")
-    public void replyProductQnA(){
+    @GetMapping("/productQnADetail/{pQnANo}")
+    public String productQnADetail(@PathVariable("pQnANo") long pQnANo, Model model){
+
+        model.addAttribute("detail", adminMapper.productQnADetail(pQnANo));
+
+        return "admin/productQnADetail";
+    }
+
+    @PostMapping("/productQnAReply")
+    public String replyProductQnA(ProductQnAVO productQnAVO, Principal principal){
         //상품 문의 답글 작성 처리
+
+        productQnAVO.setUserId(principal.getName());
+
+        log.info("productQnAVO : " + productQnAVO);
+
+        adminMapper.productQnAReply(productQnAVO);
+
+        return "redirect:/admin/productQnAList";
     }
 }

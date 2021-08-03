@@ -163,10 +163,6 @@
         display: revert;
     }
 
-    .product_QnA_List .product_QnA_Header button{
-        margin-left: 50%;
-    }
-
     .product_QnA_Content li{
         margin-top: 30px;
         border: 1px solid lightgray;
@@ -218,6 +214,22 @@
     .product_Order_Info_content{
         display: inline-block;
         margin-top: 40px;
+    }
+
+    .product_QnA_Form_area{
+        margin-top: 50px;
+    }
+
+    .product_QnA_Form_area textarea{
+        width: 1000px;
+        height: 100px;
+        resize: none;
+    }
+
+    .product_QnA_Form_area button{
+        width: 100px;
+        height: 30px;
+        margin: 10px 0 0 35%;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -319,17 +331,6 @@
                 <ul class="review">
 
                 </ul>
-                <%--<c:forEach items="${pReviewList}" var="rList">
-                    <div class="reviewContent">
-                        <label><c:out value="${rList.userId}"/></label>
-                        <span class="reviewContent_area">
-                                ${rList.reviewContent}
-                        </span>
-                        <span class="reviewContent_RegDate">
-                                ${rList.reviewDate}
-                        </span>
-                    </div>
-                </c:forEach>--%>
             </div>
 
             <div class="reviewPaging">
@@ -342,7 +343,22 @@
         <div class="product_QnA_List">
             <div class="product_QnA_Header">
                 <h2>상품 문의</h2>
-                <button type="button" id="QnAInsert">문의하기</button>
+                <div class="product_QnA_Form_area">
+                    <form id="product_QnA_InsertForm" method="post">
+                        <textarea id="pQnAContent" name="pQnAContent"></textarea>
+                        <input type="hidden" name="pno" value="${pDetail.pno}">
+                    </form>
+                    <sec:authentication property="principal" var="userId"/>
+                    <c:choose>
+                        <c:when test="${userId == 'anonymousUser'}">
+                            <button type="button" disabled>문의하기</button>
+                        </c:when>
+                        <c:otherwise>
+                            <button type="button" id="QnAInsert">문의하기</button>
+                        </c:otherwise>
+                    </c:choose>
+                    <input type="hidden" id="userStat" value="${userId}">
+                </div>
             </div>
             <div class="product_QnA_Content">
                 <ul class="product_QnA">

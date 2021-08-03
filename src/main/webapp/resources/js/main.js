@@ -14,7 +14,7 @@ $(document).ready(function(){
 
 
         actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.attr('action', '/main/'+keyword);
+        actionForm.attr('action', '/'+keyword);
         actionForm.submit();
     });
 })

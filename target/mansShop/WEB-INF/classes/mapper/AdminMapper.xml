@@ -380,7 +380,7 @@
                 , qrRegDate
             )
         VALUES(
-            #{replyNo}
+            my_QnA_Reply_SEQ.NEXTVAL
             , #{qno}
             , #{userId}
             , #{qrContent}
@@ -510,6 +510,67 @@
         WHERE
             rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
+
+    <select id="productQnAList" resultType="org.shop.domain.ProductQnAVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , q.*
+            FROM(
+                SELECT
+                    pq.*
+                    , p.pName
+                FROM
+                    productQnA pq INNER JOIN product p
+                    ON pq.pno = p.pno
+                ORDER BY
+                    pQnAGroupNo desc
+                    , pQnAIndent ASC
+            )q
+        )
+        WHERE
+            rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getProductQnATotal" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            productQnA
+    </select>
+
+    <select id="productQnADetail" resultType="org.shop.domain.ProductQnAVO">
+        SELECT
+            q.*
+            , p.pName
+        FROM
+            productQnA q INNER JOIN product p
+            ON q.pno = p.pno
+        WHERE
+            q.pQnANo = #{pQnANo}
+    </select>
+
+    <insert id="productQnAReply" parameterType="org.shop.domain.ProductQnAVO">
+        INSERT INTO productQnA(
+            pQnANo
+            , pno
+            , userId
+            , pQnAContent
+            , pQnARegDate
+            , pQnAGroupNo
+            , pQnAIndent
+        )
+        VALUES(
+            product_QnA_SEQ.NEXTVAL
+            , #{pno}
+            , #{userId}
+            , #{pQnAContent}
+            , sysdate
+            , #{pQnANo}
+            , 1
+        )
+    </insert>
 
 
 </mapper>

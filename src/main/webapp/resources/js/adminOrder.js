@@ -3,6 +3,12 @@ var header = $("meta[name='_csrf_header']").attr("content");
 
 $(document).ready(function(){
 
+    //productQnADetail
+    $("#pQnAReplyForm_btn").on('click', function(){
+        $("#pQnAReplyForm").attr('action', '/admin/productQnAReply');
+        $("#pQnAReplyForm").submit();
+    })
+
     //adminQnA
     var qno = $("#qno").val();
     (function(){

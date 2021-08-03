@@ -15,7 +15,6 @@
     <bean id="customAuthenticationSuccess" class="org.shop.security.CustomAuthenticationSuccessHandler"></bean>
 
     <security:http auto-config="true" use-expressions="true">
-        <!--<security:csrf disabled="true"/>-->
         <security:access-denied-handler ref="customAccessDenied"/>
         <security:form-login login-page="/member/login" authentication-success-handler-ref="customAuthenticationSuccess"/>
         <security:logout logout-url="/logout" invalidate-session="true"/>

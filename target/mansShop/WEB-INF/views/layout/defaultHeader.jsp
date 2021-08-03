@@ -59,7 +59,7 @@
 
                     <li><a href="/myPage/memberOrderList">주문조회</a></li>
                     <li>
-                        <form id="mainSearchForm" action="/main/searchProduct" method="get">
+                        <form id="mainSearchForm" action="/searchProduct" method="get">
                             <input type="text" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>"/>
                             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>"/>
                             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>"/>

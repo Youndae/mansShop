@@ -2,12 +2,14 @@ $(document).ready(function(){
     $(".top a").on('click', function(){
         console.log("nav top a : " + $(this).text());
 
-        if($(this).text() == "BEST"){
+        var classification = $(this).text();
+
+        if(classification == "BEST"){
             location.href="/";
-        }else if($(this).text() == "NEW"){
-            location.href="/main/new";
+        }else if(classification == "NEW"){
+            location.href="/new";
         }else{
-            location.href="/main/"+$(this).text();
+            location.href="/"+classification;
         }
     })
 

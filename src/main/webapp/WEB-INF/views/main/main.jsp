@@ -64,7 +64,7 @@
                 <div class="product_img">
 
                         <div class="thumb_img">
-                            <a href="${list.pno}" class="thumbnail"><img id="ImageData" src="/display?image=${list.firstThumbnail}"/></a>
+                            <a href="/product/${list.pno}" class="thumbnail"><img id="ImageData" src="/display?image=${list.firstThumbnail}"/></a>
                         </div>
                         <div class="productInfo">
                             <span class="pName">${list.PName}</span><br>
@@ -82,7 +82,7 @@
                 </c:if>
 
                 <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
-                    <c:if test="${num == 0 || num == 1}">
+                    <c:if test="${num != 0}">
                         <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
                             <a href="${num}">${num}</a>
                         </li>

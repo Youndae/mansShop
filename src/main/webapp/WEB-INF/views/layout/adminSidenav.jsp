@@ -10,6 +10,7 @@
             <li><a href="/admin/productList">상품목록</a></li>
             <li><a href="/admin/orderList">주문목록</a></li>
             <li><a href="/admin/adminQnAList">문의사항</a></li>
+            <li><a href="/admin/productQnAList">상품문의</a></li>
             <li><a href="/admin/userList">회원목록</a></li>
             <li><a href="/admin/salesProductList">매출정보</a></li>
         </ul>

@@ -13,7 +13,7 @@ $(document).ready(function () {
 
     var pno = $("#pno").val();
     (function () {
-        $.getJSON("/getProductThumb", {pno: pno}, function (arr) {
+        $.getJSON("/product/getProductThumb", {pno: pno}, function (arr) {
             var str = "";
             var num = 2;
             console.log("get ProductThumb");
@@ -24,7 +24,7 @@ $(document).ready(function () {
             $(".thumb").append(str);
         });
 
-        $.getJSON("/getProductOp", {pno: pno}, function (arr) {
+        $.getJSON("/product/getProductOp", {pno: pno}, function (arr) {
             var str = "<option value=\"default\">------</option>";
 
             // 수정사항. 가방같은 경우는 사이즈가 없기 때문에 옵션에서 사이즈를 출력하지 않도록 수정해야함.
@@ -37,7 +37,7 @@ $(document).ready(function () {
             $("#option_select_box").append(str);
         });
 
-        $.getJSON("/getProductInfo", {pno: pno}, function (arr) {
+        $.getJSON("/product/getProductInfo", {pno: pno}, function (arr) {
             var str = "<div class=\"productInfo_img\">";
             $(arr).each(function (i, info) {
                 str += "<div class=\"infoImg\"><img class=\"infoImg\" src=\"/display?image=" + info.pimg + "\"></div>";
@@ -197,17 +197,18 @@ $(document).ready(function () {
     $("#QnAInsert").on('click', function () {
 
 
-        var content = $("#QnAReplyForm").serialize();
+        var content = $("#product_QnA_InsertForm").serialize();
 
-        console.log("pQnAContent : " + $("input[name=pQnAContent]").val());
+        console.log("pQnAContent : " + $("#pQnAContent").val());
 
-        if ($("input[name=pQnAContent]").val() == "" || $("input[name=pQnAContent]").val() == null) {
+
+        if ($("#pQnAContent").val() == "") {
             console.log("content val is null");
             $("#QnAContentOverlap").text("문의 내용을 입력하세요");
         } else {
             console.log("content val is not null");
             $.ajax({
-                url: "/QnAInsert",
+                url: "/product/QnAInsert",
                 type: "post",
                 data: content,
                 beforeSend: function (xhr) {
@@ -229,6 +230,7 @@ $(document).ready(function () {
 
     $("#like").on('click', function () {
         var pno = $("input[name=pno]").val();
+
 
         $.ajax({
             url: "/likeProduct",
@@ -285,7 +287,7 @@ function getProductQnAList(param, callback, error) {
 
     console.log("getProductQnAList pno : " + param.pno + " page : " + param.page);
 
-    $.getJSON("/productQnAPages/" + pno + "/" + page + ".json", function (data) {
+    $.getJSON("/product/productQnAPages/" + pno + "/" + page + ".json", function (data) {
         if (callback)
             callback(data.productQnACount, data.productQnAList);
     }).fail(function (xhr, status, err) {
@@ -300,7 +302,7 @@ function getReviewList(param, callback, error) {
 
     console.log("getReviewList pno : " + param.pno + " page : " + param.page);
 
-    $.getJSON("/reviewPages/" + pno + "/" + page + ".json", function (data) {
+    $.getJSON("/product/reviewPages/" + pno + "/" + page + ".json", function (data) {
         if (callback)
             callback(data.reviewCount, data.reviewList);
     }).fail(function (xhr, status, err) {
@@ -581,29 +583,24 @@ $(function () {
 
             }
 
-            /*for(var idx = 0; idx < Object.keys(pOpNo).length; idx++){
-                formData.append('pOpNo', pOpNo[idx]);
-            }
-
-            for(var idx = 0; idx < Object.keys(pCount).length; idx++){
-                formData.append('pOpNo', pOpNo[idx]);
-            }*/
-
-            /*var a = pOpNo.length;
-            console.log("pOpNo length : " + a);
-
-            console.log("pOpNo : " + pOpNo);*/
 
             $.ajaxSettings.traditional = true;
             $.ajax({
-                url: '/addCart',
+                url: '/product/addCart',
                 type: 'post',
                 data: {pOpNo: noArr, pCount: countArr, pPrice: priceArr},
+                dataType: 'json',
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader(header, token);
                 },
                 success: function (data) {
-                    alert("장바구니에 상품이 담겼습니다.");
+                    if(data == 0){
+                        if(confirm("로그인 한 사용자만 장바구니에 담을 수 있습니다.\n 로그인하시겠습니까?")){
+                            location.href='/member/login';
+                        }
+                    }else{
+                        alert("장바구니에 상품이 담겼습니다.");
+                    }
                 },
                 error: function (request, status, error) {
                     alert("code : " + request.status + "\n"

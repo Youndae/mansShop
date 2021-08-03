@@ -41,7 +41,7 @@
         padding-left: 38%;
     }
 
-    .QnADetail_content .QnADetail_QnATitle .QnATitle_RegDate{
+    .QnADetail_content .QnADetail_QnATitle .QnATitle_writer{
         width: 100%;
     }
 
@@ -138,7 +138,7 @@
                     <span class="QnATitle">
                         <c:out value="${aqDetail.QTitle}"/>
                     </span>
-                    <div class="QnATitle_RegDate">
+                    <div class="QnATitle_writer">
                         <span class="QnAWriter">
                         작성자 : <c:out value="${aqDetail.userId}"/>
                     </span>

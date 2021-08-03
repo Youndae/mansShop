@@ -67,27 +67,6 @@ public class MemberController {
         log.info("logout");
     }
 
-    @GetMapping("/findId")
-    public void getFindId(){
-        //아이디 찾기 페이지
-    }
-
-    @PostMapping("/findId")
-    public void findId(){
-        //아이디 찾기 처리
-    }
-
-    @GetMapping("/findPw")
-    public void getFindPw(){
-        //비밀번호 찾기 페이지
-    }
-
-    @PostMapping("/findPw")
-    public void findPw(){
-        //비밀번호 찾기 처리리
-    }
-
-
     @PostMapping("/checkUserId")
     @ResponseBody
     public int checkUserId(@RequestParam("UserId") String userId) throws Exception{

@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductQnAVO {
+public class ProductQnAVO extends ProductVO{
     private Long pQnANo;
     private String pno;
     private String userId;
@@ -17,5 +17,5 @@ public class ProductQnAVO {
     private Date pQnARegDate;
     private int pQnAAnswer;
     private Long pQnAGroupNo;
-    private Long pQnAIndent;
+    private int pQnAIndent;
 }

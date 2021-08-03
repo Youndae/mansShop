@@ -83,7 +83,7 @@
             <c:forEach items="${lList}" var="list">
                 <div class="likeList_img">
                     <div class="likeThumb_img">
-                        <a href="/${list.pno}">
+                        <a href="/product/${list.pno}">
                             <img src="/display?image=${list.firstThumbnail}">
                         </a>
                     </div>

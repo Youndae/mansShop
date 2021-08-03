@@ -107,4 +107,11 @@ public interface AdminMapper {
 
     public List<SalesVO> salesTermSelect();
 
+    public List<ProductQnAVO> productQnAList(Criteria cri);
+
+    public int getProductQnATotal(Criteria cri);
+
+    public ProductQnAVO productQnADetail(long pQnANo);
+
+    public void productQnAReply(ProductQnAVO productQnAVO);
 }

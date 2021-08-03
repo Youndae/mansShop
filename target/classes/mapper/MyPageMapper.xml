@@ -128,7 +128,7 @@
             , reviewDate
         )
         VALUES(
-            #{rNum}
+            product_Review_SEQ.NEXTVAL
             , #{pno}
             , #{userId}
             , #{reviewContent}
@@ -209,7 +209,7 @@
             , qRegDate
         )
         VALUES(
-            #{qno}
+            my_QnA_SEQ.NEXTVAL
             , #{userId}
             , #{qTitle}
             , #{qContent}

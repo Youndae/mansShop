@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductMapper">
+
+    <select id="productDetail" resultType="org.shop.domain.ProductVO">
+        SELECT *
+        FROM
+            product
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductThumb" resultType="org.shop.domain.ThumbnailVO">
+        SELECT *
+        FROM
+            productThumbnail
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductOp" resultType="org.shop.domain.ProductOpVO">
+        SELECT *
+        FROM
+            productOp
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductInfo" resultType="org.shop.domain.ProductImgVO">
+        SELECT *
+        FROM
+            productImg
+        WHERE
+            pno=#{pno}
+        ORDER BY pImgStep
+    </select>
+
+    <select id="getProductReview" resultType="org.shop.domain.ProductReviewVO">
+        SELECT *
+        FROM(
+            SELECT
+                rownum rn
+                , r.*
+            FROM(
+                SELECT *
+                FROM
+                    productReview
+                WHERE
+                    pno=#{pno}
+                order by rnum desc
+            )r
+        )
+        WHERE
+            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+    </select>
+
+    <select id="getProductReviewTotal" resultType="int">
+        SELECT count(*)
+        FROM productReview
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getProductQnA" resultType="org.shop.domain.ProductQnAVO">
+        SELECT *
+        FROM(
+            SELECT rownum rn, q.*
+            FROM(
+                SELECT *
+                FROM
+                    productQnA
+                WHERE
+                    pno=#{pno}
+                ORDER BY pQnAGroupNo DESC
+                    , pQnAIndent
+                )q
+            )
+        WHERE
+            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+
+    </select>
+
+    <select id="getProductQnATotal" resultType="int">
+        SELECT count(*)
+        FROM
+            productQnA
+        WHERE
+            pno=#{pno}
+    </select>
+
+    <select id="getLikeProductStat" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            like_product
+        WHERE
+            userId=#{userId}
+            AND
+            pno=#{pno}
+    </select>
+
+    <select id="checkCart" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            cart
+        WHERE
+            cartNo=#{cartNo}
+    </select>
+
+    <insert id="addCart" parameterType="org.shop.domain.CartVO">
+        INSERT INTO cart(
+            cartNo
+            , userId
+            , pOpNo
+            , cCount
+            , cPrice
+        )
+        VALUES(
+            #{cartNo}
+            , #{userId}
+            , #{pOpNo}
+            , #{cCount}
+            , #{cPrice}
+        )
+    </insert>
+
+    <update id="updateCart" parameterType="org.shop.domain.CartVO">
+        UPDATE
+            cart
+        SET
+            cCount=cCount + #{cCount}
+            , cPrice=cPrice + #{cPrice}
+        WHERE
+            cartNo=#{cartNo}
+    </update>
+
+    <insert id="insertPQnA" parameterType="org.shop.domain.ProductQnAVO">
+        INSERT INTO productQnA(
+            pQnANo
+            , pno
+            , userId
+            , pQnAContent
+            , pQnARegDate
+            , pQnAGroupNo
+        )
+        values(
+            product_QnA_SEQ.NEXTVAL
+            , #{pno}
+            , #{userId}
+            , #{pQnAContent}
+            , sysdate
+            , product_QnA_SEQ.NEXTVAL
+        )
+
+    </insert>
+
+    <insert id="likeProduct" parameterType="String">
+        INSERT INTO like_Product(
+            likeNo
+            , userId
+            , pno
+        )
+        VALUES(
+            #{likeNo}
+            , #{userId}
+            , #{pno}
+        )
+    </insert>
+
+    <delete id="deLikeProduct" parameterType="String">
+        DELETE FROM
+            like_product
+        WHERE
+            userId=#{userId}
+            AND
+            pno=#{pno}
+    </delete>
+
+</mapper>
