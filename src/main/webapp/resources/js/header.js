@@ -19,14 +19,17 @@ $(document).ready(function(){
         console.log("hi");
 
         console.log("amount : " + $("input[name='amount']").val());
-        if (!searchForm.find("input[name='keyword']").val()) {
+        if (!$("#search_keyword").val()) {
             alert("키워드 입력");
+        }else{
+
+            searchForm.find("input[name='keyword']").val($("#search_keyword").val());
+            searchForm.find("input[name='pageNum']").val("1");
+            searchForm.find("input[name='amount']").val("12");
+
+            searchForm.submit();
         }
 
-        searchForm.find("input[name='pageNum']").val("1");
-        searchForm.find("input[name='amount']").val("10");
-        e.preventDefault();
 
-        searchForm.submit();
     });
 })

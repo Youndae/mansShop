@@ -103,16 +103,6 @@
         <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">
     </form>
-</div><%--container div end--%>
-
-<%--<script>
-    $(document).ready(function(){
-        $(".thumbnail").on('click', function(e){
-            var pno = $(this).href;
-
-            location.href="/"+pno;
-        })
-    })
-</script>--%>
+</div>
 </body>
 </html>

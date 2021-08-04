@@ -37,7 +37,6 @@
         font-size: large;
         margin: 25px 0 25px 0;
         width: 1000px;
-        height: 200px;
     }
 
     .cart_content_footer{
@@ -48,6 +47,15 @@
     .cart_content_btn button{
         width: 100px;
         height: 25px;
+    }
+
+    button.productCount {
+        background-color: white;
+        border: 1px solid lightgray;
+    }
+
+    button.productCount img{
+        width: 10px;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -113,8 +121,8 @@
                             <td>
                                 <span><c:out value="${cList.CCount}"/></span>
                                 <input type="hidden" value="<c:out value="${cList.POpNo}"/>">
-                                <button class="productCount up" name="up">up</button>
-                                <button class="productCount down" name="down">down</button>
+                                <button class="productCount up" name="up"><img src="https://image.flaticon.com/icons/png/512/120/120891.png"></button>
+                                <button class="productCount down" name="down"><img src="https://image.flaticon.com/icons/png/512/2089/2089636.png"></button>
                             </td>
                             <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
                         </tr>
@@ -145,105 +153,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ready(function(){
-
-        $("#select_order").on('click', function(){
-            var noArr = new Array();
-            var nameArr = new Array();
-            var sizeArr = new Array();
-            var colorArr = new Array();
-            var countArr = new Array();
-            var priceArr = new Array();
-
-            $("input[name=check]:checked").each(function(){
-                noArr.push($(this).attr("value"));
-                nameArr.push($(this).attr("data_pName"));
-                sizeArr.push($(this).attr("data_pSize"));
-                colorArr.push($(this).attr("data_pColor"));
-                countArr.push($(this).attr("data_cCount"));
-                priceArr.push($(this).attr("data_cPrice"));
-            });
-
-            $("input[name=pOpNo]").val(noArr);
-            $("input[name=pName]").val(nameArr);
-            $("input[name=pSize]").val(sizeArr);
-            $("input[name=pColor]").val(colorArr);
-            $("input[name=cCount]").val(countArr);
-            $("input[name=cPrice]").val(priceArr);
-
-            $("#order_form").attr("action", "/order/orderPayment");
-            $("#order_form").submit();
-
-        })
-
-        $("button[name=up]").on('click', function(){
-            console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
-
-            var totalPrice = $(".total_price").text().replace(/\D/g, '');
-            var count = $(this).siblings("span").text();
-            var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
-            pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
-            totalPrice = parseInt(totalPrice) + pPrice;
-
-            count = parseInt(count) + 1;
-            pPrice = pPrice * count;
-
-            $(this).siblings("span").text(count);
-            $(this).parent('td').next().text(pPrice.toLocaleString());
-            $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
-
-            console.log("test price : " + $(this).parent("td").next().text());
-        });
-
-        $("button[name=down]").on('click', function(){
-            console.log("test : " + $(this).siblings("span").text().replace(/\D/g,''));
-
-            var totalPrice = $(".total_price").text().replace(/\D/g, '');
-            var count = $(this).siblings("span").text();
-            var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
-            pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
-            totalPrice = parseInt(totalPrice) - pPrice;
-
-            count = parseInt(count) - 1;
-            pPrice = pPrice * count;
-
-            $(this).siblings("span").text(count);
-            $(this).parent('td').next().text(pPrice.toLocaleString());
-            $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
-
-            console.log("test price : " + $(this).parent("td").next().text());
-        });
-
-        $("#select_delete").on('click', function(){
-            var pOpNoArr = new Array();
-            $("input[name=check]:checked").each(function(){
-                pOpNoArr.push($(this).attr("value"));
-            });
-
-
-
-            $.ajaxSettings.traditional = true;
-            $.ajax({
-                url : '/myPage/deleteCart',
-                type: 'post',
-                data: {pOpNo: pOpNoArr},
-                beforeSend:function(xhr){
-                    xhr.setRequestHeader(header, token);
-                },
-                success: function(data){
-                    location.reload();
-                },
-                error: function(request, status, error){
-                    alert("code : " + request.status + "\n"
-                        + "message : " + request.responseText
-                        + "\n" + "error : " + error);
-                }
-            })
-        })
-    })
-</script>--%>
 </body>
 </html>

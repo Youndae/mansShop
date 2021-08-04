@@ -46,8 +46,6 @@ public interface MyPageMapper {
 
     public int getLikeTotal(Criteria cri);
 
-    public void insertMemberQnAReply();
-
     public List<CartVO> getCartList(String userId);
 
     public void deleteCart(@Param("userId") String userId, @Param("pOpNo") String pOpNo);

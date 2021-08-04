@@ -77,38 +77,6 @@ public class AdminController {
                                 @RequestParam("infoFiles") List<MultipartFile> infoFiles
                               ) throws Exception{
 
-
-
-
-
-/*        log.info("opVO : " + opVO);
-
-        log.info(opVO.getPClassification());
-        log.info(opVO.getPName());
-
-        log.info("firstfile length : " + firstFiles.size());
-        log.info("thumbfile length : " + thumbFiles.size());
-        log.info("infofile length : " + infoFiles.size());
-
-        for(MultipartFile image : firstFiles){
-            log.info("first img name : " + image.getOriginalFilename());
-        }
-
-        for(MultipartFile image : thumbFiles){
-            log.info("thumbfile name : " + image.getOriginalFilename());
-        }
-
-        for(MultipartFile image : infoFiles){
-            log.info("infofile Name : " + image.getOriginalFilename());
-        }*/
-
-        /*opVO.setPOpNo("7번상품옵션");
-        opVO.setPno("7번상품");
-        opVO.setFirstThumbnail("6번사진");*/
-
-        /*adminMapper.addProduct(opVO);
-        adminMapper.addProductOp(opVO);*/
-
         adminService.addProduct(opVO, thumbnailVO, imgVO, firstFiles, thumbFiles, infoFiles);
 
         log.info("insert complete");
@@ -127,54 +95,13 @@ public class AdminController {
 
         //상품정보수정
 
-
-
-        /*log.info("opVO : " + productOpVO);
-        log.info("classification : " + productOpVO.getPClassification());
-        log.info("pName : " + productOpVO.getPName());
-
-        log.info("firstFile size : " + firstFile.size());
-        log.info("thumbFiles size : " + thumbFiles.size());
-        log.info("infoFiles size : " + infoFiles.size());
-        log.info("deleteFirstThumbFile size : " + deleteFirstThumbFile.size());
-        log.info("deleteThumbFiles size : " + deleteThumbFiles.size());
-        log.info("deleteInfoFiles size : " + deleteInfoFiles.size());
-
-
-        for(MultipartFile image : firstFile){
-            log.info("firstThumb file : " + image.getOriginalFilename());
-        }
-
-        for(MultipartFile image : thumbFiles){
-            log.info("thumbFiles file : " + image.getOriginalFilename());
-        }
-
-        for(MultipartFile image : infoFiles){
-            log.info("infoFiles file : " + image.getOriginalFilename());
-        }
-
-        for(String image : deleteFirstThumbFile){
-            log.info("deleteFirstThumbFile file : " + image);
-        }
-
-        for(String image : deleteThumbFiles){
-            log.info("deleteThumbFiles file : " + image);
-        }
-
-        for(String image : deleteInfoFiles){
-            log.info("deleteInfoFiles file : " + image);
-        }*/
-
-
         log.info("controller size check : " + deleteFirstThumbFile == null);
-
 
         adminService.modifyProduct(productOpVO, thumbnailVO, productImgVO,
                                     firstFile, thumbFiles, infoFiles,
                                     deleteFirstThumbFile, deleteThumbFiles, deleteInfoFiles);
 
         log.info("complete");
-
 
     }
 
@@ -362,7 +289,7 @@ public class AdminController {
     @ResponseBody
     public int adminQnAComplete(int qno){
         //QnA 답변 완료 처리
-        log.info("QnAComplete");
+        log.info("QnAComplete : " +  qno);
 
         adminMapper.adminQnAComplete(qno);
 
@@ -373,8 +300,6 @@ public class AdminController {
     @ResponseBody
     public ResponseEntity<List<MyQnAReplyVO>> getQnAReply(int qno){
         // QnA 댓글 처리
-        // MyPageController에도 동일하게 있는데
-        // 거기서 한번에 처리하도록 할지 admin과 user를 나눠서 처리할지 고민.
 
         log.info("controller qno : " + qno);
         log.info("ReplyList");
@@ -386,6 +311,7 @@ public class AdminController {
     @ResponseBody
     public void QnAReply(MyQnAReplyVO myQnAReplyVO, Principal principal){
 
+        //문의 게시판 댓글
         String id = principal.getName();
 
         myQnAReplyVO.setUserId(id);

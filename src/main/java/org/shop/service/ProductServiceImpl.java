@@ -59,10 +59,7 @@ public class ProductServiceImpl implements ProductService{
             }else{
                 productMapper.updateCart(cartVO);
             }
-
-
         }
-
         return 1;
     }
 

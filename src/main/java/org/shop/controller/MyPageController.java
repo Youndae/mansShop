@@ -29,17 +29,17 @@ public class MyPageController {
     private MyPageMapper myPageMapper;
 
     @GetMapping("/modifyCheck")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void modifyCheck(){
 
     }
 
     @PostMapping("/modifyCheck")
     @ResponseBody
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String modifyCheckProc(MemberVO memberVO, Principal principal){
-
-        /*memberVO.setUserId(principal.getName());*/
-
-        memberVO.setUserId("coco");
+        //정보 수정 전 비밀번호 체크
+        memberVO.setUserId(principal.getName());
 
         log.info("modifyCheck : " + memberVO);
 
@@ -65,7 +65,7 @@ public class MyPageController {
     }
 
     @PostMapping("/modifyInfo")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("principal.username == #memberVO.userId")
     public String modifyInfo(MemberVO memberVO){
         //정보 수정 처리
 
@@ -129,7 +129,7 @@ public class MyPageController {
     @GetMapping("/memberReviewDetail/{rNum}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDetail(Model model, @PathVariable long rNum){
-
+        //회원 리뷰 상세
         model.addAttribute("rDetail", myPageMapper.memberReviewDetail(rNum));
 
         return "/myPage/memberReviewDetail";
@@ -138,7 +138,7 @@ public class MyPageController {
     @GetMapping("/memberReviewModify/{rNum}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewModify(Model model, @PathVariable long rNum){
-
+        //회원 리뷰 수정
         model.addAttribute("rModify", myPageMapper.memberReviewDetail(rNum));
 
         return "/myPage/memberReviewModify";
@@ -158,7 +158,7 @@ public class MyPageController {
     @GetMapping("/memberReviewDelete/{rNum}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDelete(@PathVariable long rNum){
-
+        //회원 리뷰 삭제
         log.info("memberReviewDelete");
 
         myPageMapper.deleteReview(rNum);
@@ -209,8 +209,7 @@ public class MyPageController {
         //회원 QnA 목록
         log.info("memberQnAList");
 
-        /*cri.setKeyword(principal.getName());*/
-        cri.setKeyword("coco");
+        cri.setKeyword(principal.getName());
 
         model.addAttribute("qList", myPageMapper.memberQnAList(cri));
 
@@ -257,8 +256,6 @@ public class MyPageController {
 
         cri.setKeyword(principal.getName());
 
-        /*cri.setKeyword("coco");*/
-
         cri.setAmount(8);
 
         model.addAttribute("lList", myPageMapper.likeList(cri));
@@ -266,12 +263,6 @@ public class MyPageController {
         int total = myPageMapper.getLikeTotal(cri);
 
         model.addAttribute("pageMaker", new PageDTO(cri, total));
-    }
-
-    @PostMapping("/insertMemberReply")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void insertMemberReply(){
-        //회원 QnA 댓글 작성 처리
     }
 
     @GetMapping("/cart")
@@ -291,6 +282,7 @@ public class MyPageController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList, Principal principal){
+        //장바구니 선택목록 삭제
         log.info("delete Cart : " + pOpNoList);
 
         myPageService.deleteCart(principal.getName(), pOpNoList);
@@ -301,6 +293,7 @@ public class MyPageController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void cartUp(@RequestParam("pOpNo")String pOpNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType, Principal principal){
+        //장바구니 수량 증감
         log.info("cartUp!");
 
         log.info("popno List : " + pOpNo);

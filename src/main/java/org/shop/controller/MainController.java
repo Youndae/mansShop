@@ -51,7 +51,7 @@ public class MainController {
 
     @GetMapping("/new")
     public String newProduct(Model model){
-
+        //새로운 상품
         log.info("new");
 
         model.addAttribute("productClassification", "NEW");
@@ -63,7 +63,7 @@ public class MainController {
 
     @GetMapping("/{classification}")
     public String productClassification(@PathVariable("classification") String classification, Model model, Criteria cri){
-
+        //상품 분류별
         log.info("classification : " + classification);
 
         cri.setKeyword(classification);
@@ -85,6 +85,7 @@ public class MainController {
 
     @GetMapping("/searchProduct")
     public String searchProduct(Model model, Criteria cri){
+        //상품 검색
         log.info("searchProduct");
 
         model.addAttribute("pList", mainMapper.searchProduct(cri));
@@ -120,7 +121,7 @@ public class MainController {
 
     @GetMapping("/nonOrderList")
     public String nonOrderList(OrderVO orderVO, Model model){
-
+        //비회원 주문목록
         log.info("nonOrderList : " + orderVO);
 
         orderVO.setUserId("Anonymous");

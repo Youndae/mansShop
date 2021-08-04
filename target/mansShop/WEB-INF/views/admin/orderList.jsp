@@ -247,9 +247,9 @@
                                 <th>수량</th>
                             </tr>
                             </thead>
-                            <tr class="order_detail_info_list">
+                            <tbody class="order_detail_info_list">
 
-                            </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>

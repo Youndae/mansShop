@@ -29,7 +29,7 @@ public class OrderController {
 
     @PostMapping("/orderPayment")
     public void orderPayment(@RequestParam HashMap<String, Object> commandMap, Model model){
-
+        //주문 페이지
         log.info("order payments");
         model.addAttribute("oList", orderService.orderProduct(commandMap));
         model.addAttribute("orderType", commandMap.get("oType").toString());
@@ -38,6 +38,7 @@ public class OrderController {
 
     @GetMapping("/orderComplete/{oType}")
     public String orderComplete(@PathVariable("oType") String oType, Model model){
+        //주문 완료 페이지
         log.info("orderComplete");
         model.addAttribute("type", oType);
 
@@ -60,11 +61,6 @@ public class OrderController {
 
         log.info("oType : " + oType);
 
-        log.info("payments");
-        log.info(principal == null);
-        log.info("next");
-
-
         if(principal == null){
             id = "Anonymous";
         }else{
@@ -83,10 +79,6 @@ public class OrderController {
         log.info("odPrice : " + odPrice);
 
         orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, pno, oType);
-
-
-
-
 
     }
 

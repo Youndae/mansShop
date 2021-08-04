@@ -49,11 +49,5 @@
         </div>
     </div>
 </div>
-<%--<script>
-    $(".loginBtn").on("click", function(e){
-        e.preventDefault();
-        $("form").submit();
-    });
-</script>--%>
 </body>
 </html>

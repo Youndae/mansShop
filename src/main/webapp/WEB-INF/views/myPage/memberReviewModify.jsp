@@ -90,15 +90,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-    $(function(){
-        $("#reviewModifyProc").on('click', function(){
-            var form = $("#reviewModifyForm");
-
-            form.attr("action", "/myPage/memberReviewModify");
-            form.submit();
-        })
-    })
-</script>--%>
 </body>
 </html>

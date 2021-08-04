@@ -30,13 +30,6 @@ $(document).ready(function(){
                         "<div class=\"QnADetail_reply_content_content\">" +
                         "<p>" + reply.qrContent + "</p>" +
                         "</div></li>";
-
-
-               /* str += "<div class=\"QnAReplyContent\">" +
-                        "<label>"+reply.userId+"</label>" +
-                        "<span>"+reply.qrContent+"</span>" +
-                        "<button type=\"button\" onclick=\"reply_del(this)\" value=\""+reply.replyNo+"\">삭제</button>" +
-                        "</div>";*/
             })
             $(".QnAReply").append(str);
         })
@@ -48,6 +41,9 @@ $(document).ready(function(){
             type: 'post',
             data: {qno:qno},
             dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
             success: function(data){
                console.log("complete success");
                if(data == 1){
@@ -59,34 +55,6 @@ $(document).ready(function(){
         });
     });
 
-
-
-
-
-
-
-    /*var actionForm = $("#orderActionForm");
-    var ordersearchForm = $("#orderSearchForm");
-
-    $(".paginate_button a").on('click', function(e){
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    })
-
-    $("#orderSearchForm button").on('click', function(e){
-        if(!ordersearchForm.find("input[name='keyword']").val()){
-            alert('키워드 입력');
-        }
-
-        ordersearchForm.find("input[name='pageNum']").val("1");
-        e.preventDefault();
-
-        ordersearchForm.submit();
-    })*/
-
-
     $("#tbl_orderList a").on('click', function(e){
 
         e.preventDefault();
@@ -96,10 +64,9 @@ $(document).ready(function(){
 
 
         getInfo(orderNo, function(info){
-           /*alert("data : " + info.orderNo + ", " + info.userId + ", " + info.orderPhone + ", " + info.addr + ", " + info.orderMemo);*/
+
             $(".modal-body span[name=orderNo]").text(info.orderNo);
             $(".modal-body span[name=recipient]").text(info.recipient);
-            /*$(".modal-body span[name=userId]").text(info.userId);*/
             $(".modal-body span[name=orderPhone]").text(info.orderPhone);
             $(".modal-body span[name=addr]").text(info.addr);
             $(".modal-body span[name=orderMemo]").text(info.orderMemo);
@@ -110,29 +77,11 @@ $(document).ready(function(){
                 $(".modal-body span[name=userId]").text(info.userId);
             }
 
-
-
             if(info.orderStat == 1){
                 $("#shipping").hide();
             }
 
         });
-
-        /*getInfoTable(orderNo, function(orderInfo){
-            /!*alert("tableData : " + orderInfo.pclassification + ", " + orderInfo.pname + ", " + orderInfo.psize + ", " + orderInfo.pcolor + ", " + orderInfo.popNo + ", " + orderInfo.orderNo);*!/
-            var str = "<thead>" +
-                        "<tr>" +
-                        "<th>옵션번호</th>" +
-                        "<th>분류</th>" +
-                        "<th>상품명</th>" +
-                        "<th>사이즈</th>" +
-                        "<th>컬러</th>" +
-                        "<th>수량</th>" +
-                        "</tr>"+
-                        "</thead>";
-
-
-        });*/
 
         (function(){
             $.getJSON("/admin/orderInfoTable", {orderNo:orderNo}, function(arr){
@@ -247,12 +196,13 @@ function getInfoTable(arr){
     var str = "";
     $(arr).each(function(i, info){
         str +=
+            "<tr>" +
             "<td>"+info.popNo+"</td>" +
             "<td>"+info.pclassification+"</td>" +
             "<td>"+info.pname+"</td>" +
             "<td>"+info.psize+"</td>" +
             "<td>"+info.pcolor+"</td>" +
-            "<td>"+info.orderCount+"</td>";
+            "<td>"+info.orderCount+"</td></tr>";
 
     })
 

@@ -38,7 +38,6 @@
         font-size: large;
         margin: 25px 0 25px 0;
         width: 1000px;
-        height: 200px;
     }
 
     .paging li{
@@ -100,9 +99,11 @@
                     </c:if>
 
                     <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
-                        <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
-                            <a href="${num}">${num}</a>
-                        </li>
+                        <c:if test="${num != 0}">
+                            <li class="paginate_button ${pageMaker.cri.pageNum == num?"active":""}">
+                                <a href="${num}">${num}</a>
+                            </li>
+                        </c:if>
                     </c:forEach>
 
                     <c:if test="${pageMaker.next}">
@@ -122,21 +123,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-$(document).ready(function(){
-    var actionForm = $("#actionForm");
-
-    $(".paginate_button a").on("click", function (e) {
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    });
-
-    $("#insertMemberQnA").on('click', function(){
-        location.href='/myPage/insertMemberQnA';
-    })
-})
-</script>--%>
 </body>
 </html>

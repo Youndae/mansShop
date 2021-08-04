@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MemberServiceImpl implements MemberService{
 
-
     MemberMapper memberMapper;
 
     @Override

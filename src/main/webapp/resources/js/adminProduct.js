@@ -143,36 +143,6 @@ $(document).ready(function () {
         location.href='/admin/addProduct';
     })
 
-    /*var actionForm = $("#actionForm");
-
-    $(".paginate_button a").on("click", function (e) {
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    });
-
-    $(".productList-classification a").on('click', function (e) {
-        e.preventDefault();
-
-        actionForm.find("input[name='classification']").val($(this).attr("href"));
-        actionForm.find("input[name='pageNum']").val("1");
-        actionForm.submit();
-    });
-
-    var searchForm = $("#searchForm");
-    $("#searchForm button").on('click', function (e) {
-        if (!searchForm.find("input[name='keyword']").val()) {
-            alert("키워드 입력");
-        }
-
-        searchForm.find("input[name='pageNum']").val("1");
-        e.preventDefault();
-
-        searchForm.submit();
-    })*/
-
-
     var classification = $("#classification").val();
     var size = $("#size").val();
 
@@ -244,13 +214,7 @@ $(document).ready(function () {
         } else if ($('input[name=pName]').val() == "") {
             $("#checkPName").text("상품명을 입력해주세요");
             $('input[name=pName]').focus();
-        }/*else if($('select[name=pSize]').val() == "default"){
-            $("#checkPSize").text("사이즈를 선택해주세요");
-        }else if($('input[name=pColor]').val() == ""){
-            $("#checkPColor").text("색상을 입력해주세요");
-            $('input[name=pColor]').focus();
-        }*/
-        else if ($('input[name=pPrice]').val() == "") {
+        } else if ($('input[name=pPrice]').val() == "") {
             $("#checkPPrice").text("금액을 입력해주세요");
             $('input[name=pPrice]').focus();
         } else if (numRegex.test($('input[name=pPrice]').val()) == false) {
@@ -396,7 +360,6 @@ $(document).ready(function () {
 
         console.log("form : " + form);
 
-        /*console.log("form : " + form);*/
         var formData = new FormData(form);
 
         console.log("classification : " + $('select[name=pClassification]').val());
@@ -419,13 +382,7 @@ $(document).ready(function () {
         } else if ($('input[name=pName]').val() == "") {
             $("#checkPName").text("상품명을 입력해주세요");
             $('input[name=pName]').focus();
-        }/*else if($('select[name=pSize]').val() == "default"){
-                $("#checkPSize").text("사이즈를 선택해주세요");
-            }else if($('input[name=pColor]').val() == ""){
-                $("#checkPColor").text("색상을 입력해주세요");
-                $('input[name=pColor]').focus();
-            }*/
-        else if ($('input[name=pPrice]').val() == "") {
+        } else if ($('input[name=pPrice]').val() == "") {
             $("#checkPPrice").text("금액을 입력해주세요");
             $('input[name=pPrice]').focus();
         } else if (numRegex.test($('input[name=pPrice]').val()) == false) {
@@ -451,16 +408,6 @@ $(document).ready(function () {
                 formData.append('infoFiles', infoFiles[index]);
             }
 
-            // console.log("formdata1 : " + formData);
-
-            /*console.log("test : " + formData.get('pColor'));*/
-
-            /*console.log("formdata : " + formData);*/
-
-            // console.log("type : " + typeof(formData));
-
-            // console.log("append complete");
-
             $.ajax({
                 url: '/admin/addProduct',
                 enctype: 'multipart/form-data',
@@ -484,8 +431,6 @@ $(document).ready(function () {
             });
         }
 
-
-        /*$("#addProductForm").submit();*/
     });
 
 

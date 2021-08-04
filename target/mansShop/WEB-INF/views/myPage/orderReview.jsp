@@ -95,13 +95,5 @@
         </div>
     </div>
 </div>
-<%--<script>
-    $(function(){
-        $("#reviewInsert").on('click',function(){
-            $("#reviewInsertForm").attr("action", "/myPage/orderReview");
-            $("#reviewInsertForm").submit();
-        })
-    })
-</script>--%>
 </body>
 </html>

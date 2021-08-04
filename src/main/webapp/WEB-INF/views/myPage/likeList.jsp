@@ -40,14 +40,8 @@
         flex-wrap: wrap;
     }
 
-    .likeList_content{
-        /*margin-top: 100px;*/
-
-    }
-
     .likeList_content div{
         width: 100%;
-        /*height: 250px;*/
         flex: 0 0 25%;
     }
 
@@ -92,11 +86,6 @@
                         <span class="pPrice"><fmt:formatNumber value="${list.PPrice}" pattern="#,###"/> 원</span>
                     </div>
                 </div>
-                <%--<a href="/${list.pno}">
-                    <img src="/display?image=${list.firstThumbnail}">
-                    <label>${list.PName}</label>
-                    <span>${list.PPrice}</span>
-                </a>--%>
             </c:forEach>
         </div>
 
@@ -131,17 +120,5 @@
 
 </div>
 </div>
-<%--<script>
-    $(document).ready(function(){
-        var actionForm = $("#actionForm");
-
-        $(".paginate_button a").on("click", function (e) {
-            e.preventDefault();
-
-            actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-            actionForm.submit();
-        });
-    })
-</script>--%>
 </body>
 </html>

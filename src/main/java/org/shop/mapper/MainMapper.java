@@ -19,35 +19,5 @@ public interface MainMapper {
 
     public int getProductTotal(Criteria cri);
 
-    public ProductVO productDetail(String pno);
-
-    public List<ThumbnailVO> getProductThumb(String pno);
-
-    public List<ProductOpVO> getProductOp(String pno);
-
-    public List<ProductImgVO> getProductInfo(String pno);
-
-    public List<ProductReviewVO> getProductReview(@Param("cri") Criteria cri, @Param("pno") String pno);
-
-    public List<ProductQnAVO> getProductQnA(@Param("cri") Criteria cri, @Param("pno")String pno);
-
-    public int getProductReviewTotal(String pno);
-
-    public int getProductQnATotal(String pno);
-
-    public void insertPQnA(ProductQnAVO productQnAVO);
-
-    public void likeProduct(LikeVO likeVO);
-
-    public void deLikeProduct(LikeVO likeVO);
-
-    public void addCart(CartVO cartVO);
-
-    public int checkCart(String cartNo);
-
-    public void updateCart(CartVO cartVO);
-
     public List<MemberOrderListDTO> getNonOrderList(@Param("recipient") String recipient, @Param("orderPhone") String orderPhone);
-
-    public int getLikeProductStat(@Param("pno") String pno, @Param("userId") String userId);
 }

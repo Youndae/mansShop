@@ -28,7 +28,22 @@ a:hover{
     margin: auto;
 }
 
+#mainSearchForm{
+    display: flex;
+}
 
+button{
+    background-color: white;
+    border: 1px solid lightgray;
+}
+
+.form_button{
+    margin-top: 10px;
+}
+
+.form_button .btn img{
+    width: 17px;
+}
 
 .header{
     margin-top: 20px;

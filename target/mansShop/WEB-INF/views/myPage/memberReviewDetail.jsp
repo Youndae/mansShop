@@ -82,27 +82,7 @@
             </div>
         </div>
     </div>
-
 </div>
 </div>
-<%--<script>
-    $(function(){
-        $("#modifyReview").on('click',function(){
-            var rNum = $(this).val();
-
-            location.href='/myPage/memberReviewModify/' + rNum;
-        })
-
-        $("#deleteReview").on('click',function(){
-            var rNum = $(this).val();
-            var result = confirm("리뷰를 삭제하게 되면 해당 상품의 리뷰를 재작성할 수 없습니다.\n 정말 삭제하시겠습니까?");
-
-            if(result){
-                location.href='/myPage/memberReviewDelete/' + rNum;
-            }
-
-        })
-    })
-</script>--%>
 </body>
 </html>

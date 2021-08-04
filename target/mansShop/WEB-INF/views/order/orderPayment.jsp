@@ -8,6 +8,75 @@
     <meta name="_csrf" content="${_csrf.token}">
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
+<style>
+    .container .header{
+        text-align: center;
+    }
+
+    .orderPayment_header{
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .orderPayment_content{
+        margin: 40px 0 0 35%;
+    }
+
+    .form_content{
+        margin-bottom: 20px;
+    }
+
+    .form_content_label{
+        font-size: x-large;
+    }
+
+    .form_content_input input{
+        width: 400px;
+        height: 30px;
+        margin-top: 10px;
+    }
+
+    .form_content_input_postCode input{
+        width: 100px;
+        height: 30px;
+    }
+
+    .order_table{
+        width: 700px;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .order_price{
+        margin-top: 30px;
+    }
+
+    .order_price span{
+        font-size: x-large;
+        margin-left: 10px;
+    }
+
+    .orderPayment_payment label{
+        font-size: x-large;
+    }
+
+    .orderPayment_payment{
+        margin-top: 60px;
+    }
+
+    .orderPayment_payment div{
+        margin-top: 10px;
+    }
+
+    .orderPayment_btn_area button{
+        margin-top: 35px;
+        margin-left: 17%;
+        width: 300px;
+        height: 40px;
+        font-size: large;
+        font-weight: 500;
+    }
+</style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -15,37 +84,51 @@
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
 <div class="content">
-    <div class="header">
+    <div class="orderPayment_header">
         <h1>상품 결제</h1>
     </div>
-    <div>
+    <div class="orderPayment_content">
         <form id="order_form" method="post">
-            <div>
-                <label>수령인</label>
-                <input type="text" name="recipient">
+            <div class="form_content">
+                <div class="form_content_label">
+                    <label>수령인</label>
+                </div>
+                <div class="form_content_input">
+                    <input type="text" name="recipient">
+                </div>
             </div>
-            <div>
-                <label>연락처</label>
-                <input type="text" name="orderPhone">
+            <div class="form_content">
+                <div class="form_content_label">
+                    <label>연락처</label>
+                </div>
+                <div class="form_content_input">
+                    <input type="text" name="orderPhone">
+                </div>
             </div>
-            <div>
-                <div>
+            <div class="form_content">
+                <div class="form_content_label">
                     <label>배송지주소</label>
                 </div>
-                <div>
-                    <input type="text" id="postCode" placeholder="우편번호" readonly>
-                    <button type="button" id="searchAddr">우편번호 찾기</button>
-                </div>
-                <div>
-                    <input style="width: 700px" type="text" id="address" placeholder="주소" readonly>
-                </div>
-                <div>
-                    <input type="text" id="addrDetail" placeholder="상세주소">
+                <div class="form_content_input">
+                    <div class="form_content_input_postCode">
+                        <input type="text" id="postCode" placeholder="우편번호" readonly>
+                        <button type="button" id="searchAddr">우편번호 찾기</button>
+                    </div>
+                    <div>
+                        <input style="width: 700px" type="text" id="address" placeholder="주소" readonly>
+                    </div>
+                    <div>
+                        <input type="text" id="addrDetail" placeholder="상세주소">
+                    </div>
                 </div>
             </div>
-            <div>
-                <label>배송메모</label>
-                <input type="text" name="orderMemo">
+            <div class="form_content">
+                <div class="form_content_label">
+                    <label>배송메모</label>
+                </div>
+                <div class="form_content_input">
+                    <input type="text" name="orderMemo">
+                </div>
             </div>
             <input type="hidden" name="orderPrice">
             <input type="hidden" name="orderPayment">
@@ -75,7 +158,7 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${list.PSize == null}">
+                                    <c:when test="${list.PSize == ''}">
                                         <c:choose>
                                             <c:when test="${list.PColor != null}">
                                                 색상 : <c:out value="${list.PColor}"/>
@@ -84,7 +167,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <c:choose>
-                                            <c:when test="${list.PColor == null}">
+                                            <c:when test="${list.PColor == ''}">
                                                 사이즈 : <c:out value="${list.PSize}"/>
                                             </c:when>
                                             <c:otherwise>
@@ -95,7 +178,7 @@
                                 </c:choose>
                             </td>
                             <td>
-                                <span><c:out value="${list.CCount}"/></span>
+                                <c:out value="${list.CCount}"/>
                             </td>
                             <td class="cPrice">
                                 <fmt:formatNumber value="${list.CPrice}" pattern="#,###"/>
@@ -106,220 +189,33 @@
             </table>
             <c:choose>
                 <c:when test="${total <= 100000}">
-                    <span class="delivery_price">배송비 : 2,500원</span>
-                    <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total + 2500}" pattern="#,###"/> 원</span>
+                    <div class="order_price">
+                        <span class="delivery_price">배송비 : 2,500원</span>
+                        <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total + 2500}" pattern="#,###"/> 원</span>
+                    </div>
                 </c:when>
                 <c:otherwise>
-                    <span class="delivery_price">배송비 : 0원</span>
-                    <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+                    <div class="order_price">
+                        <span class="delivery_price">배송비 : 0원</span>
+                        <span class="total_price">총 주문금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+                    </div>
                 </c:otherwise>
             </c:choose>
+        <div class="orderPayment_payment">
+            <div>
+                <label>결제수단</label>
+            </div>
+            <div>
+                <input type="radio" name="select_payment" value="card">신용카드
+                <input type="radio" name="select_payment" value="cash">무통장입금
+            </div>
+        </div>
+        <div class="orderPayment_btn_area">
+            <button type="button" id="orderPay">결제하기</button>
+        </div>
+    </div>
 
-    </div>
-    <div>
-        <label>결제수단</label>
-        <input type="radio" name="select_payment" value="card">신용카드
-        <input type="radio" name="select_payment" value="cash">무통장입금
-    </div>
-    <div>
-        <button type="button" id="orderPay">결제하기</button>
-    </div>
 </div>
 </div>
-
-
-<%--<script>
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ready(function(){
-        $("#orderPay").on('click', function(){
-            var type = $("input[name=select_payment]:checked").val();
-
-            console.log("payment type : " + type);
-
-            $("input[name=orderPrice]").val($("span.total_price").text().replace(/\D/g, ''));
-
-            if(type == 'card'){
-                $("input[name=orderPayment]").val("C");
-                order();
-            }else if(type == 'cash'){
-                $("input[name=orderPayment]").val("H");
-                var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
-                $("input[name=addr]").val(saveAddr);
-
-                var table_tbody = $("#order_payment_list");
-                var table_tr = table_tbody.children();
-                var form = $("#order_form")[0];
-                var formData = new FormData(form);
-
-                for(var i = 0; i < table_tr.length; i++){
-                    formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
-                    formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
-                    formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
-                }
-
-                $.ajax({
-                    url: '/order/payment',
-                    type: 'post',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: formData,
-                    beforeSend: function(xhr){
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function(data){
-                        var oType = "H";
-                        location.href='orderComplete/'+oType;
-                    },
-                    error: function(request, status, error){
-                        alert("code : " + request.status + "\n"
-                                + "message : " + request.responseText
-                                + "\n" + "error : " + error);
-                    }
-                })
-            }
-        })
-
-        $("#searchAddr").on('click', function(){
-            daum_address();
-        })
-    });
-
-    function daum_address(){
-        new daum.Postcode({
-            oncomplete: function(data) {
-
-                var addr = '';
-                var extraAddr = '';
-
-                if (data.userSelectedType === 'R') {
-                    addr = data.roadAddress;
-                } else {
-                    addr = data.jibunAddress;
-                }
-
-
-                if(data.userSelectedType === 'R'){
-
-                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-                        extraAddr += data.bname;
-                    }
-
-                    if(data.buildingName !== '' && data.apartment === 'Y'){
-                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                    }
-
-                    if(extraAddr !== ''){
-                        extraAddr = ' (' + extraAddr + ')';
-                    }
-
-                    addr += extraAddr;
-
-                }
-
-
-                document.getElementById('postCode').value = data.zonecode;
-                document.getElementById("address").value = addr;
-                document.getElementById("addrDetail").focus();
-            }
-        }).open();
-    }
-
-    function order() {
-        var IMP = window.IMP;
-        IMP.init('imp78285136');
-        var totalPrice = parseInt($("input[name=orderPrice]").val());
-        var name = $("input[name=recipient]").val();
-        var phone = $("input[name=orderPhone]").val();
-        var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
-        var payAddr = $("#address").val() + " " + $("#addrDetail").val();
-
-        console.log(saveAddr);
-
-        $("input[name=addr]").val(saveAddr);
-
-
-        var table_tbody = $("#order_payment_list");
-        var table_tr = table_tbody.children();
-
-        if(phone.length == 11){
-            phone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-        }else if(phone.length == 10){
-            phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-        }
-
-        var form = $("#order_form")[0];
-        var formData = new FormData(form);
-
-        for(var i = 0; i < table_tr.length; i++){
-            formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
-            formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
-            formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
-        }
-
-        var pName = table_tr.eq(0).attr("data_pName");
-
-        if(table_tr.length == 1){
-            var orderName = pName;
-        }else{
-            var orderName = pName + " 외 " + (table_tr.length - 1) + " 건";
-        }
-
-
-        IMP.request_pay({
-            pg: 'danal', // version 1.1.0부터 지원.
-            pay_method: 'card',
-            merchant_uid: 'merchant_' + new Date().getTime(),
-            name: orderName,
-            amount: totalPrice,
-            buyer_email: '',
-            buyer_name: name,
-            buyer_tel: phone,
-            buyer_addr: payAddr,
-            buyer_postcode: $("#postCode").val(),
-            /*m_redirect_url : '/order/orderComplete'
-            * 결제가 성공햇을 경우 이동할 페이지 url
-            * 가이드와 다르게 ajax로 데이터를 넘겨주는 형태로 바꿔서 그런지
-            * 제대로 동작하지 않음.*/
-        }, function (rsp) {
-            if (rsp.success) {
-                $.ajax({
-                    url: '/order/payment',
-                    type: 'post',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: formData,
-                    beforeSend: function(xhr){
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function(data){
-                        var oType = "C";
-                        location.href='orderComplete/'+oType;
-                    },
-                    error: function(request, status, error){
-                        alert("code : " + request.status + "\n"
-                                + "message : " + request.responseText
-                                + "\n" + "error : " + error);
-                    }
-                });
-
-
-                /*var msg = '결제가 완료되었습니다.';
-                msg += '고유ID : ' + rsp.imp_uid;
-                msg += '상점 거래ID : ' + rsp.merchant_uid;
-                msg += '결제 금액 : ' + rsp.paid_amount;
-                msg += '카드 승인번호 : ' + rsp.apply_num;*/
-            } else {
-                var msg = '결제에 실패하였습니다.';
-                msg += '에러내용 : ' + rsp.error_msg;
-                alert(msg);
-            }
-        });
-    }
-
-
-</script>--%>
 </body>
 </html>

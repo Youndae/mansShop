@@ -4,31 +4,9 @@ $(document).ready(function(){
 
     $(".side_nav ul").append(side_li);
 
-   /* var actionForm = $("#salesProductActionForm");
-    var SearchForm = $("#salesProductSearchForm");
-
-    $(".paginate_button a").on('click', function(e){
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    })
-
-
-    $("#salesProductSearchForm button").on('click', function(e){
-        if(!SearchForm.find("input[name='keyword']").val()){
-            alert('키워드 입력');
-        }
-
-        SearchForm.find("input[name='pageNum']").val("1");
-        e.preventDefault();
-
-        SearchForm.submit();
-    });*/
-
     $("#salesRate").on('click', function(e){
         if($(this).val() == 1)
-            $('input[name=sortType]').val("2");//2는 오름차순. null이거나
+            $('input[name=sortType]').val("2");
         else
             $('input[name=sortType]').val("1");
 
@@ -62,36 +40,6 @@ $(document).ready(function(){
 
         $("#select_Term_Year").append(str);
     })
-
-    /*(function(){
-        $.getJSON("/admin/salesTermSelect", function(arr){
-
-            var str = "";
-            var optionYear = "";
-            $(arr).each(function(i, termYear){
-                var year = termYear.salesTerm.substring(0, 4);
-
-                if(optionYear != year){
-                    optionYear = year;
-                    str += "<option value=\"" + optionYear +"\">" +
-                        optionYear + "</option>";
-                }
-            });
-
-            $("#select_Term_Year").append(str);
-        })
-    })();*/
-
-    /*$("#select_Term_Year").on("propertychange change keyup paste input", function(){
-
-        actionForm.find("input[name='pageNum']").val("1");
-        actionForm.find("input[name='keyword']").val($("#select_Term_Year").val());
-        actionForm.find("input[name='amount']").val("12");
-
-        actionForm.submit();
-    })*/
-
-
 
     var actionForm = $("#pageActionForm");
     var userSearchForm = $("#searchActionForm");
@@ -143,9 +91,6 @@ $(document).ready(function(){
             info.userBirth = birth.getFullYear() + "/" + (birth.getMonth()+1) + "/" + birth.getDate();
 
             $(".modal-body span[name=userBirth]").text(info.userBirth);
-
-
-
 
             if(info.userPhone.length == 11){
                 formatPhone = info.userPhone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');

@@ -12,9 +12,13 @@ $(document).ready(function(){
 
         var keyword = $("input[name='keyword']").val();
 
+        if(keyword == 'OUTER' || keyword == 'TOP' || keyword == 'PANTS' || keyword == 'SHOES' || keyword == 'BAGS'){
+            actionForm.attr('action', '/'+keyword);
+        }else{
+            actionForm.attr('action', '/searchProduct');
+        }
 
         actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.attr('action', '/'+keyword);
         actionForm.submit();
     });
 })

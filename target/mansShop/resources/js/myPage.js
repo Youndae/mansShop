@@ -4,16 +4,6 @@ var emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-z
 var phonePattern = /^01(?:0|1|6|9)([0-9]{3,4})([0-9]{4})$/;
 
 $(document).ready(function(){
-    //like List, memberQnAList pagination
-    /*var actionForm = $("#actionForm");
-
-    $(".paginate_button a").on("click", function (e) {
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    });*/
-
     //modifyInfo
     $("#modify_info").on('click', function(){
 
@@ -33,8 +23,6 @@ $(document).ready(function(){
             $("#userInfo").attr('action', '/myPage/modifyInfo');
             $("#userInfo").submit();
         }
-
-
     })
 
     $("#userEmail").on("propertychange change keyup paste input", function(){

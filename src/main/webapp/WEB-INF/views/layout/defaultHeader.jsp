@@ -5,30 +5,6 @@
 <head>
     <title>Title</title>
 </head>
-<style>
-    /*.content{
-    padding: 20px 0 0 0;
-    margin: 0 0 0 100px;
-    }
-
-    .content .product_header{
-        width: 200px;
-        display: contents;
-    }
-
-    .content .product_content{
-        margin-top: 100px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .product_content  div{
-        width: 100%;
-        height: 250px;
-        flex : 0 0 33.33333%;
-    }*/
-
-</style>
 <link rel="stylesheet" href="/css/header.css">
 <script type="text/javascript" src="/js/header.js"></script>
 <body>
@@ -49,7 +25,7 @@
                             </form>
 
                             <li><a href="/myPage/cart">장바구니</a></li>
-                            <li><a href="/myPage/modifyInfo">마이페이지</a></li>
+                            <li><a href="/myPage/modifyCheck">마이페이지</a></li>
                         </c:when>
                         <c:otherwise>
                             <li><a href="/member/login">로그인</a></li>
@@ -60,10 +36,15 @@
                     <li><a href="/myPage/memberOrderList">주문조회</a></li>
                     <li>
                         <form id="mainSearchForm" action="/searchProduct" method="get">
-                            <input type="text" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>"/>
+                            <input type="text" id="search_keyword">
+                            <div class="form_button">
+                                <button class="btn" type="button" >
+                                    <img src="https://as1.ftcdn.net/v2/jpg/03/25/73/68/1000_F_325736897_lyouuiCkWI59SZAPGPLZ5OWQjw2Gw4qY.jpg">
+                                </button>
+                            </div>
+                            <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>"/>
                             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>"/>
                             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>"/>
-                            <button class="btn">검색</button>
                         </form>
                     </li>
                 </ul>

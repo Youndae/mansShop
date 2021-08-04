@@ -8,9 +8,5 @@ public interface MemberMapper {
 
     public void joinAuth(String userId);
 
-    public void findId();
-
-    public void findPw();
-
     int idCheck(String userId) throws Exception;
 }

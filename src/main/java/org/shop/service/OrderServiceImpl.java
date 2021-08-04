@@ -135,7 +135,12 @@ public class OrderServiceImpl implements OrderService{
         int salesTermCount = orderMapper.maxSalesTerm(now);
         log.info("max salesTerm : " + salesTermCount);
 
-        salesVO.setSalesSum(orderVO.getOrderPrice());
+        if(orderVO.getOrderPrice() < 100000){
+            salesVO.setSalesSum(orderVO.getOrderPrice() - 2500);
+        }else{
+            salesVO.setSalesSum(orderVO.getOrderPrice());
+        }
+
         salesVO.setSalesOrders(totalCount);
         salesVO.setSalesTerm(now);
 

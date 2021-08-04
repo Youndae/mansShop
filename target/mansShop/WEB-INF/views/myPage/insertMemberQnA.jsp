@@ -94,15 +94,6 @@
     </div>
 </div>
 </div>
-<%--<script>
-    $(function(){
-        $("#insertMyQnA").on('click', function(){
-            var form = $("#myQnA_InsertForm");
 
-            form.attr("action", "/myPage/insertMemberQnA");
-            form.submit();
-        })
-    });
-</script>--%>
 </body>
 </html>

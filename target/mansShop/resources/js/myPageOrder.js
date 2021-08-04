@@ -45,23 +45,6 @@ $(document).ready(function(){
 
     })
 
-    /*$("button[name=up]").on('click', function(){
-
-        var totalPrice = $(".total_price").text().replace(/\D/g, '');
-        var count = $(this).siblings("span").text();
-        var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
-        pPrice = parseInt(pPrice) / parseInt(count); //개당 가격
-        totalPrice = parseInt(totalPrice) + pPrice;
-
-        count = parseInt(count) + 1;
-        pPrice = pPrice * count;
-
-        $(this).siblings("span").text(count);
-        $(this).parent('td').next().text(pPrice.toLocaleString());
-        $(".total_price").text("총 주문 금액 : " + totalPrice.toLocaleString() + " 원");
-
-    });*/
-
     $("button[name=up]").on('click', function(){
 
         var pOpNo = $(this).siblings("input").val();

@@ -31,7 +31,6 @@ public class MyPageServiceImpl implements MyPageService{
 
     @Override
     public int modifyCheckProc(MemberVO memberVO) {
-
         log.info("modifyCheckProc");
 
         String checkPw = myPageMapper.modifyCheck(memberVO);

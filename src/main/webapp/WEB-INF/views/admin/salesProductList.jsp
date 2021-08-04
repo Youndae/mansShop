@@ -160,51 +160,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-    $(document).ready(function(){
-
-        var actionForm = $("#salesProductActionForm");
-        var SearchForm = $("#salesProductSearchForm");
-
-        $(".paginate_button a").on('click', function(e){
-            e.preventDefault();
-
-            actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-            actionForm.submit();
-        })
-
-
-        $("#salesProductSearchForm button").on('click', function(e){
-            if(!SearchForm.find("input[name='keyword']").val()){
-                alert('키워드 입력');
-            }
-
-            SearchForm.find("input[name='pageNum']").val("1");
-            e.preventDefault();
-
-            SearchForm.submit();
-        });
-
-        $("#sales").on('click', function(e){
-           if($(this).val() == 1)
-               $('input[name=sortType]').val("2");//2는 오름차순. null이거나
-           else
-               $('input[name=sortType]').val("1");
-
-            actionForm.find("input[name='pageNum']").val("1");
-            actionForm.submit();
-        });
-
-        $("#salesRate").on('click', function(e){
-            if($(this).val() == 3)
-                $('input[name=sortType]').val("4");
-            else
-                $('input[name=sortType]').val("3");
-
-            actionForm.find("input[name='pageNum']").val("1");
-            actionForm.submit();
-        })
-    })
-</script>--%>
 </body>
 </html>

@@ -30,15 +30,9 @@ public interface AdminMapper {
 
     public void deleteInfoImg(String pImg);
 
-    public void deleteProduct(String pno);
-
     public List<OrderVO> orderList(Criteria cri);
 
     public void shippingProcessing(String orderNo);
-
-    public void orderPacking();
-
-    public void orderDetail();
 
     public List<ProductQnAVO> adminQnAList(Criteria cri);
 
@@ -61,8 +55,6 @@ public interface AdminMapper {
     public List<ProductOpVO> salesProductList(Criteria cri);
 
     public List<SalesVO> salesTermList(Criteria cri);
-
-    public void replyProductQnA();
 
     public List<ProductVO> pList() throws Exception;
 

@@ -41,7 +41,6 @@
         font-size: large;
         margin: 25px 0 25px 0;
         width: 1000px;
-        height: 200px;
     }
 
     .paging li{
@@ -129,17 +128,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-    $(document).ready(function(){
-        var actionForm = $("#actionForm");
-
-        $(".paginate_button a").on("click", function (e) {
-            e.preventDefault();
-
-            actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-            actionForm.submit();
-        });
-    })
-</script>--%>
 </body>
 </html>

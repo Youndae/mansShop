@@ -68,9 +68,9 @@ $(document).ready(function(){
                     type: "post",
                     data: UserId,
                     dataType: "json",
-                    /*beforeSend : function(xhr){
+                    beforeSend : function(xhr){
                         xhr.setRequestHeader(header, token);
-                    },*/
+                    },
                     success : function(data){
                         console.log("data : " + data);
                         if(data == 1){
@@ -80,7 +80,6 @@ $(document).ready(function(){
                             $("#idOverlap").text("사용가능한 아이디입니다.");
                             $("#idStat").val("1");
                         }
-
                     },
                     error : function(request, status, error){
                         alert("code:" + request.status + "\n"
@@ -110,8 +109,6 @@ $(document).ready(function(){
         index++;
     }
 
-    /*lastday();*/
-
     $("#select_year").on("propertychange change keyup paste input", function(){
         console.log("select Year");
         lastday();
@@ -138,48 +135,6 @@ function lastday(){
         }
     }
 }
-
-
-/*
-function checkPassword(){
-    var originPw = $("input[name='userPw']").val();
-    console.log("originPw : " + originPw);
-    var checkPw = $("#checkUserPw").val();
-
-    if(originPw.length < 8){
-        $("#pwOverlap").text("비밀번호는 8자리 이상입니다.");
-    }else if(originPw != checkPw){
-        $("#pwOverlap").text("비밀번호가 일치하지 않습니다.");
-    }else if(pwPattern.test(originPw) == false){
-        $("#pwOverlap").text("비밀번호는 영어,특수문자,숫자가 포함되어야합니다.");
-    }else{
-        $("#pwOverlap").text("");
-        $("#pwStat").val("1");
-    }
-}
-
-function checkEmail(){
-    var email = $("#userEmail").val();
-
-    if(emailPattern.test(email) == false){
-        $("#emailOverlap").text("유효한 주소가 아닙니다.");
-    }else{
-        $("#emailOverlap").text("");
-        $("#mailStat").val("1");
-    }
-}
-
-function checkPhone(){
-    var phoneNo = $("#userPhone").val();
-
-    if(phonePattern.test(phoneNo) == false){
-        $("#phoneOverlap").text("유효한 번호가 아닙니다.");
-    }else{
-        $("#phoneOverlap").text("");
-        $("#phoneStat").val("1");
-    }
-}*/
-
 
 $(function(){
     $("#join").click(function() {

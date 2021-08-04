@@ -27,11 +27,29 @@ $(document).ready(function () {
         $.getJSON("/product/getProductOp", {pno: pno}, function (arr) {
             var str = "<option value=\"default\">------</option>";
 
-            // 수정사항. 가방같은 경우는 사이즈가 없기 때문에 옵션에서 사이즈를 출력하지 않도록 수정해야함.
-
             $(arr).each(function (i, op) {
-                str += "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
-                    "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
+
+                if(op.pcolor == null){
+                    if(op.psize != null){
+                        str += "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
+                            "사이즈 : " + op.psize + "</option>";
+                    }else{
+                        str += "<option value=\"" + op.popNo + "\">" +
+                            "</option>";
+                    }
+
+                }else if(op.psize == null){
+                    if(op.pcolor != null){
+                        str += "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
+                            "컬러 : " + op.pcolor + "</option>";
+                    }
+
+                }else{
+                    str += "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
+                        "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
+                }
+
+
             })
 
             $("#option_select_box").append(str);
@@ -229,11 +247,12 @@ $(document).ready(function () {
 
 
     $("#like").on('click', function () {
-        var pno = $("input[name=pno]").val();
+        var pno = $("#pno").val();
 
+        console.log("like pno : " + pno);
 
         $.ajax({
-            url: "/likeProduct",
+            url: "/product/likeProduct",
             type: 'post',
             data: {pno: pno},
             beforeSend: function (xhr) {
@@ -251,10 +270,10 @@ $(document).ready(function () {
     })
 
     $("#deLike").on('click', function () {
-        var pno = $("input[name=pno]").val();
+        var pno = $("#pno").val();
 
         $.ajax({
-            url: "/deLikeProduct",
+            url: "/product/deLikeProduct",
             type: 'post',
             data: {pno: pno},
             beforeSend: function (xhr) {
@@ -486,21 +505,21 @@ $(function () {
 
         dataStr += "<tr class=\"product_temp_cart\" id=\"productCount" + num + "\" value=\"" + option[0] + "\">" +
             "<td>" + option_txt + "</td>" +
-            "<td>" +
+            "<td class=\"product_temp_cart_input\">" +
             "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\" readonly>" +
-            "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>up</button>" +
-            "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>down</button>" +
-            "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>x</button>" +
+            "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'><img src=\"https://image.flaticon.com/icons/png/512/120/120891.png\"></button>" +
+            "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'><img src=\"https://image.flaticon.com/icons/png/512/2089/2089636.png\"></button>" +
+            "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'><img src=\"https://image.flaticon.com/icons/png/512/109/109602.png\"></button>" +
             "</td>" +
             "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
-            "<input type=\"hidden\" name=\"size\" value=\"" + option[1] + "\">" +
-            "<input type=\"hidden\" name=\"color\" value=\"" + option[2] + "\">" +
+            "<input type=\"hidden\" name=\"color\" value=\"" + option[1] + "\">" +
+            "<input type=\"hidden\" name=\"size\" value=\"" + option[2] + "\">" +
             "</tr>";
 
         noArr.push(option[0]);
         nameArr.push($(".name").text());
-        sizeArr.push(option[1]);
-        colorArr.push(option[2]);
+        colorArr.push(option[1]);
+        sizeArr.push(option[2]);
         numArr.push(num);
 
         num++;
@@ -519,61 +538,11 @@ $(function () {
 
         console.log("append");
 
-        /*
-            옵션이 변경 되었을때는 테이블에 td만 추가해주면 됨.
-
-            고민해야할점은 count가 변동이 생겼을때.
-
-            count가 변동되었을때는
-        */
     })
 
-    /*
-            장바구니 혹은 바로구매를 눌렀을 때
-            num값을 이용해 반복문을 돌린다.
-            for(int i = 1; i <= num; i++){
-                var a = "productCount"+i;
-            }
-            이런 형태로 tr의 id값을 구하고
-            해당 id값의 value인 pOpNo와
-            해당 tr아래에 있는 input의 value를 가져와서
-            pOpNo와 count값을 배열에 넣어주는데
-            pOpNoArr = {};
-            pCount = {};
-            이렇게 각각 넣어주고 컨트롤러에서 List로 받아 처리하는 방법으로 구현할것.
-        */
 
     $(function () {
         $("#cart").on('click', function () {
-            /*var formdata = new FormData();*/
-            /*var pOpNo = new Array();*/
-            /*var pCount = new Array();
-            var pPrice = new Array();
-
-            console.log("Num : " + num);*/
-
-            /*for(var i = 1; i < num; i++){
-                var tVal = "productCount" + i;
-
-                var count = $("input[name="+tVal+"]").val();
-                var opNo = $("tr[id="+tVal+"]").attr("value");
-                var price = $("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, '');
-
-                console.log("opNo : " + opNo);
-                console.log("count : " + count);
-                console.log("price : " + price);
-
-
-                /!*pOpNo[pOpNoNum] = opNo;
-                pCount[pCountNum] = count;
-
-                pOpNoNum++;
-                pCountNum++;*!/
-
-                /!*pOpNo.push(opNo);*!/
-                pCount.push(count);
-                pPrice.push(price);
-            }*/
 
             for (var i = 0; i < numArr.length; i++) {
                 var n = numArr[i];
@@ -613,25 +582,6 @@ $(function () {
 
     $(function () {
         $("#buy").on('click', function () {
-            /*  var noArr = new Array();
-              var nameArr = new Array();
-              var sizeArr = new Array();
-              var colorArr = new Array();
-              var countArr = new Array();
-              var priceArr = new Array();
-
-              for(var i = 1; i < num; i++){
-                  var tVal = "productCount" + i;
-                  console.log("tVal : " + tVal);
-                  noArr.push($("tr[id="+tVal+"]").attr("value"));
-                  console.log("noArr : " + $("tr[id="+tVal+"]").attr("value"));
-                  nameArr.push($(".name").text());
-                  sizeArr.push($("tr[id="+tVal+"] input[name=size]").val());
-                  colorArr.push($("tr[id="+tVal+"] input[name=color]").val());
-                  countArr.push($("input[name="+tVal+"]").val());
-                  priceArr.push($("tr[id="+tVal+"] td[name=productPrice] span").text().replace(/\D/g, ''));
-              }*/
-
 
             for (var i = 0; i < numArr.length; i++) {
                 var n = numArr[i];
@@ -648,7 +598,6 @@ $(function () {
             $("input[name=cCount]").val(countArr);
             $("input[name=cPrice]").val(priceArr);
             $("input[name=pno]").val(pnoArr);
-
 
             $("#order_form").attr("action", "/order/orderPayment");
             $("#order_form").submit();

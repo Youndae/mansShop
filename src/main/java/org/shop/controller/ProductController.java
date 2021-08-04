@@ -29,6 +29,7 @@ public class ProductController {
 
     @GetMapping("/{pno}")
     public String productDetail(@PathVariable("pno") String pno, Model model, Criteria cri, Principal principal){
+        //상품 상세페이지
         log.info("detail pno : " + pno);
 
         cri.setKeyword(pno);
@@ -105,6 +106,7 @@ public class ProductController {
                        @RequestParam("pCount") List<String> pCount,
                        @RequestParam("pPrice") List<String> pPrice,
                        CartVO cartVO, Principal principal){
+        //장바구니 추가
         log.info("addCart");
 
         log.info("pPrice : " + pPrice);
@@ -123,6 +125,8 @@ public class ProductController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void QnAInsert(ProductQnAVO productQnAVO, Principal principal){
 
+        //상품 문의 작성
+
         log.info("pQnAContent: " + productQnAVO.getPQnAContent());
         log.info("pno : " + productQnAVO.getPno());
 
@@ -139,11 +143,10 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void likeProduct(LikeVO likeVO, Principal principal){
+        //찜목록에 추가
         log.info("like product");
 
-        String id = principal.getName();
-
-        likeVO.setUserId(id);
+        likeVO.setUserId(principal.getName());
 
         String likeNo = likeVO.getUserId()+likeVO.getPno();
 
@@ -159,6 +162,7 @@ public class ProductController {
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void deLikeProduct(LikeVO likeVO, Principal principal){
+        //찜목록에서 삭제
         log.info("deLikeProduct");
 
         String id = principal.getName();

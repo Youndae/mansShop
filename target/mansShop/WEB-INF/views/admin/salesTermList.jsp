@@ -142,50 +142,5 @@
     </div>
 </div>
 </div>
-<%--<script>
-$(document).ready(function(){
-
-    var actionForm = $("#salesProductActionForm");
-
-    (function(){
-        $.getJSON("/admin/salesTermSelect", function(arr){
-
-            var str = "";
-            var optionYear = "";
-            $(arr).each(function(i, termYear){
-                var year = termYear.salesTerm.substring(0, 4);
-
-                if(optionYear != year){
-                    optionYear = year;
-                    str += "<option value=\"" + optionYear +"\">" +
-                        optionYear + "</option>";
-                }
-            });
-
-            $("#select_Term_Year").append(str);
-        })
-    })();
-
-
-
-
-    $(".paginate_button a").on('click', function(e){
-        e.preventDefault();
-
-        actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-        actionForm.submit();
-    });
-
-    $("#select_Term_Year").on("propertychange change keyup paste input", function(){
-
-        actionForm.find("input[name='pageNum']").val("1");
-        actionForm.find("input[name='keyword']").val($("#select_Term_Year").val());
-        actionForm.find("input[name='amount']").val("12");
-
-        actionForm.submit();
-    })
-
-})
-</script>--%>
 </body>
 </html>
