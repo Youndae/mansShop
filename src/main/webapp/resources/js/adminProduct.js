@@ -186,11 +186,11 @@ $(document).ready(function () {
             console.log("imgNum : " + imgNum);
             str += "<div class=\"preview-box\" value=\"" + imgNum + "\">";
             if (type == "of") {
-                str += "<img class=\"firstThumb\" id=\"" + imgNum + "\" src=\"/admin/display?image=" + attach.firstThumbnail + "\"\/>";
+                str += "<img class=\"firstThumb\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.firstThumbnail + "\"\/>";
             } else if (type == "ot") {
-                str += "<img class=\"thumb\" id=\"" + imgNum + "\" src=\"/admin/display?image=" + attach.pthumbnail + "\"\/>";
+                str += "<img class=\"thumb\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.pthumbnail + "\"\/>";
             } else if (type == "oi") {
-                str += "<img class=\"infoImg\" id=\"" + imgNum + "\" src=\"/admin/display?image=" + attach.pimg + "\"\/>";
+                str += "<img class=\"infoImg\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.pimg + "\"\/>";
             }
             str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deleteOldPreview(this)\">";
             str += "삭제" + "</a>";

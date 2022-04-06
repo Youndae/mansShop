@@ -26,7 +26,7 @@
 ### 작업과정
 
 >2021/05/20   
->    * 프로젝트 기본 셋팅 및 테스트   
+>   * 프로젝트 기본 셋팅 및 테스트   
 >   * DB 설계
    
 >2021/05/21
@@ -406,3 +406,8 @@
 >   * CSS 반응형으로 변경
 >   * CSS를 압축해 중복되는 부분 최대한 줄이기
 >   * 알람 기능 및 채팅기능 추가
+>#
+>
+>2022/04/06
+>   * adminController와 MainController에 중복으로 있던 /display를 MainController에서만 사용하고   
+>     Admin 페이지에서 MainController에 있는 display를 사용하도록 변경.

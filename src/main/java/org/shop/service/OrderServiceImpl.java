@@ -55,8 +55,6 @@ public class OrderServiceImpl implements OrderService{
         String cCount = commandMap.get("cCount").toString();
         count_array = cCount.split(",");
 
-
-
         String[] price_array = null;
         String cPrice = commandMap.get("cPrice").toString();
         price_array = cPrice.split(",");

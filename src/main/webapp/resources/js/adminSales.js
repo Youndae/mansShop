@@ -122,4 +122,3 @@ function getUserInfo(userId, callback, error){
             error(er);
     });
 };
-

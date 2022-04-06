@@ -130,28 +130,6 @@ public class AdminController {
         return new ResponseEntity<>(adminMapper.getInfoImg(pno), HttpStatus.OK);
     }
 
-    @GetMapping("/display")
-    @ResponseBody
-    public ResponseEntity<byte[]> getFile(String image){
-        log.info("thumb : " + image);
-
-        File file = new File("E:\\upload\\Product\\" + image);
-
-        log.info("file : " + file);
-
-        ResponseEntity<byte[]> result = null;
-
-        try{
-            HttpHeaders header = new HttpHeaders();
-
-            header.add("Content-Type", Files.probeContentType(file.toPath()));
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     @GetMapping("/productInfo/{pOpNo}")
     public String productInfo(@PathVariable("pOpNo") String pOpNo, Model model){
         //상품 정보

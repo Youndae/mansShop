@@ -48,31 +48,23 @@
     </insert>
 
     <update id="productSales" parameterType="org.shop.domain.OrderDetailVO">
-        UPDATE
-            product
-        SET
+        UPDATE product SET
             pSales = pSales + #{odPrice}
-        WHERE
-            pno=(
-                SELECT
-                    op.pno
-                FROM
-                    product p INNER JOIN productOp op
+        WHERE pno=(
+                SELECT op.pno
+                FROM product p
+                    INNER JOIN productOp op
                     ON p.pno = op.pno
-                WHERE
-                    op.pOpNo=#{pOpNo}
+                WHERE op.pOpNo=#{pOpNo}
             )
     </update>
 
     <update id="productOpSales" parameterType="org.shop.domain.OrderDetailVO">
-        UPDATE
-            productOp
-        SET
+        UPDATE productOp SET
             opSales = opSales + #{odPrice}
             , opSalesRate = opSalesRate + #{orderCount}
             , pStock = pStock - #{orderCount}
-        WHERE
-            pOpNo=#{pOpNo}
+        WHERE pOpNo=#{pOpNo}
     </update>
 
     <insert id="addTotalSales" parameterType="org.shop.domain.SalesVO">
@@ -89,28 +81,21 @@
     </insert>
 
     <update id="updateTotalSales" parameterType="org.shop.domain.SalesVO">
-        UPDATE
-            sales
-        SET
+        UPDATE sales SET
             salesSum = salesSum + #{salesSum}
             , salesOrders = salesOrders + #{salesOrders}
-        WHERE
-            salesTerm=#{salesTerm}
+        WHERE salesTerm=#{salesTerm}
     </update>
 
     <select id="maxSalesTerm" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            sales
-        WHERE
-            salesTerm=#{term}
+        SELECT count(*)
+        FROM sales
+        WHERE salesTerm=#{term}
     </select>
 
     <delete id="deleteOrderCart" parameterType="String">
-        DELETE FROM
-            cart
-        WHERE
-            userId=#{userId} AND pOpNo=#{pOpNo}
+        DELETE FROM cart
+        WHERE userId=#{userId}
+            AND pOpNo=#{pOpNo}
     </delete>
 </mapper>

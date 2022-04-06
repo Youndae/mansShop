@@ -15,33 +15,28 @@
     <select id="productList" resultType="org.shop.domain.ProductOpVO">
         SELECT *
         FROM(
-                SELECT
-                    rownum rn
-                    , pno
-                    , pClassification
-                    , pName
-                    , pPrice
-                    , pRegDate
-                    , pOpNo
-                    , pSize
-                    , pColor
-                    , pStock
-                FROM
-                    product_view
+            SELECT rownum rn
+                , pno
+                , pClassification
+                , pName
+                , pPrice
+                , pRegDate
+                , pOpNo
+                , pSize
+                , pColor
+                , pStock
+            FROM product_view
 
         <include refid="search"></include>
 
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
-
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getProductTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            product_view
+        SELECT count(*)
+        FROM product_view
         <include refid="search"></include>
     </select>
 
@@ -124,29 +119,34 @@
             , op.pColor
             , op.pStock
             , op.opClosed
-        FROM
-            productOp op INNER JOIN product p
-        ON
-            p.pno = op.pno
+        FROM productOp op
+            INNER JOIN product p
+            ON p.pno = op.pno
         WHERE
             op.pOpNo = #{pOpNo}
     </select>
 
     <select id="getFirstThumb" resultType="org.shop.domain.ProductVO">
-        select * from product where pno=#{pno}
+        SELECT *
+        FROM product
+        WHERE pno=#{pno}
     </select>
 
     <select id="getThumbnail" resultType="org.shop.domain.ThumbnailVO">
-        SELECT * FROM productThumbnail where pno=#{pno}
+        SELECT *
+        FROM productThumbnail
+        where pno=#{pno}
     </select>
 
     <select id="getInfoImg" resultType="org.shop.domain.ProductImgVO">
-        SELECT * FROM productimg where pno=#{pno}
+        SELECT *
+        FROM productimg
+        WHERE pno=#{pno}
     </select>
 
     <update id="modifyProductThumb" parameterType="org.shop.domain.ProductOpVO">
-        UPDATE product
-        SET pClassification=#{pClassification}
+        UPDATE product SET
+            pClassification=#{pClassification}
             , pName=#{pName}
             , pPrice=#{pPrice}
             , firstThumbnail=#{firstThumbnail}
@@ -154,16 +154,16 @@
     </update>
 
     <update id="modifyProductInfo" parameterType="org.shop.domain.ProductOpVO">
-        UPDATE product
-        SET pClassification=#{pClassification}
+        UPDATE product SET
+            pClassification=#{pClassification}
             , pName=#{pName}
             , pPrice=#{pPrice}
         WHERE pno=#{pno}
     </update>
 
     <update id="modifyProductOp" parameterType="org.shop.domain.ProductOpVO">
-        UPDATE productOp
-        SET pSize=#{pSize}
+        UPDATE productOp SET
+            pSize=#{pSize}
             , pColor=#{pColor}
             , pStock=#{pStock}
         WHERE pOpNo=#{pOpNo}
@@ -180,32 +180,32 @@
     </delete>
 
     <select id="maxStep" resultType="int">
-        SELECT max(pImgStep)
-        FROM productImg
+        SELECT max(pImgStep) FROM
+            productImg
         WHERE pno=#{pno}
     </select>
 
     <update id="closedProductOp" parameterType="String">
-        UPDATE productOp
-        SET opClosed=1
+        UPDATE productOp SET
+            opClosed=1
         WHERE pOpNo=#{pOpNo}
     </update>
 
     <update id="openProductOp" parameterType="String">
-        UPDATE productOp
-        SET opClosed=0
+        UPDATE productOp SET
+            opClosed=0
         WHERE pOpNo=#{pOpNo}
     </update>
 
     <update id="closedProduct" parameterType="String">
-        UPDATE product
-        SET pClosed=1
+        UPDATE product SET
+            pClosed=1
         WHERE pno=#{pno}
     </update>
 
     <update id="openProduct" parameterType="String">
-        UPDATE product
-        SET pClosed=0
+        UPDATE product SET
+            pClosed=0
         WHERE pno=#{pno}
     </update>
 
@@ -218,47 +218,41 @@
     <select id="orderList" resultType="org.shop.domain.OrderVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , o.*
             FROM(
                 SELECT *
-                FROM
-                    productOrder
+                FROM productOrder
+
                 <include refid="orderSearch"></include>
+
                 ORDER BY orderDate DESC
             ) o
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getOrderTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            productOrder
+        SELECT count(*)
+        FROM productOrder
         <include refid="orderSearch"></include>
     </select>
 
     <select id="orderInfo" resultType="org.shop.domain.OrderVO">
-        select
-            orderNo
+        select orderNo
             , recipient
             , userId
             , orderPhone
             , addr
             , orderMemo
             , orderStat
-        FROM
-            productOrder
-        WHERE
-            orderNo=#{orderNo}
+        FROM productOrder
+        WHERE orderNo=#{orderNo}
     </select>
 
     <select id="orderInfoTable" resultType="org.shop.domain.OrderDetailVO">
-        SELECT
-            p.pClassification
+        SELECT p.pClassification
             , p.pName
             , p.pSize
             , p.pColor
@@ -266,101 +260,80 @@
             , pod.pOpNo
             , pod.orderNo
             , pod.orderCount
-        FROM
-            productOrder_detail pod INNER JOIN product_view p
+        FROM productOrder_detail pod
+            INNER JOIN product_view p
             ON pod.pOpNo = p.pOpNo
-        WHERE
-            orderNo=#{orderNo}
+        WHERE orderNo=#{orderNo}
     </select>
 
     <update id="shippingProcessing">
-        UPDATE
-            productOrder
-        SET
+        UPDATE productOrder SET
             orderStat=1
         WHERE
             orderNo=#{orderNo}
     </update>
 
     <select id="checkOrderStat" resultType="int">
-        SELECT
-            orderStat
-        FROM
-            productOrder
+        SELECT orderStat
+        FROM productOrder
         WHERE
             orderNo=#{orderNo}
     </select>
 
     <select id="getAdminQnATotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            my_QnA
-
+        SELECT count(*)
+        FROM my_QnA
     </select>
 
     <select id="adminQnAList" resultType="org.shop.domain.MyQnAVO">
         SELECT *
         FROM (
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , qno
                 , userid
                 , qtitle
                 , qcontent
                 , qstat
                 , qregdate
-            FROM
-                my_QnA
-            ORDER BY
-                qno DESC
+            FROM my_QnA
+            ORDER BY qno DESC
             )
-        WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="adminQnADetail" resultType="org.shop.domain.MyQnAVO">
         SELECT *
-        FROM
-            my_QnA
-        WHERE
-            qno=#{qno}
+        FROM my_QnA
+        WHERE qno=#{qno}
     </select>
 
     <select id="adminQnAReplyList" resultType="org.shop.domain.MyQnAReplyVO">
         SELECT *
-        FROM
-            my_QnA_Reply
-        WHERE
-            qno=#{qno}
+        FROM my_QnA_Reply
+        WHERE qno=#{qno}
         ORDER BY replyNo DESC
     </select>
 
     <update id="adminQnAComplete">
-        UPDATE
-            my_QnA
-        SET
+        UPDATE my_QnA SET
             qStat=1
-        WHERE
-            qno=#{qno}
+        WHERE qno=#{qno}
     </update>
 
     <select id="adminQnACheck" resultType="int">
-        SELECT
-            qStat
-        FROM
-            my_QnA
-        WHERE
-            qno=#{qno}
+        SELECT qStat
+        FROM my_QnA
+        WHERE qno=#{qno}
     </select>
 
     <insert id="adminQnAReply" parameterType="org.shop.domain.MyQnAReplyVO">
-        INSERT INTO
-            my_QnA_Reply(
-                replyNo
-                , qno
-                , userId
-                , qrContent
-                , qrRegDate
+        INSERT INTO my_QnA_Reply(
+            replyNo
+            , qno
+            , userId
+            , qrContent
+            , qrRegDate
             )
         VALUES(
             my_QnA_Reply_SEQ.NEXTVAL
@@ -372,42 +345,38 @@
     </insert>
 
     <delete id="QnAReplyDelete">
-        DELETE FROM
-            my_qna_reply
-        WHERE
-            replyNo=#{replyNo}
+        DELETE FROM my_qna_reply
+        WHERE replyNo=#{replyNo}
     </delete>
 
     <select id="userList" resultType="org.shop.domain.MemberVO">
         SELECT *
         FROM(
-            SELECT rownum rn, m.*
+            SELECT rownum rn
+                , m.*
             FROM(
                 SELECT *
-                FROM
-                    member
+                FROM member
+
                 <include refid="orderSearch"></include>
-                ORDER BY
-                    joinRegdate desc
+
+                ORDER BY joinRegdate desc
                 )m
             )
-        WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getUserTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            member
+        SELECT count(*)
+        FROM member
         <include refid="orderSearch"></include>
     </select>
 
     <select id="userInfo" resultType="org.shop.domain.MemberVO">
         SELECT *
-        FROM
-            member
-        WHERE
-            userId=#{userId}
+        FROM member
+        WHERE userId=#{userId}
     </select>
 
     <sql id="salesSearchProduct">
@@ -428,29 +397,29 @@
 
 
     <select id="getSalesProductTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            product_view
+        SELECT count(*)
+        FROM product_view
         <include refid="salesSearchProduct"></include>
     </select>
 
     <select id="salesProductList" resultType="org.shop.domain.ProductOpVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , v.*
             FROM(
                 SELECT *
-                FROM
-                    product_view
+                FROM product_view
+
                 <include refid="salesSortProduct"></include>
+
                 ) v
+
             <include refid="salesSearchProduct"></include>
+
             )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <sql id="salesSearchTerm">
@@ -460,78 +429,67 @@
     </sql>
 
     <select id="salesTermSelect" resultType="org.shop.domain.SalesVO">
-        SELECT
-            salesTerm
-        FROM
-            sales
-        ORDER BY
-            salesTerm DESC
+        SELECT salesTerm
+        FROM sales
+        ORDER BY salesTerm DESC
     </select>
 
     <select id="getSalesTermTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            sales
+        SELECT count(*)
+        FROM sales
+
         <include refid="salesSearchTerm"></include>
     </select>
 
     <select id="salesTermList" resultType="org.shop.domain.SalesVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , s.*
             FROM(
                 SELECT *
-                FROM
-                    sales
+                FROM sales
                 ORDER BY salesterm DESC
             ) s
+
         <include refid="salesSearchTerm"></include>
+
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="productQnAList" resultType="org.shop.domain.ProductQnAVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , q.*
             FROM(
-                SELECT
-                    pq.*
+                SELECT pq.*
                     , p.pName
-                FROM
-                    productQnA pq INNER JOIN product p
+                FROM productQnA pq
+                    INNER JOIN product p
                     ON pq.pno = p.pno
-                ORDER BY
-                    pQnAGroupNo desc
+                ORDER BY pQnAGroupNo desc
                     , pQnAIndent ASC
             )q
         )
-        WHERE
-            rn between (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getProductQnATotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            productQnA
+        SELECT count(*)
+        FROM productQnA
     </select>
 
     <select id="productQnADetail" resultType="org.shop.domain.ProductQnAVO">
-        SELECT
-            q.*
+        SELECT q.*
             , p.pName
-        FROM
-            productQnA q INNER JOIN product p
+        FROM productQnA q
+            INNER JOIN product p
             ON q.pno = p.pno
-        WHERE
-            q.pQnANo = #{pQnANo}
+        WHERE q.pQnANo = #{pQnANo}
     </select>
 
     <insert id="productQnAReply" parameterType="org.shop.domain.ProductQnAVO">
@@ -554,6 +512,5 @@
             , 1
         )
     </insert>
-
 
 </mapper>
