@@ -7,22 +7,22 @@
             SELECT *
                     FROM(
                         SELECT *
-                        FROM
-                            product
+                        FROM product
                         ORDER BY pSales DESC
                     )
-            WHERE rownum BETWEEN 1 AND 12
+            WHERE rownum
+                BETWEEN 1 AND 12
     </select>
 
     <select id="mainNew" resultType="org.shop.domain.ProductVO">
             SELECT *
                     FROM(
                         SELECT *
-                        FROM
-                            product
+                        FROM product
                         ORDER BY pRegDate DESC
                     )
-            WHERE rownum BETWEEN 1 AND 12
+            WHERE rownum
+                BETWEEN 1 AND 12
     </select>
 
     <select id="mainClassification" resultType="org.shop.domain.ProductVO">
@@ -33,64 +33,51 @@
                             , p.*
                         FROM(
                             SELECT *
-                            FROM
-                                product
-                            WHERE
-                                pClassification = #{keyword}
+                            FROM product
+                            WHERE pClassification = #{keyword}
                             ORDER BY pRegDate DESC
                         )p
                     )
-            WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+            WHERE rn
+                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getProductTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            product
-        WHERE
-            pClassification=#{keyword}
+        SELECT count(*)
+        FROM product
+        WHERE pClassification=#{keyword}
     </select>
 
     <select id="searchProduct" resultType="org.shop.domain.ProductVO">
             SELECT *
                     FROM(
-                        SELECT
-                            rownum rn
+                        SELECT rownum rn
                             , p.*
                         FROM(
                             SELECT *
-                            FROM
-                                product
-                            WHERE
-                                pName like '%'||#{keyword}||'%'
+                            FROM product
+                            WHERE pName like '%'||#{keyword}||'%'
                             ORDER BY pRegDate DESC
                         )p
                     )
-            WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+            WHERE rn
+                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getSearchProduct" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            product
-        WHERE
-            pName like '%'||#{keyword}||'%'
+        SELECT count(*)
+        FROM product
+        WHERE pName like '%'||#{keyword}||'%'
     </select>
 
     <select id="getNonOrderList" resultType="org.shop.domain.MemberOrderListDTO">
-        SELECT
-            v.*
-        FROM
-            productOrder o INNER JOIN memberOrderList_view v
+        SELECT v.*
+        FROM productOrder o
+            INNER JOIN memberOrderList_view v
             ON o.orderNo = v.orderNo
-        WHERE
-            v.userId='Anonymous'
-            AND
-            o.recipient=#{recipient}
-            AND
-            o.orderPhone=#{orderPhone}
+        WHERE v.userId='Anonymous'
+            AND o.recipient=#{recipient}
+            AND o.orderPhone=#{orderPhone}
     </select>
 
 </mapper>

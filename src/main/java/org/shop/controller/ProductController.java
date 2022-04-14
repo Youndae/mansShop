@@ -2,6 +2,7 @@ package org.shop.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.shop.domain.*;
 import org.shop.mapper.ProductMapper;
 import org.shop.service.ProductService;
@@ -12,9 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
+import java.util.Random;
 
 @RequestMapping("/product")
 @Controller
@@ -105,18 +111,44 @@ public class ProductController {
     public int addCart(@RequestParam("pOpNo") List<String> pOpNo,
                        @RequestParam("pCount") List<String> pCount,
                        @RequestParam("pPrice") List<String> pPrice,
-                       CartVO cartVO, Principal principal){
+                       CartVO cartVO, Principal principal, CartDetailVO cartDetailVO,
+                       HttpServletRequest request, HttpServletResponse response){
         //장바구니 추가
         log.info("addCart");
 
         log.info("pPrice : " + pPrice);
 
-        if(principal == null){
-            return 0;
+        Cookie cookie = WebUtils.getCookie(request, "cartCookie");
+
+        if(principal == null && cookie == null){
+            String ckId = RandomStringUtils.random(8, true, true);
+            Cookie cartCookie = new Cookie("cartCookie", ckId);
+            cartCookie.setPath("/");
+            cartCookie.setMaxAge(7 * 24 * 60 * 60);
+            response.addCookie(cartCookie);
+
+            //VO에 쿠키 값 set
+            cartVO.setCkId(ckId);
+            cartVO.setUserId("Anonymous");
+
+            return productService.addCart(pOpNo, pCount, pPrice, cartVO, cartDetailVO);
+        }else if(principal == null && cookie != null){
+            String ckId = cookie.getValue();
+
+            cookie.setPath("/");
+            cookie.setMaxAge(7 * 24 * 60 * 60);
+            response.addCookie(cookie);
+
+            //VO에 쿠키값 set
+            cartVO.setCkId(ckId);
+            cartVO.setUserId("Anonymous");
+
+            return productService.addCart(pOpNo, pCount, pPrice, cartVO, cartDetailVO);
         }else{
+            //회원 장바구니 처리
             cartVO.setUserId(principal.getName());
 
-            return productService.addCart(pOpNo, pCount, pPrice, cartVO);
+            return productService.addCart(pOpNo, pCount, pPrice, cartVO, cartDetailVO);
         }
     }
 

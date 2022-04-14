@@ -25,17 +25,27 @@ public interface ProductMapper {
 
     public List<ProductQnAVO> getProductQnA(@Param("cri") Criteria cri, @Param("pno")String pno);
 
-    public int checkCart(String cartNo);
+    public int checkCart(CartVO cartVO);
 
     public void addCart(CartVO cartVO);
 
+    //updatedAt 수정
     public void updateCart(CartVO cartVO);
+
+    public String checkCartNo(CartVO cartVO);
+
+    public void updateCartDetail(CartDetailVO cartDetailVO);
+
+    public void addCartDetail(CartDetailVO cartDetailVO);
+
+    public int checkDetailOption(CartDetailVO cartDetailVO);
 
     public void insertPQnA(ProductQnAVO productQnAVO);
 
     public void likeProduct(LikeVO likeVO);
 
     public void deLikeProduct(LikeVO likeVO);
+
 
 
 }

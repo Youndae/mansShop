@@ -20,36 +20,34 @@
     </resultMap>
 
     <select id="getModifyInfo" resultMap="memberMap">
-        SELECT
-            mem.userId, userPw, userName, userEmail, userBirth, userPhone, auth
-        FROM
-            member mem LEFT OUTER JOIN member_auth auth ON mem.userId = auth.userId
-        WHERE
-            mem.userId = #{userId}
+        SELECT mem.userId
+            , userPw
+            , userName
+            , userEmail
+            , userBirth
+            , userPhone
+            , auth
+        FROM member mem
+            LEFT OUTER JOIN member_auth auth
+            ON mem.userId = auth.userId
+        WHERE mem.userId = #{userId}
     </select>
 
     <update id="modifyInfo" parameterType="org.shop.domain.MemberVO">
-        UPDATE
-            member
-        SET
+        UPDATE member SET
             userPhone=#{userPhone}
             , userEmail=#{userEmail}
-        WHERE
-            userId = #{userId}
+        WHERE userId = #{userId}
     </update>
 
     <select id="modifyCheck" resultType="string">
-        SELECT
-            userPw
-        FROM
-            member
-        WHERE
-            userId=#{userId}
+        SELECT userPw
+        FROM member
+        WHERE userId=#{userId}
     </select>
 
     <select id="getCartList" resultType="org.shop.domain.CartVO">
-        SELECT
-            c.cartNo
+        SELECT c.cartNo
             , c.pOpNo
             , c.cCount
             , c.cPrice
@@ -57,66 +55,49 @@
             , p.pno
             , op.pSize
             , op.pColor
-        FROM
-            cart c
+        FROM cart c
             INNER JOIN productOp op
-                ON c.pOpNo = op.pOpNo
+            ON c.pOpNo = op.pOpNo
             INNER JOIN product p
-                ON op.pno = p.pno
-        WHERE
-            c.userId = #{userId}
+            ON op.pno = p.pno
+        WHERE c.userId = #{userId}
     </select>
 
     <delete id="deleteCart" parameterType="String">
         DELETE FROM cart
-        WHERE
-            userId=#{userId}
-            AND
-            pOpNo=#{pOpNo}
+        WHERE userId=#{userId}
+            AND pOpNo=#{pOpNo}
     </delete>
 
     <update id="cartUp" parameterType="org.shop.domain.CartVO">
-        UPDATE
-            cart
-        SET
+        UPDATE cart SET
             cCount=cCount + 1
             , cPrice=cPrice + #{cPrice}
-        WHERE
-            userId=#{userId}
-            AND
-            pOpNo=#{pOpNo}
+        WHERE userId=#{userId}
+            AND pOpNo=#{pOpNo}
     </update>
 
     <update id="cartDown" parameterType="org.shop.domain.CartVO">
-        UPDATE
-            cart
-        SET
+        UPDATE cart SET
             cCount=cCount - 1
             , cPrice=cPrice - #{cPrice}
-        WHERE
-            userId=#{userId}
-            AND
-            pOpNo=#{pOpNo}
+        WHERE userId=#{userId}
+            AND pOpNo=#{pOpNo}
     </update>
 
     <select id="memberOrderList" resultType="org.shop.domain.MemberOrderListDTO">
         <![CDATA[
             SELECT *
-            FROM
-                memberOrderList_view
-            WHERE
-                userId=#{userId}
-                AND
-                orderDate >= #{regDate}
+            FROM memberOrderList_view
+            WHERE userId=#{userId}
+                AND orderDate >= #{regDate}
         ]]>
     </select>
 
     <select id="reviewProductInfo" resultType="org.shop.domain.ProductOpVO">
         SELECT *
-        FROM
-            product_view
-        WHERE
-            pOpNo=#{pOpNo}
+        FROM product_view
+        WHERE pOpNo=#{pOpNo}
     </select>
 
     <insert id="insertProductReview" parameterType="org.shop.domain.ProductReviewVO">
@@ -137,67 +118,51 @@
     </insert>
 
     <update id="reviewStatUp" parameterType="org.shop.domain.ProductReviewVO">
-        UPDATE
-            productOrder_Detail
-        SET
+        UPDATE productOrder_Detail SET
             reviewStat=1
-        WHERE
-            orderNo=#{orderNo}
-            AND
-            pno=#{pno}
+        WHERE orderNo=#{orderNo}
+            AND pno=#{pno}
     </update>
 
     <delete id="deleteReview" parameterType="long">
-        DELETE FROM
-            productReview
-        WHERE
-            rNum=#{rNum}
+        DELETE FROM productReview
+        WHERE rNum=#{rNum}
     </delete>
 
     <select id="memberQnAList" resultType="org.shop.domain.MyQnAVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , qno
                 , userid
                 , qtitle
                 , qcontent
                 , qstat
                 , qregdate
-        FROM
-            my_QnA
-        WHERE
-            userId=#{keyword}
+        FROM my_QnA
+        WHERE userId=#{keyword}
         ORDER BY qno DESC
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getQnATotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            my_QnA
-        WHERE
-            userId=#{keyword}
+        SELECT count(*)
+        FROM my_QnA
+        WHERE userId=#{keyword}
     </select>
 
     <select id="memberQnADetail" resultType="org.shop.domain.MyQnAVO">
         SELECT *
-        FROM
-            my_QnA
-        WHERE
-            qno=#{qno}
+        FROM my_QnA
+        WHERE qno=#{qno}
     </select>
 
     <select id="memberQnAReply" resultType="org.shop.domain.MyQnAReplyVO">
         SELECT *
-        FROM
-            my_QnA_Reply
-        WHERE
-            qno=#{qno}
+        FROM my_QnA_Reply
+        WHERE qno=#{qno}
     </select>
 
     <insert id="insertMemberQnA" parameterType="org.shop.domain.MyQnAVO">
@@ -220,90 +185,73 @@
     <select id="memberReviewList" resultType="org.shop.domain.ProductReviewVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , r.*
             FROM(
-                SELECT
-                r.pno
+                SELECT r.pno
                 , r.rNum
                 , p.pname
                 , p.firstThumbnail
                 , r.reviewDate
-                FROM
-                    productReview r INNER JOIN product p
+                FROM productReview r
+                    INNER JOIN product p
                     ON r.pno = p.pno
-                WHERE
-                    userid=#{keyword}
+                WHERE userid=#{keyword}
                 ORDER BY rNum DESC
             )r
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getReviewTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            productReview
-        WHERE
-            userId=#{keyword}
+        SELECT count(*)
+        FROM productReview
+        WHERE userId=#{keyword}
     </select>
 
     <select id="memberReviewDetail" resultType="org.shop.domain.ProductReviewVO">
-        SELECT
-            r.reviewContent
+        SELECT r.reviewContent
             , r.reviewDate
             , r.rNum
             , p.firstThumbnail
             , p.pName
-        FROM
-            productReview r INNER JOIN product p
+        FROM productReview r
+            INNER JOIN product p
             ON r.pno = p.pno
-        WHERE
-            r.rNum=#{rNum}
+        WHERE r.rNum=#{rNum}
     </select>
 
     <update id="memberReviewModify" parameterType="org.shop.domain.ProductReviewVO">
-        UPDATE
-            productReview
-        SET
-            reviewContent=#{reviewContent}
-        WHERE
-            rNum=#{rNum}
+        UPDATE productReview
+        SET reviewContent=#{reviewContent}
+        WHERE rNum=#{rNum}
     </update>
 
     <select id="likeList" resultType="org.shop.domain.LikeVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , l.userid
                 , l.pno
                 , p.firstThumbnail
                 , p.pName
                 , p.pPrice
-            FROM
-                like_product l INNER JOIN product p
-            ON l.pno = p.pno
-            WHERE
-                l.userId=#{keyword}
-                AND
-                p.pclosed=0
+            FROM like_product l
+                INNER JOIN product p
+                ON l.pno = p.pno
+            WHERE l.userId=#{keyword}
+                AND p.pclosed=0
             ORDER BY l.likeno DESC
         )
-        WHERE
-            rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
     </select>
 
     <select id="getLikeTotal" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            like_product
-        WHERE
-            userId=#{keyword}
+        SELECT count(*)
+        FROM like_product
+        WHERE userId=#{keyword}
     </select>
 
 </mapper>

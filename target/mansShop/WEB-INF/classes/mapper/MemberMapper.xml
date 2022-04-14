@@ -4,11 +4,15 @@
 <mapper namespace="org.shop.mapper.MemberMapper">
 
     <select id="userInfo" resultType="org.shop.domain.MemberVO">
-        SELECT * FROM member WHERE userId = #{userId}
+        SELECT *
+        FROM member
+        WHERE userId = #{userId}
     </select>
 
     <select id="idCheck" resultType="int">
-        SELECT count(*) FROM member WHERE userId = #{userId}
+        SELECT count(*)
+        FROM member
+        WHERE userId = #{userId}
     </select>
 
     <insert id="join">

@@ -48,7 +48,7 @@ public class MyPageServiceImpl implements MyPageService{
     @Override
     public void cartCount(String pOpNo, String cPrice, String countType, Principal principal) {
 
-        CartVO cartVO = new CartVO();
+        /*CartVO cartVO = new CartVO();
 
         log.info("count impl type : " + countType);
 
@@ -68,7 +68,7 @@ public class MyPageServiceImpl implements MyPageService{
                 cartVO.setCPrice(Long.parseLong(cPrice));
                 myPageMapper.cartDown(cartVO);
 
-        }
+        }*/
 
         log.info("impl complete");
     }

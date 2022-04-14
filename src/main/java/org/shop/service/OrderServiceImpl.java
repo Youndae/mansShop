@@ -2,10 +2,7 @@ package org.shop.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.CartVO;
-import org.shop.domain.OrderDetailVO;
-import org.shop.domain.OrderVO;
-import org.shop.domain.SalesVO;
+import org.shop.domain.*;
 import org.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 
@@ -70,11 +67,16 @@ public class OrderServiceImpl implements OrderService{
             log.info("size_array length : " + size_array.length);
             CartVO cartVO = new CartVO();
 
-            cartVO.setPOpNo(no_array[i]);
+            /**
+             * VO 수정으로 인한 오류. cart 수정 끝나는대로 수정할것.
+             */
+
+
+            /*cartVO.setPOpNo(no_array[i]);
             cartVO.setPName(name_array[i]);
             cartVO.setCCount(Long.parseLong(count_array[i]));
             cartVO.setCPrice(Long.parseLong(price_array[i]));
-            cartVO.setPno(pno_array[i]);
+            cartVO.setPno(pno_array[i]);*/
 
             if(size_array.length != 0 && size_array[i] != null){
                 cartVO.setPSize(size_array[i]);
@@ -161,4 +163,5 @@ public class OrderServiceImpl implements OrderService{
         }
 
     }
+
 }

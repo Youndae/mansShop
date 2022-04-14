@@ -5,136 +5,159 @@
 
     <select id="productDetail" resultType="org.shop.domain.ProductVO">
         SELECT *
-        FROM
-            product
-        WHERE
-            pno=#{pno}
+        FROM product
+        WHERE pno=#{pno}
     </select>
 
     <select id="getProductThumb" resultType="org.shop.domain.ThumbnailVO">
         SELECT *
-        FROM
-            productThumbnail
-        WHERE
-            pno=#{pno}
+        FROM productThumbnail
+        WHERE pno=#{pno}
     </select>
 
     <select id="getProductOp" resultType="org.shop.domain.ProductOpVO">
         SELECT *
-        FROM
-            productOp
-        WHERE
-            pno=#{pno}
+        FROM productOp
+        WHERE pno=#{pno}
     </select>
 
     <select id="getProductInfo" resultType="org.shop.domain.ProductImgVO">
         SELECT *
-        FROM
-            productImg
-        WHERE
-            pno=#{pno}
+        FROM productImg
+        WHERE pno=#{pno}
         ORDER BY pImgStep
     </select>
 
     <select id="getProductReview" resultType="org.shop.domain.ProductReviewVO">
         SELECT *
         FROM(
-            SELECT
-                rownum rn
+            SELECT rownum rn
                 , r.*
             FROM(
                 SELECT *
-                FROM
-                    productReview
-                WHERE
-                    pno=#{pno}
+                FROM productReview
+                WHERE pno=#{pno}
                 order by rnum desc
             )r
         )
-        WHERE
-            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+        WHERE rn
+            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
     </select>
 
     <select id="getProductReviewTotal" resultType="int">
         SELECT count(*)
         FROM productReview
-        WHERE
-            pno=#{pno}
+        WHERE pno=#{pno}
     </select>
 
     <select id="getProductQnA" resultType="org.shop.domain.ProductQnAVO">
         SELECT *
         FROM(
-            SELECT rownum rn, q.*
+            SELECT rownum rn
+                , q.*
             FROM(
                 SELECT *
-                FROM
-                    productQnA
-                WHERE
-                    pno=#{pno}
+                FROM productQnA
+                WHERE pno=#{pno}
                 ORDER BY pQnAGroupNo DESC
                     , pQnAIndent
                 )q
             )
-        WHERE
-            rn BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+        WHERE rn
+            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
 
     </select>
 
     <select id="getProductQnATotal" resultType="int">
         SELECT count(*)
-        FROM
-            productQnA
-        WHERE
-            pno=#{pno}
+        FROM productQnA
+        WHERE pno=#{pno}
     </select>
 
     <select id="getLikeProductStat" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            like_product
-        WHERE
-            userId=#{userId}
-            AND
-            pno=#{pno}
+        SELECT count(*)
+        FROM like_product
+        WHERE userId=#{userId}
+            AND pno=#{pno}
     </select>
 
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
     <select id="checkCart" resultType="int">
-        SELECT
-            count(*)
-        FROM
-            cart
-        WHERE
-            cartNo=#{cartNo}
+        SELECT count(*)
+        FROM cart
+        <include refid="cartId"></include>
     </select>
 
     <insert id="addCart" parameterType="org.shop.domain.CartVO">
         INSERT INTO cart(
             cartNo
             , userId
+            , ckId
+            , createdAt
+            , updatedAt
+        )
+        VALUES(
+            #{cartNo}
+            , #{userId}
+            , #{ckId}
+            , sysdate
+            , sysdate
+        )
+    </insert>
+
+    <update id="updateCart" parameterType="org.shop.domain.CartVO">
+        UPDATE cart SET
+            updatedAt = sysdate
+        <include refid="cartId"></include>
+    </update>
+
+    <select id="checkCartNo" resultType="String">
+        SELECT cartNo
+        FROM cart
+        <include refid="cartId"></include>
+    </select>
+
+    <update id="updateCartDetail" parameterType="org.shop.domain.CartDetailVO">
+        UPDATE cartDetail SET
+            cCount = cCount + #{cCount}
+            , cPrice = cPrice + #{cPrice}
+        WHERE
+            pOpNo = #{pOpNo}
+            AND
+            cartNo = #{cartNo}
+    </update>
+
+    <insert id="addCartDetail" parameterType="org.shop.domain.CartDetailVO">
+        INSERT INTO cartDetail(
+            cdNo
+            , cartNo
             , pOpNo
             , cCount
             , cPrice
         )
         VALUES(
-            #{cartNo}
-            , #{userId}
+            #{cdNo}
+            , #{cartNo}
             , #{pOpNo}
             , #{cCount}
             , #{cPrice}
         )
     </insert>
 
-    <update id="updateCart" parameterType="org.shop.domain.CartVO">
-        UPDATE
-            cart
-        SET
-            cCount=cCount + #{cCount}
-            , cPrice=cPrice + #{cPrice}
+    <select id="checkDetailOption" resultType="int">
+        SELECT count(*)
+        FROM cartDetail
         WHERE
-            cartNo=#{cartNo}
-    </update>
+            pOpNo = #{pOpNo}
+            AND
+            cartNo = #{cartNo}
+    </select>
 
     <insert id="insertPQnA" parameterType="org.shop.domain.ProductQnAVO">
         INSERT INTO productQnA(
@@ -170,12 +193,9 @@
     </insert>
 
     <delete id="deLikeProduct" parameterType="String">
-        DELETE FROM
-            like_product
-        WHERE
-            userId=#{userId}
-            AND
-            pno=#{pno}
+        DELETE FROM like_product
+        WHERE userId=#{userId}
+            AND pno=#{pno}
     </delete>
 
 </mapper>

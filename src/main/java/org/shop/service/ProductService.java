@@ -1,9 +1,6 @@
 package org.shop.service;
 
-import org.shop.domain.CartVO;
-import org.shop.domain.Criteria;
-import org.shop.domain.ProductQnADTO;
-import org.shop.domain.ProductReviewDTO;
+import org.shop.domain.*;
 
 import java.util.List;
 
@@ -13,5 +10,5 @@ public interface ProductService {
 
     public ProductQnADTO getProductQnA(Criteria cri, String pno);
 
-    public int addCart(List<String> pOpNo, List<String> pCount, List<String> pPrice, CartVO cartVO);
+    public int addCart(List<String> pOpNo, List<String> pCount, List<String> pPrice, CartVO cartVO, CartDetailVO cartDetailVO);
 }

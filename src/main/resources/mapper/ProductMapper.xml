@@ -81,35 +81,83 @@
             AND pno=#{pno}
     </select>
 
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
     <select id="checkCart" resultType="int">
         SELECT count(*)
         FROM cart
-        WHERE cartNo=#{cartNo}
+        <include refid="cartId"></include>
     </select>
 
     <insert id="addCart" parameterType="org.shop.domain.CartVO">
         INSERT INTO cart(
             cartNo
             , userId
+            , ckId
+            , createdAt
+            , updatedAt
+        )
+        VALUES(
+            #{cartNo}
+            , #{userId}
+            , #{ckId}
+            , sysdate
+            , sysdate
+        )
+    </insert>
+
+    <update id="updateCart" parameterType="org.shop.domain.CartVO">
+        UPDATE cart SET
+            updatedAt = sysdate
+        <include refid="cartId"></include>
+    </update>
+
+    <select id="checkCartNo" resultType="String">
+        SELECT cartNo
+        FROM cart
+        <include refid="cartId"></include>
+    </select>
+
+    <update id="updateCartDetail" parameterType="org.shop.domain.CartDetailVO">
+        UPDATE cartDetail SET
+            cCount = cCount + #{cCount}
+            , cPrice = cPrice + #{cPrice}
+        WHERE
+            pOpNo = #{pOpNo}
+            AND
+            cartNo = #{cartNo}
+    </update>
+
+    <insert id="addCartDetail" parameterType="org.shop.domain.CartDetailVO">
+        INSERT INTO cartDetail(
+            cdNo
+            , cartNo
             , pOpNo
             , cCount
             , cPrice
         )
         VALUES(
-            #{cartNo}
-            , #{userId}
+            #{cdNo}
+            , #{cartNo}
             , #{pOpNo}
             , #{cCount}
             , #{cPrice}
         )
     </insert>
 
-    <update id="updateCart" parameterType="org.shop.domain.CartVO">
-        UPDATE cart SET
-            cCount=cCount + #{cCount}
-            , cPrice=cPrice + #{cPrice}
-        WHERE cartNo=#{cartNo}
-    </update>
+    <select id="checkDetailOption" resultType="int">
+        SELECT count(*)
+        FROM cartDetail
+        WHERE
+            pOpNo = #{pOpNo}
+            AND
+            cartNo = #{cartNo}
+    </select>
 
     <insert id="insertPQnA" parameterType="org.shop.domain.ProductQnAVO">
         INSERT INTO productQnA(
