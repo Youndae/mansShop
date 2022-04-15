@@ -25,6 +25,7 @@ $(document).ready(function(){
                 formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
                 formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
                 formData.append('pno', table_tr.eq(i).attr("data_pno"));
+                formData.append('cdNo', table_tr.eq(i).attr("data_cdNo"));
             }
 
             $.ajax({
@@ -123,6 +124,7 @@ function order() {
         formData.append('orderCount', table_tr.eq(i).attr("data_cCount"));
         formData.append('odPrice', table_tr.eq(i).attr("data_cPrice"));
         formData.append('pno', table_tr.eq(i).attr("data_pno"));
+        formData.append('cdNo', table_tr.eq(i).attr("data_cdNo"));
     }
 
     var pName = table_tr.eq(0).attr("data_pName");

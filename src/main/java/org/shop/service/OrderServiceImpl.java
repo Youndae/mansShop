@@ -6,6 +6,7 @@ import org.shop.domain.*;
 import org.shop.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +21,7 @@ public class OrderServiceImpl implements OrderService{
     private OrderMapper orderMapper;
 
     @Override
-    public List<CartVO> orderProduct(HashMap<String, Object> commandMap) {
+    public List<CartDetailVO> orderProduct(HashMap<String, Object> commandMap) {
 
         log.info("order payments impl");
 
@@ -60,17 +61,34 @@ public class OrderServiceImpl implements OrderService{
         String pno = commandMap.get("pno").toString();
         pno_array = pno.split(",");
 
-        List<CartVO> vo = new ArrayList<>();
+        String[] cd_array = null;
+        String cdNo = commandMap.get("cdNo").toString();
+        cd_array = cdNo.split(",");
+
+        List<CartDetailVO> vo = new ArrayList<>();
 
         for(int i = 0; i < no_array.length; i++){
             log.info("order payments each");
             log.info("size_array length : " + size_array.length);
-            CartVO cartVO = new CartVO();
 
-            /**
-             * VO 수정으로 인한 오류. cart 수정 끝나는대로 수정할것.
-             */
+            CartDetailVO cartDetailVO = new CartDetailVO();
 
+            cartDetailVO.setPOpNo(no_array[i]);
+            cartDetailVO.setPName(name_array[i]);
+            cartDetailVO.setCCount(Integer.parseInt(count_array[i]));
+            cartDetailVO.setCPrice(Long.parseLong(price_array[i]));
+            cartDetailVO.setPno(pno_array[i]);
+            cartDetailVO.setCdNo(cd_array[i]);
+
+            if(size_array.length != 0 && size_array[i] != null){
+                cartDetailVO.setPSize(size_array[i]);
+            }
+
+            if(color_array.length != 0 && color_array[i] != null){
+                cartDetailVO.setPColor(color_array[i]);
+            }
+
+            vo.add(cartDetailVO);
 
             /*cartVO.setPOpNo(no_array[i]);
             cartVO.setPName(name_array[i]);
@@ -78,7 +96,7 @@ public class OrderServiceImpl implements OrderService{
             cartVO.setCPrice(Long.parseLong(price_array[i]));
             cartVO.setPno(pno_array[i]);*/
 
-            if(size_array.length != 0 && size_array[i] != null){
+            /*if(size_array.length != 0 && size_array[i] != null){
                 cartVO.setPSize(size_array[i]);
             }
 
@@ -86,7 +104,7 @@ public class OrderServiceImpl implements OrderService{
                 cartVO.setPColor(color_array[i]);
             }
 
-            vo.add(cartVO);
+            vo.add(cartVO);*/
         }
 
         log.info("Last VO : " + vo);
@@ -96,14 +114,12 @@ public class OrderServiceImpl implements OrderService{
 
 
     @Override
-    public void orderPayment(OrderVO orderVO, List<String> pOpNo, List<String> orderCount, List<String> odPrice, List<String> pno, String oType) {
+    public void orderPayment(OrderVO orderVO, List<String> cdNo, List<String> pOpNo, List<String> orderCount, List<String> odPrice, List<String> pno, String oType, Cookie cookie) {
         StringBuffer sb =  new StringBuffer();
 
         String orderNo = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
 
         orderVO.setOrderNo(orderNo);
-
-
 
         orderMapper.orderPayment(orderVO);
 
@@ -156,9 +172,22 @@ public class OrderServiceImpl implements OrderService{
 
         //카트에서 결제된 상품은 삭제
 
-        if(oType != "d"){
-            for(int i = 0; i < pOpNo.size(); i++){
-                orderMapper.deleteOrderCart(orderVO.getUserId(), pOpNo.get(i));
+        if(oType != "d"){ //oType = d는 장바구니를 거치지 않은 상품 정보에서 바로 구매한 상품.
+
+            CartVO cartVO = new CartVO();
+
+            if(cookie != null){ //비회원이라면
+                cartVO.setCkId(cookie.getValue());
+            }else{
+                cartVO.setUserId(orderVO.getUserId());
+            }
+
+            if(orderMapper.deleteCartCheck(cartVO) == cdNo.size()){ //장바구니 상품을 전체 구매한 경우라면
+                orderMapper.deleteOrderCart(cartVO); //cart 테이블에서 해당 사용자 데이터 삭제
+            }else{
+                for(int i = 0; i < cdNo.size(); i++){
+                    orderMapper.deleteOrderCartDetail(cdNo.get(i)); //cartDetail 테이블에서 해당 데이터만 삭제
+                }
             }
         }
 

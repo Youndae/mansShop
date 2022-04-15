@@ -46,12 +46,16 @@ public interface MyPageMapper {
 
     public int getLikeTotal(Criteria cri);
 
-    public List<CartVO> getCartList(String userId);
+    public List<CartDetailDTO> getCartList(CartVO cartVO);
 
-    public void deleteCart(@Param("userId") String userId, @Param("pOpNo") String pOpNo);
+    public void deleteCart(CartVO cartVO);
 
-    public void cartUp(CartVO cartVO);
+    public void deleteCartDetail(@Param("cdNo") String cdNo);
 
-    public void cartDown(CartVO cartVO);
+    public int cartCount(CartVO cartVO);
+
+    public void cartUp(CartDetailVO cartDetailVO);
+
+    public void cartDown(CartDetailVO cartDetailVO);
 
 }

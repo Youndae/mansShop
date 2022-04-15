@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -50,16 +53,20 @@ public class OrderController {
     @PostMapping("/payment")
     @ResponseBody
     public void payment(OrderVO orderVO, @RequestParam("oType") String oType,
-                          @RequestParam("pOpNo") List<String> pOpNo,
-                          @RequestParam("orderCount")List<String> orderCount,
-                          @RequestParam("odPrice")List<String> odPrice,
-                          @RequestParam("pno")List<String> pno,
-                          Principal principal){
+                        @RequestParam("cdNo") List<String> cdNo,
+                        @RequestParam("pOpNo") List<String> pOpNo,
+                        @RequestParam("orderCount")List<String> orderCount,
+                        @RequestParam("odPrice")List<String> odPrice,
+                        @RequestParam("pno")List<String> pno,
+                        Principal principal,
+                        HttpServletRequest request){
         //결제처리
 
         String id = null;
 
         log.info("oType : " + oType);
+
+        Cookie cookie = WebUtils.getCookie(request, "cartCookie");
 
         if(principal == null){
             id = "Anonymous";
@@ -78,7 +85,7 @@ public class OrderController {
         log.info("orderCount : " + orderCount);
         log.info("odPrice : " + odPrice);
 
-        orderService.orderPayment(orderVO, pOpNo, orderCount, odPrice, pno, oType);
+        orderService.orderPayment(orderVO, cdNo, pOpNo, orderCount, odPrice, pno, oType, cookie);
 
     }
 

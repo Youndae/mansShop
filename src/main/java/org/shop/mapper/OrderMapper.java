@@ -1,9 +1,7 @@
 package org.shop.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import org.shop.domain.OrderDetailVO;
-import org.shop.domain.OrderVO;
-import org.shop.domain.SalesVO;
+import org.shop.domain.*;
 
 public interface OrderMapper {
 
@@ -28,7 +26,13 @@ public interface OrderMapper {
     //총 매출 테이블에서 가장 늦은 기간값
     public int maxSalesTerm(@Param("term") String term);
 
+    //구매한 상품이 장바구니 전체 상품인지 체크
+    public int deleteCartCheck(CartVO cartVO);
+
+    //장바구니 상품을 전부 구매한 경우 장바구니 전체 삭제
+    public void deleteOrderCart(CartVO cartVO);
+
     //결제된 상품 카트에서 삭제.
-    public void deleteOrderCart(@Param("userId") String userId, @Param("pOpNo") String pOpNo);
+    public void deleteOrderCartDetail(@Param("cdNo") String cdNo);
 
 }

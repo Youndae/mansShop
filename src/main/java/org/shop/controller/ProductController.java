@@ -120,7 +120,8 @@ public class ProductController {
 
         Cookie cookie = WebUtils.getCookie(request, "cartCookie");
 
-        if(principal == null && cookie == null){
+        if(principal == null && cookie == null){ // 회원이 아니고 쿠키가 없는 경우
+            //쿠키 생성
             String ckId = RandomStringUtils.random(8, true, true);
             Cookie cartCookie = new Cookie("cartCookie", ckId);
             cartCookie.setPath("/");
@@ -132,9 +133,9 @@ public class ProductController {
             cartVO.setUserId("Anonymous");
 
             return productService.addCart(pOpNo, pCount, pPrice, cartVO, cartDetailVO);
-        }else if(principal == null && cookie != null){
+        }else if(principal == null && cookie != null){ //회원이 아니고 쿠키가 존재하는 경우
             String ckId = cookie.getValue();
-
+            //쿠키 유효기간을 다시 증가.
             cookie.setPath("/");
             cookie.setMaxAge(7 * 24 * 60 * 60);
             response.addCookie(cookie);
@@ -144,7 +145,7 @@ public class ProductController {
             cartVO.setUserId("Anonymous");
 
             return productService.addCart(pOpNo, pCount, pPrice, cartVO, cartDetailVO);
-        }else{
+        }else{ //회원인 경우
             //회원 장바구니 처리
             cartVO.setUserId(principal.getName());
 

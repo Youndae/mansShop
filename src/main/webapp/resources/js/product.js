@@ -564,9 +564,7 @@ $(function () {
                 },
                 success: function (data) {
                     if(data == 0){
-                        if(confirm("로그인 한 사용자만 장바구니에 담을 수 있습니다.\n 로그인하시겠습니까?")){
-                            location.href='/member/login';
-                        }
+                        alert("오류가 발생했습니다.\n 잠시후 다시 시도해주세요.");
                     }else{
                         alert("장바구니에 상품이 담겼습니다.");
                     }

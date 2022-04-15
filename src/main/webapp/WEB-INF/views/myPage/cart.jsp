@@ -24,7 +24,7 @@
     }
 
     .cart_header{
-        margin: 40px 0 50px 200px;
+        margin: 40px -40px 50px 200px;
     }
 
     .cart_content{
@@ -70,76 +70,84 @@
             <h1>장바구니</h1>
         </div>
         <div class="cart_content">
-            <div class="cart_List">
-                <table class="cart_Table" border="1">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>상품명</th>
-                        <th>옵션</th>
-                        <th>수량</th>
-                        <th>가격</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${cartList}" var="cList">
-                        <c:set var="total" value="${total + cList.CPrice}"/>
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="check"
-                                       value="${cList.POpNo}"
-                                       data_pName="${cList.PName}"
-                                       data_pSize="${cList.PSize}"
-                                       data_pColor="${cList.PColor}"
-                                       data_cCount="${cList.CCount}"
-                                       data_cPrice="${cList.CPrice}"
-                                       data_pno="${cList.pno}"
-                                       checked>
-                            </td>
-                            <td><c:out value="${cList.PName}"/></td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${cList.PSize == null}">
-                                        <c:choose>
-                                            <c:when test="${cList.PColor != null}">
-                                                색상 : <c:out value="${cList.PColor}"/>
-                                            </c:when>
-                                        </c:choose>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:choose>
-                                            <c:when test="${cList.PColor == null}">
-                                                사이즈 : <c:out value="${cList.PSize}"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                사이즈 : <c:out value="${cList.PSize}"/>  색상 : <c:out value="${cList.PColor}"/>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <span><c:out value="${cList.CCount}"/></span>
-                                <input type="hidden" value="<c:out value="${cList.POpNo}"/>">
-                                <button class="productCount up" name="up"><img src="https://image.flaticon.com/icons/png/512/120/120891.png"></button>
-                                <button class="productCount down" name="down"><img src="https://image.flaticon.com/icons/png/512/2089/2089636.png"></button>
-                            </td>
-                            <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-            <div class="cart_content_footer">
-                <span class="total_price">총 주문 금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
-                <div class="cart_content_btn">
-                    <button type="button" id="select_delete">선택상품 삭제</button>
-                    <button type="button" id="select_order">선택상품 주문</button>
-                </div>
-            </div>
-
+            <c:choose>
+                <c:when test="${cartList != [] and cartList != null}">
+                    <div class="cart_List">
+                        <table class="cart_Table" border="1">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>상품명</th>
+                                    <th>옵션</th>
+                                    <th>수량</th>
+                                    <th>가격</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach items="${cartList}" var="cList">
+                                    <c:set var="total" value="${total + cList.CPrice}"/>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="check"
+                                                   value="${cList.POpNo}"
+                                                   data_pName="${cList.PName}"
+                                                   data_pSize="${cList.PSize}"
+                                                   data_pColor="${cList.PColor}"
+                                                   data_cCount="${cList.CCount}"
+                                                   data_cPrice="${cList.CPrice}"
+                                                   data_pno="${cList.pno}"
+                                                   data_cdNo="${cList.cdNo}"
+                                                   checked>
+                                        </td>
+                                        <td><c:out value="${cList.PName}"/></td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${cList.PSize == null}">
+                                                    <c:choose>
+                                                        <c:when test="${cList.PColor != null}">
+                                                            색상 : <c:out value="${cList.PColor}"/>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:choose>
+                                                        <c:when test="${cList.PColor == null}">
+                                                            사이즈 : <c:out value="${cList.PSize}"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            사이즈 : <c:out value="${cList.PSize}"/>  색상 : <c:out value="${cList.PColor}"/>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <span><c:out value="${cList.CCount}"/></span>
+                                            <input type="hidden" value="<c:out value="${cList.cdNo}"/>">
+                                            <button class="productCount up" name="up"><img src="https://image.flaticon.com/icons/png/512/120/120891.png"></button>
+                                            <button class="productCount down" name="down"><img src="https://image.flaticon.com/icons/png/512/2089/2089636.png"></button>
+                                        </td>
+                                        <td class="cPrice"><fmt:formatNumber value="${cList.CPrice}" pattern="#,###"/></td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cart_content_footer">
+                        <span class="total_price">총 주문 금액 : <fmt:formatNumber value="${total}" pattern="#,###"/> 원</span>
+                        <div class="cart_content_btn">
+                            <button type="button" id="select_delete">선택상품 삭제</button>
+                            <button type="button" id="select_order">선택상품 주문</button>
+                        </div>
+                    </div>
+                </c:when>
+                <c:when test="${cartList == [] or cartList == null}">
+                    <span>장바구니에 담은 상품이 없습니다.</span>
+                </c:when>
+            </c:choose>
         </div>
         <form id="order_form" method="post">
+            <input type="hidden" name="cdNo">
             <input type="hidden" name="pOpNo">
             <input type="hidden" name="pName">
             <input type="hidden" name="pSize">

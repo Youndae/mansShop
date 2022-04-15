@@ -1,6 +1,7 @@
 var token = $("meta[name='_csrf']").attr("content");
 var header = $("meta[name='_csrf_header']").attr("content");
 var pOpNoArr = new Array();
+var cdNoArr = new Array();
 $(document).ready(function(){
     //orderComplete
     $("#orderList").on('click', function(){
@@ -21,6 +22,7 @@ $(document).ready(function(){
         var countArr = new Array();
         var priceArr = new Array();
         var pnoArr = new Array();
+        var cdArr = new Array();
 
         $("input[name=check]:checked").each(function(){
             noArr.push($(this).attr("value"));
@@ -30,6 +32,7 @@ $(document).ready(function(){
             countArr.push($(this).attr("data_cCount"));
             priceArr.push($(this).attr("data_cPrice"));
             pnoArr.push($(this).attr("data_pno"));
+            cdArr.push($(this).attr("data_cdNo"))
         });
 
         $("input[name=pOpNo]").val(noArr);
@@ -39,6 +42,7 @@ $(document).ready(function(){
         $("input[name=cCount]").val(countArr);
         $("input[name=cPrice]").val(priceArr);
         $("input[name=pno]").val(pnoArr);
+        $("input[name=cdNo]").val(cdArr);
 
         $("#order_form").attr("action", "/order/orderPayment");
         $("#order_form").submit();
@@ -47,18 +51,16 @@ $(document).ready(function(){
 
     $("button[name=up]").on('click', function(){
 
-        var pOpNo = $(this).siblings("input").val();
-        var count = $(this).siblings("span").text();
+        var cdNo = $(this).siblings("input").val();
         var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
         pPrice = parseInt(pPrice) / parseInt(count);
-
         var countType = "up";
 
         $.ajaxSettings.traditional = true;
         $.ajax({
             url: '/myPage/cartCount',
             type: 'post',
-            data: {pOpNo: pOpNo, cPrice: pPrice, countType: countType},
+            data: {cdNo: cdNo, cPrice: pPrice, countType: countType},
             beforeSend:function(xhr){
                 xhr.setRequestHeader(header, token);
             },
@@ -77,30 +79,35 @@ $(document).ready(function(){
 
     $("button[name=down]").on('click', function(){
 
-        var pOpNo = $(this).siblings("input").val();
+        var cdNo = $(this).siblings("input").val();
         var count = $(this).siblings("span").text();
         var pPrice = $(this).parent('td').next().text().replace(/\D/g, '');
         pPrice = parseInt(pPrice) / parseInt(count);
-
         var countType = "down";
 
-        $.ajaxSettings.traditional = true;
-        $.ajax({
-            url: '/myPage/cartCount',
-            type: 'post',
-            data: {pOpNo: pOpNo, cPrice: pPrice, countType: countType},
-            beforeSend:function(xhr){
-                xhr.setRequestHeader(header, token);
-            },
-            success: function(data){
-                location.reload();
-            },
-            error: function(request, status, error){
-                alert("code : " + request.status + "\n"
-                    + "message : " + request.responseText
-                    + "\n" + "error : " + error);
-            }
-        })
+        if(count == "1"){
+            alert("최소 개수입니다.");
+        }else{
+            $.ajaxSettings.traditional = true;
+            $.ajax({
+                url: '/myPage/cartCount',
+                type: 'post',
+                data: {cdNo: cdNo, cPrice: pPrice, countType: countType},
+                beforeSend:function(xhr){
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error: function(request, status, error){
+                    alert("code : " + request.status + "\n"
+                        + "message : " + request.responseText
+                        + "\n" + "error : " + error);
+                }
+            })
+        }
+
+
 
     });
 
@@ -108,14 +115,14 @@ $(document).ready(function(){
         console.log("select_delete");
         /*var pOpNoArr = new Array();*/
         $("input[name=check]:checked").each(function(){
-            pOpNoArr.push($(this).attr("value"));
+            cdNoArr.push($(this).attr("data_cdNo"));
         });
 
         $.ajaxSettings.traditional = true;
         $.ajax({
             url : '/myPage/deleteCart',
             type: 'post',
-            data: {pOpNo: pOpNoArr},
+            data: {cdNo: cdNoArr},
             beforeSend:function(xhr){
                 xhr.setRequestHeader(header, token);
             },

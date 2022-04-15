@@ -152,7 +152,8 @@
                             data_cCount="${list.CCount}"
                             data_cprice="${list.CPrice}"
                             data_pName="${list.PName}"
-                            data_pno="${list.pno}">
+                            data_pno="${list.pno}"
+                            data_cdNo="${list.cdNo}">
                             <td>
                                 <c:out value="${list.PName}"/>
                             </td>

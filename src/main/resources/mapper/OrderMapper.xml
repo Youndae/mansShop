@@ -93,9 +93,35 @@
         WHERE salesTerm=#{term}
     </select>
 
-    <delete id="deleteOrderCart" parameterType="String">
+    <sql id="cartCheckId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">c.ckId = #{ckId}</if>
+            <if test="ckId == null">c.userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <select id="deleteCartCheck" resultType="int">
+        SELECT count(*)
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
+        <include refid="cartId"></include>
+    </select>
+
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <delete id="deleteOrderCart" parameterType="org.shop.domain.CartVO">
         DELETE FROM cart
-        WHERE userId=#{userId}
-            AND pOpNo=#{pOpNo}
+        <include refid="cartId"></include>
+    </delete>
+
+    <delete id="deleteOrderCartDetail" parameterType="String">
+        DELETE FROM cartDetail
+        WHERE cdNo = #{cdNo}
     </delete>
 </mapper>

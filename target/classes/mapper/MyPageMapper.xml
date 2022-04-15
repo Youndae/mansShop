@@ -46,43 +46,70 @@
         WHERE userId=#{userId}
     </select>
 
-    <select id="getCartList" resultType="org.shop.domain.CartVO">
-        SELECT c.cartNo
-            , c.pOpNo
-            , c.cCount
-            , c.cPrice
+    <sql id="cartListId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">c.ckId = #{ckId}</if>
+            <if test="ckId == null">c.userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <select id="getCartList" resultType="org.shop.domain.CartDetailDTO">
+        SELECT cd.cartNo
+            , cd.cdNo
+            , cd.pOpNo
+            , cd.cCount
+            , cd.cPrice
             , p.pName
             , p.pno
             , op.pSize
             , op.pColor
-        FROM cart c
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
             INNER JOIN productOp op
-            ON c.pOpNo = op.pOpNo
+            ON cd.pOpNo = op.pOpNo
             INNER JOIN product p
             ON op.pno = p.pno
-        WHERE c.userId = #{userId}
+        <include refid="cartListId"></include>
     </select>
+
+    <select id="cartCount" resultType="int">
+        SELECT count(*)
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
+        <include refid="cartListId"></include>
+    </select>
+
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
 
     <delete id="deleteCart" parameterType="String">
         DELETE FROM cart
-        WHERE userId=#{userId}
-            AND pOpNo=#{pOpNo}
+        <include refid="cartId"></include>
+    </delete>
+
+    <delete id="deleteCartDetail" parameterType="String">
+        DELETE FROM cartDetail
+        WHERE cdNo = #{cdNo}
     </delete>
 
     <update id="cartUp" parameterType="org.shop.domain.CartVO">
-        UPDATE cart SET
+        UPDATE cartDetail SET
             cCount=cCount + 1
             , cPrice=cPrice + #{cPrice}
-        WHERE userId=#{userId}
-            AND pOpNo=#{pOpNo}
+        WHERE cdNo = #{cdNo}
     </update>
 
     <update id="cartDown" parameterType="org.shop.domain.CartVO">
-        UPDATE cart SET
+        UPDATE cartDetail SET
             cCount=cCount - 1
             , cPrice=cPrice - #{cPrice}
-        WHERE userId=#{userId}
-            AND pOpNo=#{pOpNo}
+        WHERE cdNo = #{cdNo}
     </update>
 
     <select id="memberOrderList" resultType="org.shop.domain.MemberOrderListDTO">

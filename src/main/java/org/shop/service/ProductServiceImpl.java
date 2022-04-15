@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService{
             }
             //cart 테이블 데이터의 updatedAt(수정일자) 수정.
             productMapper.updateCart(cartVO);
-            return 0;
+            return 1;
         }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
             cartVO.setCartNo(LocalDateTime.now() + RandomStringUtils.random(4, true, true));
             cartDetailVO.setCartNo(cartVO.getCartNo());
@@ -100,14 +100,13 @@ public class ProductServiceImpl implements ProductService{
                 //detail insert
                 productMapper.addCartDetail(cartDetailVO);
             }
-            return 0;
+            return 1;
         }
-
-
 
     }
 
     public CartDetailVO setDetail(int i, CartDetailVO cartDetailVO, List<String> pOpNo, List<String> pCount, List<String> pPrice){
+
             //cartDetailVO에 set 해주는 코드.
             cartDetailVO.setCdNo(LocalDateTime.now() + pOpNo.get(i) + pCount.get(i));
             cartDetailVO.setPOpNo(pOpNo.get(i));

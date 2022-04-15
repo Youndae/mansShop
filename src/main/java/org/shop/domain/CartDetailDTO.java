@@ -1,20 +1,22 @@
 package org.shop.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class CartDetailVO extends ProductOpVO{
+@NoArgsConstructor
+public class CartDetailDTO {
 
-    private String cdNo;
     private String cartNo;
+    private String cdNo;
     private String pOpNo;
     private int cCount;
     private Long cPrice;
-
-    private ProductVO productVO;
+    private String pName;
+    private String pno;
+    private String pSize;
+    private String pColor;
 
 }

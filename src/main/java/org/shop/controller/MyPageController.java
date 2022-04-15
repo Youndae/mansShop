@@ -11,7 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Date;
 import java.text.ParseException;
@@ -266,41 +269,48 @@ public class MyPageController {
     }
 
     @GetMapping("/cart")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void cart(Model model, Principal principal){
+    public void cart(Model model, Principal principal, HttpServletRequest request, CartVO cartVO){
         //장바구니 페이지
 
         log.info("get Cart List");
 
-        String id = principal.getName();
+        //회원과 비회원 구분해서 데이터 조회
+        Cookie cookie = WebUtils.getCookie(request, "cartCookie");
 
+        if(principal == null && cookie != null){
+            cartVO.setCkId(cookie.getValue());
+        }else if(principal != null){
+            cartVO.setUserId(principal.getName());
+        }
 
-        model.addAttribute("cartList", myPageMapper.getCartList(id));
+        model.addAttribute("cartList", myPageMapper.getCartList(cartVO));
+
     }
 
     @PostMapping("/deleteCart")
     @ResponseBody
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void deleteCart(@RequestParam("pOpNo")List<String> pOpNoList, Principal principal){
+    public void deleteCart(@RequestParam("cdNo")List<String> cdNoList, Principal principal, HttpServletRequest request, CartVO cartVO){
         //장바구니 선택목록 삭제
-        log.info("delete Cart : " + pOpNoList);
+        log.info("delete Cart : " + cdNoList);
 
-        myPageService.deleteCart(principal.getName(), pOpNoList);
+        Cookie cookie = WebUtils.getCookie(request, "cartCookie");
+
+        if(principal == null && cookie != null){//비회원
+            cartVO.setCkId(cookie.getValue());
+        }else if(principal != null){
+            cartVO.setUserId(principal.getName());
+        }
+
+        myPageService.deleteCart(cartVO, cdNoList);
 
     }
 
     @PostMapping("/cartCount")
     @ResponseBody
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void cartUp(@RequestParam("pOpNo")String pOpNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType, Principal principal){
+    public void cartUp(@RequestParam("cdNo")String cdNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType){
         //장바구니 수량 증감
-        log.info("cartUp!");
 
-        log.info("popno List : " + pOpNo);
-        log.info("cPrice List : " + cPrice);
-        log.info("type : " + countType);
-
-        myPageService.cartCount(pOpNo, cPrice, countType, principal);
+        myPageService.cartCount(cdNo, cPrice, countType);
     }
 
 }

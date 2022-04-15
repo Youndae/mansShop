@@ -11,12 +11,10 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartVO extends ProductOpVO{
+public class CartVO {
+
     private String cartNo;
     private String userId;
-//    private String pOpNo;
-//    private Long cCount;
-//    private Long cPrice;
     private String ckId;
     private Date createdAt;
     private Date updatedAt;
