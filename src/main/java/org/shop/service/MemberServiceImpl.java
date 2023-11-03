@@ -1,29 +1,22 @@
 package org.shop.service;
 
 
-import javafx.util.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.member.JoinDTO;
 import org.shop.domain.dto.member.SearchIdDTO;
-import org.shop.domain.entity.Certify;
 import org.shop.domain.entity.Member;
-import org.shop.mapper.CertifyMapper;
 import org.shop.mapper.MemberMapper;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -35,8 +28,6 @@ public class MemberServiceImpl implements MemberService{
     private final MemberMapper memberMapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
-
-//    private final CertifyMapper certifyMapper;
 
     private final JavaMailSender javaMailSender;
 
@@ -92,9 +83,9 @@ public class MemberServiceImpl implements MemberService{
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
             stringValueOperations.set(userId, String.valueOf(certificationNo), 6L, TimeUnit.MINUTES);
 
-            /*MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
+            MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
 
-            javaMailSender.send(mailForm);*/
+            javaMailSender.send(mailForm);
             return "success";
         }catch (Exception e){
             e.printStackTrace();
@@ -103,7 +94,10 @@ public class MemberServiceImpl implements MemberService{
 
 
 
-       /* Certify certify = Certify.builder()
+       /*
+       기존 DB에서 cno를 관리하던 코드
+
+       Certify certify = Certify.builder()
                 .cno(certificationNo)
                 .userId(userId)
                 .userName(userName)
@@ -173,10 +167,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public int resetPw(String userId, int cno, String password) {
 
-        /*int checkResult = certifyMapper.checkCertify(SearchIdDTO.builder()
-                .userId(userId)
-                .cno(cno)
-                .build());*/
+
 
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
@@ -192,7 +183,15 @@ public class MemberServiceImpl implements MemberService{
             return 0;
 
 
-        /*if(checkResult == 0) {
+        /*
+        기존 DB에서 cno를 관리하던 코드
+
+        int checkResult = certifyMapper.checkCertify(SearchIdDTO.builder()
+                .userId(userId)
+                .cno(cno)
+                .build());
+
+        if(checkResult == 0) {
             certifyMapper.deleteCertify(cno);
             return 0;
         }

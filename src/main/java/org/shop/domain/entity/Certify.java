@@ -2,6 +2,10 @@ package org.shop.domain.entity;
 
 import lombok.*;
 
+/**
+ * Redis로 전환
+ */
+@Deprecated
 @Getter
 @Builder
 @ToString

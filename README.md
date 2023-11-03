@@ -654,4 +654,38 @@
 >     만약 Redis를 통해 처리를 한다고 하면, userId : certificationNum 형태로 저장을 하거나,   
 >     userId : certificationNum, certificationNum : userEmail 형태로 두개의 데이터를 저장해 좀 더 명확하게 정보를   
 >     체크하도록 하면 좋을 것 같다고 생각한다.
->    
+
+
+> 23/11/01 ~ 23/11/02
+> * 인증번호 관리를 DB에서 Redis로 전환.
+>   * userId : certificationNo 형태로 저장.
+>   * expire는 기준보다 1분 많은 6분으로 처리.
+>   * 사용자가 인증번호 입력 시 일치여부와 상관없이 delete 처리.
+>     * 인증번호를 실수로 잘못 입력하는 경우를 대비해 리펙토링 예정.
+>   * Redis는 Jedis를 사용하지 않고 LettuceConnectionFactory와 같이 사용.
+> * Redis 적용 중 발생한 문제점.
+>   * Jedis
+>     * 처음 Redis를 공부하고 사용했을 때는 Spring Boot 환경이었고 Dependency도    
+>       boot-starter-redis를 사용했기 때문에 boot가 아닌 환경에서는 조금 다를거라고 예상했다.   
+>       그래서 알아보니 Jedis를 사용한 예제가 많았기에 Jedis를 같이 사용해보고자 했으나 결국 Lettuce를 사용하게 되었다.
+>     * 최종적으로 Jedis를 사용하지 않게 된 계기는 JedisShard를 찾을 수 없다는 오류를 해결하지 못한 부분이었다.   
+>       알아본바로는 Jedis4부터 JedisShard는 삭제되었다고 하는데 계속해서 JedisShard가 존재하지 않는다는 오류가 발생했고,   
+>       문제를 해결할 수 없었다.   
+>       지금 시점에서는 아마 Jedis 버전문제가 아니었을까 라는 생각을 하고는 있다.
+>   * Lettuce
+>     * Lettuce는 기존 Boot기반 프로젝트를 열어 External Libraires에서 찾아 적용하게 되었다.   
+>     * applicationContext.xml에 Bean을 등록하고 사용하고자 했지만 버전 오류가 발생해 맞는 버전을 찾는데 시간이 꽤 걸렸다.
+>     * MemberMaperTests 클래스에서 테스트코드를 돌려본 결과 Redis가 정상적으로 연결되어 처리되고 있는 것을 확인할 수 있었다.
+>     * 문제는 Tomcat으로 구동했을 때 오류가 발생했고, BeanCreationException과 ClassNotFoundException, NoSuchBeanDefinitionException이   
+>       코드를 조금씩 수정해볼때마다 발생했다.   
+>       그래서 applicationContext에 설정하지 않고 RedisConfig라는 Configuration 클래스를 생성하고 거기에서 처리해봤으나 동일한 문제가 발생.   
+>       그래도 ClassNotFoundException은 해결할 수 있었다.   
+>       org.springframework.core.NativeDetector를 찾을 수 없다는 오류였는데 spring-core를 pom에 추가하니 문제가 해결되었다.   
+>       나머지 오류는 진짜 끝까지 계속 발생했다.   
+>       그래서 다시 applicationContext로 Bean 생성을 옮기게 되었고, BeanCreationException에 집중해 찾아봤다.   
+>       오타나 해야하는 설정을 빼먹는 경우 주로 발생한다는 이미 아는 내용이 대부분이었고, 새롭게 알게된 것이 버전문제로 인한 Bean 생성 불가인 경우가 있다는 것이었다.   
+>       그래서 Redis 버전을 낮춰봤다.   
+>       기존에는 boot기반 프로젝트와 동일한 2.7.6이었다. 이 환경에서도 테스트코드는 잘 동작했다.   
+>       하지만 저런 문제가 발생할 수 있다는 것을 보고 버전을 2.0.10.RELEASE로 낮춰봤다.   
+>       문제가 해결되었다...
+> 
