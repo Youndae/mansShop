@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.MyPageMapper">
+
+    <resultMap id="memberMap" type="org.shop.domain.dto.member.MemberDTO">
+        <id property="userId" column="userId"/>
+        <result property="userId" column="userId"/>
+        <result property="userPw" column="userPw"/>
+        <collection property="authList" resultMap="authMap"></collection>
+    </resultMap>
+
+    <resultMap id="authMap" type="org.shop.domain.dto.member.MemberAuthDTO">
+        <result property="userId" column="userId"/>
+        <result property="auth" column="auth"/>
+    </resultMap>
+
+    <select id="getModifyInfo" resultType="org.shop.domain.dto.myPage.MemberModifyDTO">
+        SELECT userId
+             , userName
+             , userEmail
+             , userPhone
+        FROM member
+        WHERE userId = #{userId}
+    </select>
+
+    <select id="getUserInfo" resultMap="memberMap">
+        SELECT mem.userId
+             , userPw
+             , auth
+        FROM member mem
+                 LEFT OUTER JOIN memberAuth auth
+                                 ON mem.userId = auth.userId
+        WHERE mem.userId = #{userId}
+    </select>
+
+    <update id="modifyInfo" parameterType="org.shop.domain.entity.Member">
+        UPDATE member
+        SET userName = #{userName}
+            , userPhone=#{userPhone}
+            , userEmail=#{userEmail}
+        WHERE userId = #{userId}
+    </update>
+
+    <select id="modifyCheck" resultType="string">
+        SELECT userPw
+        FROM member
+        WHERE userId=#{userId}
+    </select>
+
+    <sql id="cartListId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">c.ckId = #{ckId}</if>
+            <if test="ckId == null">c.userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <select id="getCartList" resultType="org.shop.domain.dto.myPage.CartDetailDTO">
+        SELECT cd.cartNo
+            , cd.cdNo
+            , cd.pOpNo
+            , cd.cCount
+            , cd.cPrice
+            , p.pName
+            , p.pno
+            , op.pSize
+            , op.pColor
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
+            INNER JOIN productOp op
+            ON cd.pOpNo = op.pOpNo
+            INNER JOIN product p
+            ON op.pno = p.pno
+        <include refid="cartListId"></include>
+    </select>
+
+    <select id="cartCount" resultType="int">
+        SELECT count(*)
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
+        <include refid="cartListId"></include>
+    </select>
+
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <delete id="deleteCart" parameterType="String">
+        DELETE FROM cart
+        <include refid="cartId"></include>
+    </delete>
+
+    <delete id="deleteCartDetail" parameterType="String">
+        DELETE FROM cartDetail
+        <where>
+            <foreach collection="list" item="item" open="" close="" separator="OR">
+                (cdNo = #{item})
+            </foreach>
+        </where>
+    </delete>
+
+    <update id="cartUp" parameterType="org.shop.domain.entity.Cart">
+        UPDATE cartDetail SET
+            cCount=cCount + 1
+            , cPrice=cPrice + #{cPrice}
+        WHERE cdNo = #{cdNo}
+    </update>
+
+    <update id="cartDown" parameterType="org.shop.domain.entity.Cart">
+        UPDATE cartDetail SET
+            cCount=cCount - 1
+            , cPrice=cPrice - #{cPrice}
+        WHERE cdNo = #{cdNo}
+    </update>
+
+    <select id="memberOrderList" resultType="org.shop.domain.dto.myPage.MemberOrderListDTO">
+        <![CDATA[
+            SELECT *
+            FROM memberOrderList_view
+            WHERE userId=#{userId}
+                AND orderDate >= #{regDate}
+        ]]>
+    </select>
+
+    <select id="reviewProductInfo" resultType="String">
+        SELECT pName
+        FROM product
+        WHERE pno = #{pno}
+    </select>
+
+    <insert id="insertProductReview" parameterType="org.shop.domain.entity.ProductReview">
+        INSERT INTO productReview(
+            rNum
+            , pno
+            , userId
+            , reviewContent
+            , reviewDate
+        )
+        VALUES(
+            product_Review_SEQ.NEXTVAL
+            , #{pno}
+            , #{userId}
+            , #{reviewContent}
+            , sysdate
+        )
+    </insert>
+
+    <update id="reviewStatUp" parameterType="org.shop.domain.entity.ProductReview">
+        UPDATE productOrderDetail SET
+            reviewStat=1
+        WHERE orderNo=#{orderNo}
+            AND pno=#{pno}
+    </update>
+
+    <delete id="deleteReview" parameterType="long">
+        DELETE FROM productReview
+        WHERE rNum=#{rNum}
+    </delete>
+
+    <select id="memberQnAList" resultType="org.shop.domain.dto.myPage.MemberQnAListDTO">
+        SELECT *
+        FROM(
+            SELECT rownum rn
+                , qno
+                , userid
+                , qtitle
+                , qcontent
+                , qstat
+                , qregdate
+        FROM myQnA
+        WHERE userId=#{keyword}
+        ORDER BY qno DESC
+        )
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getQnATotal" resultType="int">
+        SELECT count(*)
+        FROM myQnA
+        WHERE userId=#{keyword}
+    </select>
+
+    <select id="memberQnADetail" resultType="org.shop.domain.dto.myPage.MemberQnADetailDTO">
+        SELECT qTitle
+            , qContent
+        FROM myQnA
+        WHERE qno=#{qno}
+    </select>
+
+    <select id="memberQnAReply" resultType="org.shop.domain.dto.myPage.MemberQnAReplyListDTO">
+        SELECT userId
+            , qrRegDate
+            , qrContent
+        FROM myQnAReply
+        WHERE qno=#{qno}
+    </select>
+
+    <insert id="insertMemberQnA" parameterType="org.shop.domain.entity.MyQnA">
+        INSERT INTO myQnA(
+            qno
+            , userId
+            , qTitle
+            , qContent
+            , qRegDate
+        )
+        VALUES(
+            my_QnA_SEQ.NEXTVAL
+            , #{userId}
+            , #{qTitle}
+            , #{qContent}
+            , sysdate
+        )
+    </insert>
+
+    <select id="memberReviewList" resultType="org.shop.domain.dto.myPage.MemberReviewListDTO">
+        SELECT *
+        FROM(
+            SELECT rownum rn
+                , r.*
+            FROM(
+                SELECT r.pno
+                , r.rNum
+                , p.pname
+                , p.firstThumbnail
+                , r.reviewDate
+                FROM productReview r
+                    INNER JOIN product p
+                    ON r.pno = p.pno
+                WHERE userid=#{keyword}
+                ORDER BY rNum DESC
+            )r
+        )
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getReviewTotal" resultType="int">
+        SELECT count(*)
+        FROM productReview
+        WHERE userId=#{keyword}
+    </select>
+
+    <select id="memberReviewDetail" resultType="org.shop.domain.dto.myPage.MemberReviewDetailDTO">
+        SELECT r.reviewContent
+            , r.reviewDate
+            , r.rNum
+            , p.firstThumbnail
+            , p.pName
+        FROM productReview r
+            INNER JOIN product p
+            ON r.pno = p.pno
+        WHERE r.rNum=#{rNum}
+    </select>
+
+    <update id="memberReviewModify" parameterType="org.shop.domain.entity.ProductReview">
+        UPDATE productReview
+        SET reviewContent=#{reviewContent}
+        WHERE rNum=#{rNum}
+    </update>
+
+    <select id="likeList" resultType="org.shop.domain.dto.myPage.LikeListDTO">
+        SELECT *
+        FROM(
+            SELECT rownum rn
+                , l.pno
+                , p.firstThumbnail
+                , p.pName
+                , p.pPrice
+            FROM likeProduct l
+                INNER JOIN product p
+                ON l.pno = p.pno
+            WHERE l.userId=#{keyword}
+                AND p.pclosed=0
+            ORDER BY l.likeno DESC
+        )
+        WHERE rn
+            BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getLikeTotal" resultType="int">
+        SELECT count(*)
+        FROM likeProduct
+        WHERE userId=#{keyword}
+    </select>
+
+</mapper>

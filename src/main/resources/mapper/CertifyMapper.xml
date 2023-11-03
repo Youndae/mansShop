@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.CertifyMapper">
+
+    <insert id="addCertify" parameterType="org.shop.domain.entity.Certify">
+        INSERT INTO certify(
+                cno
+                , userId
+                , userName
+                , userPhone
+                , userEmail
+        )
+        VALUES(
+               #{cno}
+               , #{userId}
+               , #{userName}
+               , #{userPhone}
+               , #{userEmail}
+              )
+    </insert>
+
+    <delete id="deleteCertify" parameterType="int">
+        DELETE FROM certify
+        WHERE cno = #{cno}
+    </delete>
+
+    <select id="checkCertify" resultType="int">
+        SELECT count(*)
+        FROM certify
+        WHERE userId = #{userId}
+        AND cno = #{cno}
+    </select>
+</mapper>

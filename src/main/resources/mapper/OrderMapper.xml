@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.OrderMapper">
+
+    <insert id="orderPayment" parameterType="org.shop.domain.entity.ProductOrder">
+        INSERT INTO productOrder(
+            orderNo
+            , userId
+            , addr
+            , orderPhone
+            , orderMemo
+            , orderPrice
+            , orderDate
+            , orderPayment
+            , recipient
+        )
+        VALUES(
+            #{orderNo}
+            , #{userId}
+            , #{addr}
+            , #{orderPhone}
+            , #{orderMemo}
+            , #{orderPrice}
+            , sysdate
+            , #{orderPayment}
+            , #{recipient}
+        )
+    </insert>
+
+    <insert id="orderPaymentOp" parameterType="org.shop.domain.entity.ProductOrderDetail">
+        <foreach collection="list" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+            INTO productOrderDetail(
+            odNo
+            , orderNo
+            , pOpNo
+            , orderCount
+            , odPrice
+            , pno
+            )
+            VALUES(
+            #{item.odNo}
+            , #{item.orderNo}
+            , #{item.pOpNo}
+            , #{item.orderCount}
+            , #{item.odPrice}
+            , #{item.pno}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="productSales" parameterType="org.shop.domain.entity.ProductOrderDetail">
+        <foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+            UPDATE product SET
+            pSales = pSales + #{item.odPrice}
+            WHERE pno=(
+                    SELECT op.pno
+                    FROM product p
+                        INNER JOIN productOp op
+                        ON p.pno = op.pno
+                    WHERE op.pOpNo=#{item.pOpNo}
+                )
+        </foreach>
+
+    </update>
+
+    <update id="productOpSales" parameterType="org.shop.domain.entity.ProductOrderDetail">
+        <foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+            UPDATE productOp SET
+            opSales = opSales + #{item.odPrice}
+            , opSalesRate = opSalesRate + #{item.orderCount}
+            , pStock = pStock - #{item.orderCount}
+            WHERE pOpNo=#{item.pOpNo}
+        </foreach>
+    </update>
+
+    <insert id="addTotalSales" parameterType="org.shop.domain.entity.Sales">
+        INSERT INTO SALES(
+            salesTerm
+            , salesSum
+            , salesOrders
+        )
+        VALUES(
+            #{salesTerm}
+            , #{salesSum}
+            , #{salesOrders}
+        )
+    </insert>
+
+    <update id="updateTotalSales" parameterType="org.shop.domain.entity.Sales">
+        UPDATE sales SET
+            salesSum = salesSum + #{salesSum}
+            , salesOrders = salesOrders + #{salesOrders}
+        WHERE salesTerm=#{salesTerm}
+    </update>
+
+    <select id="maxSalesTerm" resultType="int">
+        SELECT count(*)
+        FROM sales
+        WHERE salesTerm=#{term}
+    </select>
+
+    <sql id="cartCheckId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">c.ckId = #{ckId}</if>
+            <if test="ckId == null">c.userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <select id="deleteCartCheck" resultType="int">
+        SELECT count(*)
+        FROM cartDetail cd
+            INNER JOIN cart c
+            ON cd.cartNo = c.cartNo
+        <include refid="cartId"></include>
+    </select>
+
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <delete id="deleteOrderCart" parameterType="org.shop.domain.entity.Cart">
+        DELETE FROM cart
+        <include refid="cartId"></include>
+    </delete>
+
+    <delete id="deleteOrderCartDetail" parameterType="String">
+        DELETE FROM cartDetail
+        <where>
+            <foreach collection="list" item="item" open="" close="" separator="OR">
+                (cdNo = #{item})
+            </foreach>
+        </where>
+    </delete>
+</mapper>

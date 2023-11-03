@@ -1,0 +1,88 @@
+.join_header{
+    text-align: center;
+}
+
+.join_content{
+    font-size: large;
+    padding-left: 45%;
+    font-weight: bold;
+}
+
+.formJoin div{
+    margin: 10px;
+}
+
+.join_content input{
+    width: 270px;
+    height: 30px;
+}
+
+button#join{
+    text-align: center;
+    width: 100px;
+    height: 30px;
+    margin-left: 7%;
+}
+
+/* login */
+
+.login_content div{
+    text-align: center;
+}
+
+.login_header{
+    font-size: x-large;
+    margin: 10% 0 2% 0;
+}
+
+.login_form input{
+    height: 40px;
+    width: 300px;
+}
+
+/*.login_form button{
+    margin-top: 40px;
+    height: 30px;
+    width: 100px;
+}*/
+
+.login-form-btn-area button {
+    margin-top: 40px;
+    height: 30px;
+}
+
+.login-form-btn-area .loginBtn-area button{
+    width: 300px;
+}
+
+.login-form-btn-area .else-btn-area button{
+    width: 90px;
+}
+
+
+/* searchId */
+.search-radio-area{
+    margin-bottom: 1%;
+}
+
+.form-group{
+    margin-bottom: 1%;
+}
+
+.search_id_form input{
+    width: 195px;
+    text-align: center;
+}
+
+.search_pw_form input{
+    width: 195px;
+    text-align: center;
+}
+
+.btn-area {
+    margin-top: 1%;
+}
+
+.btn-area button{
+    margin-left: 1%;
+}

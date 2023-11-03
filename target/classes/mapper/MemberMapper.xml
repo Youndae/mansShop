@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.MemberMapper">
+
+    <select id="idCheck" resultType="int">
+        SELECT count(*)
+        FROM member
+        WHERE userId = #{userId}
+    </select>
+
+    <insert id="join">
+        INSERT INTO member(
+            userId
+            , userPw
+            , userName
+            , userEmail
+            , userBirth
+            , userPhone
+            , joinRegDate
+        )
+        VALUES(
+            #{userId}
+            , #{userPw}
+            , #{userName}
+            , #{userEmail}
+            , #{userBirth}
+            , #{userPhone}
+            , sysdate
+        )
+    </insert>
+
+    <insert id="joinAuth">
+        INSERT INTO memberAuth(
+            userId
+            , auth
+        )
+        VALUES(
+            #{userId}
+            , 'ROLE_MEMBER'
+        )
+    </insert>
+
+
+    <select id="searchId" resultType="String">
+        SELECT userId
+        FROM member
+        WHERE userName = #{userName}
+        <include refid="searchId"></include>
+    </select>
+    <sql id="searchId">
+        <trim prefix="AND ">
+            <if test="userPhone != null">userPhone = #{userPhone}</if>
+            <if test="userEmail != null">userEmail = #{userEmail}</if>
+        </trim>
+    </sql>
+    
+    
+    <select id="checkUser" resultType="int">
+        SELECT count(*)
+        FROM member
+        WHERE userId = #{userId}
+        AND userName = #{userName}
+        AND userEmail = #{userEmail}
+    </select>
+
+    <update id="modifyPw" parameterType="org.shop.domain.entity.Member">
+        UPDATE member SET
+        userPw = #{userPw}
+        WHERE userId = #{userId}
+    </update>
+</mapper>

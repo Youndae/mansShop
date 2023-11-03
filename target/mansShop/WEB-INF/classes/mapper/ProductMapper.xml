@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductMapper">
+
+    <select id="productDetail" resultType="org.shop.domain.dto.product.ProductDetailDTO">
+        SELECT firstThumbnail
+        , pName
+        , pPrice
+        , pno
+        FROM product
+        WHERE pno=#{pno}
+    </select>
+
+    <select id="getProductOp" resultType="org.shop.domain.dto.product.ProductOpDTO">
+        SELECT pOpNo
+                , pSize
+                , pColor
+        FROM productOp
+        WHERE pno=#{pno}
+    </select>
+
+    <select id="getProductReview" resultType="org.shop.domain.entity.ProductReview">
+        SELECT *
+        FROM(
+            SELECT rownum rn
+                , r.*
+            FROM(
+                SELECT *
+                FROM productReview
+                WHERE pno=#{pno}
+                order by rnum desc
+            )r
+        )
+        WHERE rn
+            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+    </select>
+
+    <select id="getProductReviewTotal" resultType="int">
+        SELECT count(*)
+        FROM productReview
+        WHERE pno=#{pno}
+    </select>
+
+    <select id="getProductQnA" resultType="org.shop.domain.entity.ProductQnA">
+        SELECT *
+        FROM(
+            SELECT rownum rn
+                , q.*
+            FROM(
+                SELECT *
+                FROM productQna
+                WHERE pno=#{pno}
+                ORDER BY pQnAGroupNo DESC
+                    , pQnAIndent
+                )q
+            )
+        WHERE rn
+            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+
+    </select>
+
+    <select id="getProductQnATotal" resultType="int">
+        SELECT count(*)
+        FROM productQna
+        WHERE pno=#{pno}
+    </select>
+
+    <select id="getLikeProductStat" resultType="int">
+        SELECT count(*)
+        FROM likeProduct
+        WHERE userId=#{userId}
+            AND pno=#{pno}
+    </select>
+
+    <sql id="cartId">
+        <trim prefix="WHERE">
+            <if test="ckId != null">ckId = #{ckId}</if>
+            <if test="ckId == null">userId = #{userId}</if>
+        </trim>
+    </sql>
+
+    <select id="checkCart" resultType="int">
+        SELECT count(*)
+        FROM cart
+        <include refid="cartId"></include>
+    </select>
+
+    <insert id="addCart" parameterType="org.shop.domain.entity.Cart">
+        INSERT INTO cart(
+            cartNo
+            , userId
+            , ckId
+            , createdAt
+            , updatedAt
+        )
+        VALUES(
+            #{cartNo}
+            , #{userId}
+            , #{ckId}
+            , sysdate
+            , sysdate
+        )
+    </insert>
+
+    <update id="updateCart" parameterType="org.shop.domain.entity.Cart">
+        UPDATE cart SET
+            updatedAt = sysdate
+        <include refid="cartId"></include>
+    </update>
+
+    <select id="checkCartNo" resultType="String">
+        SELECT cartNo
+        FROM cart
+        <include refid="cartId"></include>
+    </select>
+
+    <update id="updateCartDetail" parameterType="org.shop.domain.entity.CartDetail">
+        <foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+            UPDATE cartDetail SET
+            cCount = cCount + #{item.cCount}
+            , cPrice = cPrice + #{item.cPrice}
+            WHERE
+            pOpNo = #{item.pOpNo}
+            AND
+            cartNo = #{item.cartNo}
+        </foreach>
+    </update>
+
+
+
+    <insert id="addCartDetail" parameterType="org.shop.domain.entity.CartDetail">
+        <foreach collection="list" item="item" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+            INTO cartDetail(
+                cdNo
+                , cartNo
+                , pOpNo
+                , cCount
+                , cPrice
+            )
+            VALUES(
+                #{item.cdNo}
+                , #{item.cartNo}
+                , #{item.pOpNo}
+                , #{item.cCount}
+                , #{item.cPrice}
+            )
+        </foreach>
+    </insert>
+
+    <select id="checkDetailOption" resultType="String">
+        SELECT pOpNo
+        FROM cartDetail
+        WHERE
+            cartNo = #{cartNo}
+    </select>
+
+    <insert id="insertPQnA" parameterType="org.shop.domain.entity.ProductQnA">
+        INSERT INTO productQna(
+            pQnANo
+            , pno
+            , userId
+            , pQnAContent
+            , pQnARegDate
+            , pQnAGroupNo
+        )
+        values(
+            product_QnA_SEQ.NEXTVAL
+            , #{pno}
+            , #{userId}
+            , #{pQnAContent}
+            , sysdate
+            , product_QnA_SEQ.NEXTVAL
+        )
+
+    </insert>
+
+    <insert id="likeProduct" parameterType="String">
+        INSERT INTO likeProduct(
+            likeNo
+            , userId
+            , pno
+        )
+        VALUES(
+            #{likeNo}
+            , #{userId}
+            , #{pno}
+        )
+    </insert>
+
+    <delete id="deLikeProduct" parameterType="String">
+        DELETE FROM likeProduct
+        WHERE userId=#{userId}
+            AND pno=#{pno}
+    </delete>
+
+</mapper>

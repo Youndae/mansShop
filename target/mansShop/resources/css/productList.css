@@ -1,0 +1,23 @@
+.productList_header button{
+    float: right;
+}
+
+.productList_classification{
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+    border: solid;
+    border-width: 1px 0 1px 0;
+}
+
+.productList_classification a{
+    margin: 5%;
+}
+
+.productList_content_bottom{
+    display: flex;
+}
+
+.productList_content_bottom .paging{
+    margin-left: 10px;
+}

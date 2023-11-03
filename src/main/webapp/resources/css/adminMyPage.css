@@ -1,0 +1,22 @@
+.content {
+    display: inline-flex;
+    padding: 100px 0 0 0;
+    margin-left: 20%;
+    justify-content: center;
+    position: sticky;
+}
+
+.container .header{
+    text-align: center;
+    z-index: 1;
+}
+
+.content_header {
+    margin: 40px 0 50px 10px;
+}
+
+.content_data {
+    width: 100%;
+    height: 100%;
+}
+

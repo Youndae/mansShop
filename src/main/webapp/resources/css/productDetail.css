@@ -1,0 +1,262 @@
+#firstThumb{
+    width: 400px;
+}
+.thumb>img{
+    width: 80px;
+}
+
+.productthumbnail{
+    padding: 0 0 0 15%;
+}
+
+.QnA_content_reply{
+    text-align: left;
+    margin-left: 24px;
+}
+
+.productInfo_detail .product_detail_info::after{
+    display: inline-block;
+    content: "";
+    vertical-align: middle;
+}
+
+.container div{
+    text-align: center;
+}
+
+ul{
+    list-style: none;
+}
+
+.product_Info_Order{
+    display: inline-flex;
+    margin-top: 100px;
+    width: 80%;
+}
+
+.optionArea{
+    margin-left: 400px;
+    width: 30%;
+}
+
+.productOption{
+    width: fit-content;
+    float: right;
+    font-size: xx-large;
+}
+
+.mgt-4{
+    margin-top: 40px;
+}
+
+.productOption label{
+    font-weight: bold;
+    float: left;
+}
+
+.productOption span{
+    font-weight: 100;
+    font-size: xx-large;
+    margin-left: 20px;
+}
+
+.productInfo_tempOrderInfo{
+    display: grid;
+}
+
+.productInfo_tempOrderInfo .tempOrderTable{
+    text-align: center;
+    width: 100%;
+    border: 0px solid;
+}
+
+.productInfo_tempOrderInfo .tempOrderTable span{
+    font-size: large;
+}
+
+.productInfo_tempOrderInfo .tempOrderTable input{
+    width: 20px;
+    border: 1px solid lightgray;
+    margin-left: 10px;
+    text-align: center;
+}
+
+select#option_select_box{
+    margin-top: 10px;
+    height: 25px;
+}
+
+.detail_button{
+    font-size: xx-large;
+    margin-bottom: 50px;
+    border: solid;
+    border-width: 1px 0px 1px 0px;
+    position: sticky;
+    top: 230px;
+    z-index: 1;
+    background-color: white;
+    width: 100%;
+}
+
+.detail_button a{
+    padding: 0 100px 0 100px;
+}
+
+.product_Review_List{
+    border: solid;
+    border-width: 1px 0px 0px 0px;
+}
+
+.product_Review_List_header{
+    margin-top: 40px;
+}
+
+.product_Review_List_content{
+    margin-top: 40px;
+}
+
+.product_Review_List_content li{
+    margin-top: 30px;
+    border: 1px solid lightgray;
+    width: 50%;
+    display: inline-grid;
+}
+
+.review_content_header{
+    display: inline-flex;
+}
+
+.review_content_header strong{
+    font-weight: bold;
+    font-size: x-large;
+    width: 10%;
+}
+
+.review_content_header small{
+    font-size: small;
+    padding: 12px 0 0 0;
+}
+
+.review_content_content{
+    display: flex;
+    margin-left: 20%;
+}
+
+.reviewPaging li{
+    display: inline;
+    margin: 10px;
+    font-size: large;
+}
+
+.product_QnA_List{
+    margin-top: 100px;
+    border: solid;
+    border-width: 1px 0 0 0;
+}
+
+.product_QnA_List .product_QnA_Header{
+    margin-top: 40px;
+    display: revert;
+}
+
+.product_QnA_Content li{
+    margin-top: 30px;
+    border: 1px solid lightgray;
+    width: 50%;
+    display: inline-grid;
+}
+
+.QnA_content_header{
+    display: flex;
+}
+
+.QnA_content_header strong{
+    font-weight: bold;
+    font-size: x-large;
+    width: 10%;
+}
+
+.QnA_content_header small{
+    font-size: small;
+    padding: 12px 10px 0 0;
+}
+
+.QnA_content_content{
+    display: flex;
+    margin-left: 20%;
+}
+
+.QnA_content_reply{
+    margin-left: 50px;
+    padding-right: 15px;
+}
+
+.QnAPaging li{
+    display: inline;
+    margin: 10px;
+    font-size: large;
+}
+
+.product_Order_Info{
+    margin-top: 100px;
+    border: solid;
+    border-width: 1px 0 0 0;
+}
+
+.product_order_Info_header{
+    margin-top: 40px;
+}
+
+.product_Order_Info_content{
+    display: inline-block;
+    margin-top: 40px;
+}
+
+.product_QnA_Form_area{
+    margin-top: 50px;
+}
+
+.product_QnA_Form_area textarea{
+    width: 1000px;
+    height: 100px;
+    resize: none;
+}
+
+.product_QnA_Form_area button{
+    width: 100px;
+    height: 30px;
+    margin: 10px 0 0 35%;
+}
+
+.product_temp_cart img{
+    width: 10px;
+}
+
+.product_temp_cart_input button{
+    background-color: white;
+    border: 1px solid lightgray;
+}
+
+.product_temp_cart_input .remove_btn{
+    margin-left: 7px;
+}
+
+.product_temp_cart_input {
+    display: flex;
+}
+
+.pCount {
+    display: flex;
+}
+
+.pCount_up_down{
+    display: grid;
+}
+
+.pCount_remove {
+    margin-top: 4px;
+}
+
+.remove_btn img{
+    width: 15px;
+}

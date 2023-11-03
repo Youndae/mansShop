@@ -1,0 +1,53 @@
+.cart_List table{
+    font-size: large;
+    margin: 25px 0 25px 0;
+    width: 900px;
+}
+
+.cart_content_footer{
+    float: right;
+}
+
+.cart_content_btn button{
+    width: 100px;
+    height: 25px;
+}
+
+button.productCount {
+    background-color: white;
+    border: 1px solid lightgray;
+}
+
+button.productCount img{
+    width: 10px;
+}
+
+.count_body{
+    display: flex;
+    padding-left: 15px;
+}
+
+.count_body .count_btn{
+    display: grid;
+}
+
+.count_head{
+    width: 40px;
+}
+
+.price_head{
+    width: 120px;
+}
+
+.pName_body, .pOption_body {
+    text-align: center;
+}
+
+.price_body{
+    text-align: right;
+}
+
+.total_price{
+    font-weight: bold;
+    padding-left: 30px;
+}

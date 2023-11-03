@@ -1,0 +1,24 @@
+.side_nav{
+    width: 400px;
+}
+
+.side_nav ul{
+    width: 300px;
+}
+
+.side_nav li{
+    list-style: none;
+    font-weight: bold;
+}
+
+.side_nav_ul li{
+    margin: 40px;
+    font-size: x-large;
+}
+
+.sales_category li{
+    width: 150px;
+    margin: 20px 0 0 70px;
+    font-size: large;
+}
+

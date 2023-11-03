@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.MainMapper">
+
+    <select id="mainBest" resultType="org.shop.domain.entity.Product">
+            SELECT *
+                    FROM(
+                        SELECT *
+                        FROM product
+                        ORDER BY pSales DESC
+                    )
+            WHERE rownum
+                BETWEEN 1 AND 12
+    </select>
+
+    <select id="mainNew" resultType="org.shop.domain.entity.Product">
+            SELECT *
+                    FROM(
+                        SELECT *
+                        FROM product
+                        ORDER BY pRegDate DESC
+                    )
+            WHERE rownum
+                BETWEEN 1 AND 12
+    </select>
+
+    <select id="mainClassification" resultType="org.shop.domain.entity.Product">
+            SELECT *
+                    FROM(
+                        SELECT
+                            rownum rn
+                            , p.*
+                        FROM(
+                            SELECT *
+                            FROM product
+                            WHERE pClassification = #{keyword}
+                            ORDER BY pRegDate DESC
+                        )p
+                    )
+            WHERE rn
+                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getProductTotal" resultType="int">
+        SELECT count(*)
+        FROM product
+        WHERE pClassification=#{keyword}
+    </select>
+
+    <select id="searchProduct" resultType="org.shop.domain.entity.Product">
+            SELECT *
+                    FROM(
+                        SELECT rownum rn
+                            , p.*
+                        FROM(
+                            SELECT *
+                            FROM product
+                            WHERE pName LIKE '%'||#{keyword}||'%'
+                            ORDER BY pRegDate DESC
+                        )p
+                    )
+            WHERE rn
+                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    </select>
+
+    <select id="getSearchProduct" resultType="int">
+        SELECT count(*)
+        FROM product
+        WHERE pName LIKE '%'||#{keyword}||'%'
+    </select>
+
+    <select id="getNonOrderList" resultType="org.shop.domain.dto.myPage.MemberOrderListDTO">
+        SELECT v.*
+        FROM productOrder o
+            INNER JOIN memberOrderList_view v
+            ON o.orderNo = v.orderNo
+        WHERE v.userId='Anonymous'
+            AND o.recipient=#{recipient}
+            AND o.orderPhone=#{orderPhone}
+    </select>
+
+</mapper>

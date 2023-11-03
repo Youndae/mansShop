@@ -1,0 +1,32 @@
+.container td{
+    text-align: center;
+}
+
+.memberOrderList_Term_select{
+    float: right;
+}
+
+.tbl_review_a{
+    display: inline-flex;
+    width: 100%;
+}
+
+.tbl_productName{
+    width: 100%;
+    text-align: center;
+    margin: 11% 0 0 0;
+}
+
+.orderList_tbl {
+    margin-top: 50px;
+}
+
+.orderList_tbl label{
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.tbl_firstThumbnail img{
+    width: 250px;
+    height: 300px;
+}
