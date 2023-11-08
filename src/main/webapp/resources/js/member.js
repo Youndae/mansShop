@@ -79,7 +79,6 @@ $(document).ready(function(){
                 userId : uid,
                 userName : name,
                 userEmail : mail,
-                searchType: searchType,
             }
 
             $.ajax({
@@ -370,8 +369,6 @@ $(function(){
 
 $(document).on('click', "#certifi-btn", function(){
     var uid = $('#userId').val();
-    var name = $('#userName').val();
-    var mail = $('input[name="userEmail"]').val();
     var certify = $('input[name="certifi-input"]').val();
 
     if(certify == '' || certify == null){
@@ -381,8 +378,6 @@ $(document).on('click', "#certifi-btn", function(){
     }else{
         var formData = {
             userId : uid,
-            userName : name,
-            userEmail : mail,
             cno : certify,
         };
 
@@ -399,7 +394,6 @@ $(document).on('click', "#certifi-btn", function(){
                 else if(data == 'error')
                     alert('오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요');
                 else if(data == 'success'){
-                    alert('성공! 비밀번호 변경 페이지로 이동');
                     $('#formId').val(uid);
                     $('#formCno').val(certify);
 

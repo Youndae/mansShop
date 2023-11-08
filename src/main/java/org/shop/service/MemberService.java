@@ -7,9 +7,13 @@ public interface MemberService {
 
     public int join(JoinDTO dto) throws Exception;
 
-    public String searchPw(String userId, String userName, String userEmail, String searchType);
+    public String searchId(String userName, String userPhone, String userEmail);
+
+    public String searchPw(String userId, String userName, String userEmail);
 
     public SearchIdDTO checkResetUser(SearchIdDTO dto);
 
     public int resetPw(String userId, int cno, String password);
+
+    public String checkCno(SearchIdDTO dto);
 }

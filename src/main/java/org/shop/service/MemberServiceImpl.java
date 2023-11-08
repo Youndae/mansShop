@@ -58,7 +58,34 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public String searchPw(String userId, String userName, String userEmail, String searchType) {
+    public String searchId(String userName, String userPhone, String userEmail) {
+
+        if(userPhone == "")
+            userPhone = null;
+
+        if(userEmail == "")
+            userEmail = null;
+
+        if(userName == null ||
+                (userPhone == null && userEmail == null))
+            return null;
+
+        Member member = Member.builder()
+                .userName(userName)
+                .userPhone(userPhone)
+                .userEmail(userEmail)
+                .build();
+
+        String result = memberMapper.searchId(member);
+
+        if(result == null)
+            return null;
+
+        return result;
+    }
+
+    @Override
+    public String searchPw(String userId, String userName, String userEmail) {
 
         if(userId == null || userName == null)
             return null;
@@ -149,6 +176,25 @@ public class MemberServiceImpl implements MemberService{
         return message;
     }
 
+    @Override
+    public String checkCno(SearchIdDTO dto) {
+
+        String result = null;
+
+        try{
+            ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+            result = stringValueOperations.get(dto.getUserId());
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return "error";
+        }
+
+        if(result != null && dto.getCno() == Integer.parseInt(result))
+            return "success";
+
+
+        return "fail";
+    }
 
     @Override
     public SearchIdDTO checkResetUser(SearchIdDTO dto) {
@@ -158,7 +204,7 @@ public class MemberServiceImpl implements MemberService{
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         String result = stringValueOperations.get(dto.getUserId());
 
-        if(result != null)
+        if(result != null && dto.getCno() == Integer.parseInt(result))
             return dto;
 
         return null;
@@ -166,9 +212,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public int resetPw(String userId, int cno, String password) {
-
-
-
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
 

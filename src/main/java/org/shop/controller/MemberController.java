@@ -100,33 +100,7 @@ public class MemberController {
 
         log.info("userName : " + userName + ", userPhone : " + userPhone + ", userEmail : " + userEmail);
 
-        if(userPhone == "")
-            userPhone = null;
-
-        if(userEmail == "")
-            userEmail = null;
-
-        if(userName == null)
-            return null;
-        else if(userPhone == null && userEmail == null)
-            return null;
-
-
-       Member member = Member.builder()
-               .userName(userName)
-               .userPhone(userPhone)
-               .userEmail(userEmail)
-               .build();
-
-       String result = memberMapper.searchId(member);
-
-       log.info("result : " + result);
-
-       if(result == null) {
-           log.info("equals empty");
-           return null;
-       }
-        return result;
+        return memberService.searchId(userName, userPhone, userEmail);
     }
 
     @GetMapping("/searchPw")
@@ -138,12 +112,11 @@ public class MemberController {
     @ResponseBody
     public String searchPwProc(@RequestParam("userId") String userId
                                 , @RequestParam("userName") String userName
-                                , @RequestParam("userEmail") String userEmail
-                                , @RequestParam("searchType") String searchType){
+                                , @RequestParam("userEmail") String userEmail){
 
         log.info("userId : " + userId + ", userName : " + userName);
 
-        return memberService.searchPw(userId, userName, userEmail, searchType);
+        return memberService.searchPw(userId, userName, userEmail);
 
     }
 
@@ -151,16 +124,16 @@ public class MemberController {
     @PostMapping("/certifyPw")
     @ResponseBody
     public String certifyPw(@RequestParam("userId") String userId
-                            , @RequestParam("userName") String userName
-                            , @RequestParam(value = "userPhone", required = false) String userPhone
-                            , @RequestParam(value = "userEmail", required = false) String userEmail
                             , @RequestParam("cno") int cno) throws IOException {
 
         log.info("certifyPw");
-        log.info("userId : " + userId + ", userName : " + userName + ", userPhone : " + userPhone
-         + ", userEmail : " + userEmail + ", cno : " + cno);
 
-        return "success";
+        SearchIdDTO dto = SearchIdDTO.builder()
+                .userId(userId)
+                .cno(cno)
+                .build();
+
+        return memberService.checkCno(dto);
     }
 
 
@@ -180,9 +153,13 @@ public class MemberController {
 
         log.info("dto : " + dto);
 
-        model.addAttribute("info", dto);
+        if(dto != null){
+            model.addAttribute("info", dto);
 
-        return "/member/pwReset";
+            return "/member/pwReset";
+        }else{
+            return "/accessError";
+        }
     }
 
     @PostMapping("/resetPw")
