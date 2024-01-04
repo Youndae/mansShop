@@ -11,6 +11,9 @@
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="/js/member.js"></script>
 <link rel="stylesheet" href="/css/member.css">
+<script type="text/javascript">
+    history.replaceState({}, null, location.pathname);
+</script>
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
     <div class="content login_content">

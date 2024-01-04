@@ -117,7 +117,6 @@ public class MemberController {
         log.info("userId : " + userId + ", userName : " + userName);
 
         return memberService.searchPw(userId, userName, userEmail);
-
     }
 
 
@@ -136,8 +135,7 @@ public class MemberController {
         return memberService.checkCno(dto);
     }
 
-
-    @PostMapping("/pwReset")
+    @GetMapping("/pwReset")
     public String resetPassword(@RequestParam("userId") String userId,
                                 @RequestParam("cno") int cno, Model model){
         log.info("id : " + userId + ", cno : " + cno);
@@ -149,7 +147,7 @@ public class MemberController {
 
         SearchIdDTO dto = SearchIdDTO.builder().userId(userId).cno(cno).build();
 
-        dto = memberService.checkResetUser(dto);
+        /*dto = memberService.checkResetUser(dto);
 
         log.info("dto : " + dto);
 
@@ -159,7 +157,16 @@ public class MemberController {
             return "/member/pwReset";
         }else{
             return "/accessError";
-        }
+        }*/
+
+        String result = memberService.checkCno(dto);
+
+        if(result.equals("success")){
+            model.addAttribute("info", dto);
+            return "/member/pwReset";
+        }else
+            return "/accessError";
+
     }
 
     @PostMapping("/resetPw")

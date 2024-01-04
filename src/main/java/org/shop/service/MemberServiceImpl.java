@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService{
     private final RedisTemplate redisTemplate;
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int join(JoinDTO dto) throws Exception {
 
         log.info("service join");
@@ -102,26 +102,22 @@ public class MemberServiceImpl implements MemberService{
             return null;
 
         Random ran = new Random();
-
         int certificationNo = ran.nextInt(899999) + 100001;
-
 
         try{
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
             stringValueOperations.set(userId, String.valueOf(certificationNo), 6L, TimeUnit.MINUTES);
 
             MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
-
             javaMailSender.send(mailForm);
+
             return "success";
         }catch (Exception e){
             e.printStackTrace();
             return "error";
         }
 
-
-
-       /*
+        /* searchPw
        기존 DB에서 cno를 관리하던 코드
 
        Certify certify = Certify.builder()
@@ -147,6 +143,7 @@ public class MemberServiceImpl implements MemberService{
             return "success";
         }else
             return "error";*/
+
     }
 
     public MimeMessage createEmailForm(String userEmail, int certificationNo) throws MessagingException {
@@ -176,6 +173,22 @@ public class MemberServiceImpl implements MemberService{
         return message;
     }
 
+    /*
+    checkCno로 통합
+    @Override
+    public SearchIdDTO checkResetUser(SearchIdDTO dto) {
+
+//        int result = certifyMapper.checkCertify(dto);
+
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        String result = stringValueOperations.get(dto.getUserId());
+
+        if(result != null && dto.getCno() == Integer.parseInt(result))
+            return dto;
+
+        return null;
+    }*/
+
     @Override
     public String checkCno(SearchIdDTO dto) {
 
@@ -197,24 +210,9 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public SearchIdDTO checkResetUser(SearchIdDTO dto) {
-
-//        int result = certifyMapper.checkCertify(dto);
-
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        String result = stringValueOperations.get(dto.getUserId());
-
-        if(result != null && dto.getCno() == Integer.parseInt(result))
-            return dto;
-
-        return null;
-    }
-
-    @Override
     public int resetPw(String userId, int cno, String password) {
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-
 
         String certificationValue = stringValueOperations.get(userId);
 
@@ -225,8 +223,16 @@ public class MemberServiceImpl implements MemberService{
         if(certificationValue == null || checkResult != cno)
             return 0;
 
+        password = passwordEncoder.encode(password);
 
-        /*
+        int modifyResult = memberMapper.modifyPw(Member.builder().userId(userId).userPw(password).build());
+
+        if(modifyResult == 0)
+            return 0;
+
+        return 1;
+
+        /* resetPw
         기존 DB에서 cno를 관리하던 코드
 
         int checkResult = certifyMapper.checkCertify(SearchIdDTO.builder()
@@ -243,14 +249,5 @@ public class MemberServiceImpl implements MemberService{
 
         if(certifyResult == 0)
             return 0;*/
-
-        password = passwordEncoder.encode(password);
-
-        int modifyResult = memberMapper.modifyPw(Member.builder().userId(userId).userPw(password).build());
-
-        if(modifyResult == 0)
-            return 0;
-
-        return 1;
     }
 }

@@ -389,6 +389,7 @@ $(document).on('click', "#certifi-btn", function(){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
+                console.log("certify data : " + data);
                 if(data == 'fail')
                     $('.certifi-overlap').text('유효하지 않은 인증번호입니다.');
                 else if(data == 'error')

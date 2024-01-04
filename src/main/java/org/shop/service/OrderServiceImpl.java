@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int orderPayment(ProductOrderDTO dto
                             , List<String> cdNo
                             , List<String> pOpNo

@@ -57,7 +57,7 @@ public class ProductServiceImpl implements ProductService{
 
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int addCart(List<String> pOpNo
             , List<String> pCount
             , List<String> pPrice
@@ -136,7 +136,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int likeProduct(String pno, Principal principal) throws Exception{
 
         String uid = principal.getName();
@@ -152,7 +152,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int deLikeProduct(String pno, Principal principal) throws Exception{
 
         LikeProduct likeProduct = LikeProduct.builder()
@@ -165,7 +165,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) throws Exception{
 
         ProductQnA productQna = ProductQnA.builder()

@@ -29,7 +29,7 @@ public class MyPageServiceImpl implements MyPageService{
     private final CookieService cookieService;
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int deleteCart(List<String> cdNoList
             , Principal principal
             , HttpServletRequest request
@@ -78,7 +78,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int cartCount(String cdNo, String cPrice, String countType) throws Exception{
 
         CartDetail cartDetail = CartDetail.builder()
@@ -132,7 +132,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) throws Exception{
 
 
@@ -151,7 +151,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) throws Exception{
 
         MyQnA myQna = MyQnA.builder()
@@ -165,7 +165,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int memberReviewModify(ProductReviewModifyDTO dto) throws Exception{
 
         myPageMapper.memberReviewModify(ProductReview.builder()
@@ -178,7 +178,7 @@ public class MyPageServiceImpl implements MyPageService{
 
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackFor = {Exception.class})
     public int deleteReview(long rNum) throws Exception{
 
         myPageMapper.deleteReview(rNum);

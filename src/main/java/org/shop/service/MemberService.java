@@ -11,7 +11,7 @@ public interface MemberService {
 
     public String searchPw(String userId, String userName, String userEmail);
 
-    public SearchIdDTO checkResetUser(SearchIdDTO dto);
+//    public SearchIdDTO checkResetUser(SearchIdDTO dto);
 
     public int resetPw(String userId, int cno, String password);
 
