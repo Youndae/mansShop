@@ -18,7 +18,6 @@
         <security:access-denied-handler ref="customAccessDenied"/>
         <security:form-login login-page="/member/login" authentication-success-handler-ref="customAuthenticationSuccess"/>
         <security:logout logout-url="/logout" invalidate-session="true"/>
-
     </security:http>
 
     <security:authentication-manager>

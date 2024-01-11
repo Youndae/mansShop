@@ -14,6 +14,9 @@ import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +24,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequestMapping("/myPage/")
 @Controller
@@ -325,6 +330,39 @@ public class MyPageController {
         }
 
         return String.valueOf(result);
+    }
+
+    //채팅 문의 리스트
+    @GetMapping("/chatQnA")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public String chatQnA(Principal principal, Model model){
+
+        //채팅 저장 처리 및 내역 출력 기능 구현 후 서비스 호출해서 qList로 전달
+        model.addAttribute("qList", null);
+
+        return "myPage/memberChat";
+    }
+
+    //채팅 방 생성
+    @PostMapping("/chatRoom")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @ResponseBody
+    public String createChatRoom(Principal principal){
+        log.info("Create ChatRoom user : " + principal.getName());
+
+        return myPageService.createChatRoom(principal);
+    }
+
+    //채팅방 입장
+    @GetMapping("/chatRoom/{chatRoomId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public String chatRoom(@PathVariable("chatRoomId") String chatRoomId, Model model, Principal principal){
+        log.info(principal.getName() + "'s chatRoom connect");
+
+        //채팅방 정보(내역) 전달
+        model.addAttribute("room", myPageService.findByUserRoomId(chatRoomId, principal));
+
+        return "chat/room";
     }
 
 }

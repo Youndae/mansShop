@@ -120,4 +120,25 @@ $(function(){
             }
         })
     });
+
+    //chat
+    $("#startChat").on('click', function() {
+        $.ajax({
+            url: '/myPage/chatRoom',
+            type: 'post',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(data) {
+                if(data == '')
+                    alert("오류가 발생했습니다.");
+                else {
+                    window.open('/myPage/chatRoom/' + data
+                        , '채팅 문의'
+                        , 'width=600px,height=700px,scrollbars=yes'
+                    );
+                }
+            }
+        });
+    });
 });

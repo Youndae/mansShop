@@ -5,7 +5,9 @@ import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.myPage.*;
 import org.shop.domain.entity.*;
+import org.shop.mapper.ChatMapper;
 import org.shop.mapper.MyPageMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ public class MyPageServiceImpl implements MyPageService{
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final CookieService cookieService;
+
+    private final ChatMapper chatMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -183,5 +187,45 @@ public class MyPageServiceImpl implements MyPageService{
 
         myPageMapper.deleteReview(rNum);
         return ResultProperties.SUCCESS;
+    }
+
+    @Override
+    public String createChatRoom(Principal principal) {
+
+        /** 방번호 생성. 기능 완료 후 수정 */
+        StringBuffer sb = new StringBuffer();
+
+        String uid = principal.getName();
+        String chatRoomId = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
+                            .append(uid)
+                            .toString();
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .chatRoomId(chatRoomId)
+                .userId(uid)
+                .build();
+
+        chatMapper.createChatRoom(chatRoom);
+
+        return chatRoomId;
+    }
+
+    @Override
+    public String findByUserRoomId(String chatRoomId, Principal principal) {
+        /**
+         * 현재는 해당 방을 생성한 사용자가 맞는지만 체크.
+         *
+         * 추후 이전 채팅 내역까지 출력하도록 할 때 기능 추가.
+         */
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .chatRoomId(chatRoomId)
+                .userId(principal.getName())
+                .build();
+
+        if(chatMapper.checkUser(chatRoom) == 0)
+            throw new AccessDeniedException("Access Denied");
+
+        return chatRoomId;
     }
 }

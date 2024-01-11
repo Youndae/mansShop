@@ -27,4 +27,8 @@ public interface MyPageService {
     int memberReviewModify(ProductReviewModifyDTO dto) throws Exception;
 
     int deleteReview(long rNum) throws Exception;
+
+    public String createChatRoom(Principal principal);
+
+    public String findByUserRoomId(String chatRoomId, Principal principal);
 }

@@ -194,9 +194,6 @@ public class AdminServiceImpl implements AdminService{
                         .build());
             }
             log.info("thumbNo");
-            for(int i = 0; i < thumbList.size(); i++){
-                log.info("thumb" + i + "'s No : " + thumbList.get(i).getThumbNo());
-            }
             adminMapper.addProductThumbnail(thumbList);
         }
 
