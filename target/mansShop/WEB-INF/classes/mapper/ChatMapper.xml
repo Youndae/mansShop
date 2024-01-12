@@ -21,5 +21,10 @@
           AND userId = #{userId}
     </select>
 
-
+    <select id="duplicationCheck" resultType="String">
+        SELECT chatRoomId
+        FROM chatRoom
+        WHERE userId = #{userId}
+            AND chatStatus = 0
+    </select>
 </mapper>

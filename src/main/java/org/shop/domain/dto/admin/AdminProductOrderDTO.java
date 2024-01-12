@@ -6,6 +6,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 public class AdminProductOrderDTO {
 
     private String orderNo;

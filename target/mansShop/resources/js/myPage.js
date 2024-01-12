@@ -132,6 +132,8 @@ $(function(){
             success: function(data) {
                 if(data == '')
                     alert("오류가 발생했습니다.");
+                else if(data == 'duplication')
+                    alert('마무리 되지 않은 채팅이 있습니다');
                 else {
                     window.open('/myPage/chatRoom/' + data
                         , '채팅 문의'

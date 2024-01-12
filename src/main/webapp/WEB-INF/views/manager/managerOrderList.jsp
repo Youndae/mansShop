@@ -158,9 +158,9 @@
                         </table>
                     </div>
                 </div>
-                <div class="shipping_btn">
+                <%--<div class="shipping_btn">
                     <button type="button" id="shipping">배송처리</button>
-                </div>
+                </div>--%>
             </div>
         </div>
     </div>

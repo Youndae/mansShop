@@ -12,7 +12,7 @@
                 type: 'get',
                 success: function(data) {
                     console.log("manager return data : ", data);
-                    if(data == null)
+                    if(data == '')
                         alert("상담 요청이 없습니다.");
                     else
                         window.open('/managerPage/chatRoom/' + data, '채팅 상담', 'width=600px,height=700px,scrollbars=yes');

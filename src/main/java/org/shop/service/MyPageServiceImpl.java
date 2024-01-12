@@ -196,6 +196,11 @@ public class MyPageServiceImpl implements MyPageService{
         StringBuffer sb = new StringBuffer();
 
         String uid = principal.getName();
+        //상담이 마무리되지 않은 방이 있다면(chatStatus == 0)
+        String duplicationRoomId = chatMapper.duplicationCheck(uid);
+        if(duplicationRoomId != null)
+            return duplicationRoomId;
+
         String chatRoomId = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
                             .append(uid)
                             .toString();

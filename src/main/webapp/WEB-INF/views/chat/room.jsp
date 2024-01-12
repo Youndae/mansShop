@@ -8,56 +8,9 @@
     <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="/css/room.css">
 </head>
 <sec:authentication property="principal.username" var="uid"/>
-<style>
-    .content{
-        display: block;
-    }
-    #msgArea {
-        display: inline-grid;
-        height: 550px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        align-content: baseline;
-        -ms-overflow-style: none;
-    }
-
-    #msgArea::-webkit-scrollbar-thumb {
-        background-color: lightgray;
-    }
-
-    #msgArea::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    .input-area {
-        margin-top: 20px;
-    }
-
-    .alert-info{
-        height: 50px;
-    }
-
-    .opponent2 {
-        float: left;
-        max-width: 50%;
-    }
-    .myself2 {
-        float: right;
-        max-width: 50%;
-        padding-right: 10px;
-    }
-
-    .opponent2, .myself2 {
-        word-wrap: break-word;
-        word-break: break-all;
-        margin-top: 10px;
-    }
-    .col-6 {
-        max-width: 100%;
-    }
-</style>
 <script>
     $(document).ready(function() {
         const manager = 'manager';
@@ -107,8 +60,6 @@
                         }
                     }
                     $("#msgArea").append(str);
-                    // $("#msgArea").scrollTop($('#msgArea').prop('scrollHeight'));
-                    // let maxScroll = $("#msgArea").height() - $("#content-id").height();
                     $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
                     $("#msg").focus();
                     console.log("focus");
@@ -132,8 +83,6 @@
                 $("#button-send").click();
         })
     });
-
-
 </script>
 <body>
 <div class="container">
@@ -157,7 +106,6 @@
             </div>
         </div>
     </div>
-<%--    <div class="col-6"></div>--%>
 </div>
 </body>
 </html>

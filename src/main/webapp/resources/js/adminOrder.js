@@ -61,9 +61,9 @@ $(document).ready(function(){
         var orderNo = $(this).text();
         var str = "";
 
-
+        console.log('tbl_orderList');
         getInfo(orderNo, function(info){
-
+            console.log('getInfo in');
             $(".modal-body span[name=orderNo]").text(info.orderNo);
             $(".modal-body span[name=recipient]").text(info.recipient);
             $(".modal-body span[name=orderPhone]").text(info.orderPhone);
@@ -84,7 +84,7 @@ $(document).ready(function(){
 
         (function(){
             $.getJSON("/admin/orderInfoTable", {orderNo:orderNo}, function(arr){
-
+                console.log('orderInfoTable in');
                 str += getInfoTable(arr);
 
                 $(".order_detail_info_list").append(str);
@@ -178,7 +178,7 @@ $(function(){
 });
 
 function getInfo(orderNo, callback, error){
-
+    console.log('getInfo');
     $.get("/admin/orderInfo/"+orderNo + ".json", function(result){
         if(callback)
             callback(result);

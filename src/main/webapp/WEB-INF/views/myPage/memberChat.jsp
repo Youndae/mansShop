@@ -13,6 +13,15 @@
 <link rel="stylesheet" href="/css/adminMyPage.css">
 <link rel="stylesheet" href="/css/default.css">
 <link rel="stylesheet" href="/css/memberQnA.css">
+<style>
+  .content_area {
+    width: 1000px;
+  }
+
+  .qna_info {
+    text-align: center;
+  }
+</style>
 <body>
 <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
 <div class="content">
@@ -24,7 +33,7 @@
     </div>
     <c:choose>
       <c:when test="${qList eq null}">
-        <h3>문의 내역이 없습니다.</h3>
+        <h2 class="qna_info">문의 내역이 없습니다.</h2>
       </c:when>
       <c:otherwise>
         <div class="memberQnAList_content content_data">

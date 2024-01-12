@@ -33,6 +33,11 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             return;
         }
 
+        if(roleNames.contains("ROLE_MANAGER")){
+            response.sendRedirect("/managerPage/orderList");
+            return;
+        }
+
         HttpSession session = request.getSession();
 
         log.info("auth session : " + session);

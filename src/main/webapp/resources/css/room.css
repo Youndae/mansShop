@@ -1,0 +1,46 @@
+.content{
+    display: block;
+}
+#msgArea {
+    display: inline-grid;
+    height: 550px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-content: baseline;
+    -ms-overflow-style: none;
+}
+
+#msgArea::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+}
+
+#msgArea::-webkit-scrollbar {
+    width: 5px;
+}
+
+.input-area {
+    margin-top: 20px;
+}
+
+.alert-info{
+    height: 50px;
+}
+
+.opponent2 {
+    float: left;
+    max-width: 50%;
+}
+.myself2 {
+    float: right;
+    max-width: 50%;
+    padding-right: 10px;
+}
+
+.opponent2, .myself2 {
+    word-wrap: break-word;
+    word-break: break-all;
+    margin-top: 10px;
+}
+.col-6 {
+    max-width: 100%;
+}

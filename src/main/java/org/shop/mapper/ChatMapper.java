@@ -10,4 +10,7 @@ public interface ChatMapper {
 
     //채팅방에 접근하려는 사용자가 일치하는지 체크. count(*) 조회 후 int 리턴
     public int checkUser(ChatRoom chatRoom);
+
+    public String duplicationCheck(String uid);
+
 }
