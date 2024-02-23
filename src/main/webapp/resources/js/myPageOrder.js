@@ -184,7 +184,7 @@ $(function(){
 
 })
 
-function getList(regDate){
+/*function getList(regDate){
     $(".memberOrderList div").remove();
     $.getJSON("/myPage/selectOrderList", {regDate: regDate}, function(arr){
         let str = "";
@@ -348,6 +348,117 @@ function getList(regDate){
 
         $(".memberOrderList").append(str);
     })
+}*/
+
+function getList(regDate){
+    $(".memberOrderList div").remove();
+    $.getJSON("/myPage/selectOrderList", {regDate: regDate}, function(arr){
+        let str = "";
+        let date = "";
+        let totalPrice = 0;
+
+        $(arr).each(function(i, attach){
+            if(i == 0){
+                date = attach.orderDate;
+                totalPrice = attach.orderPrice;
+                str += newDateOrderStr(attach);
+            }else{
+                if(date == attach.orderDate){
+                    str += sameDateOrderStr(attach);
+                }else{
+                    date = attach.orderDate;
+                    str += "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>";
+                    str += newDateOrderStr(attach);
+                    totalPrice = attach.orderPrice;
+                }
+            }
+
+            if(i == arr.length - 1)
+                str +=  "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>";
+        })
+
+        $(".memberOrderList").append(str);
+    })
+}
+
+function sameDateOrderStr(attach) {
+    let str = "<tr>" +
+        "<td>" +
+        "<a class=\"tbl_order_a\" href=\"/product/" + attach.pno + "\">" +
+        "<div class=\"tbl_firstThumbnail\">" +
+        "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
+        "</div>" +
+        "<div class=\"tbl_productName\">"+
+        attach.pname +
+        "</div></a></td>";
+
+    str += orderOptionStr(attach);
+
+    return str;
+}
+
+function newDateOrderStr(attach) {
+    const od = new Date(attach.orderDate);
+    attach.orderDate = od.getFullYear() + "/" + (od.getMonth() + 1) + "/" + od.getDate();
+
+    let str =  "<div class=\"orderList_tbl\">" +
+        "<label>" + attach.orderDate + "</label>" +
+        "<table class=\"tbl_h_2\" border=\"1\">" +
+        "<thead>" +
+        "<tr>" +
+        "<th>상품명</th>" +
+        "<th>옵션</th>" +
+        "<th>수량</th>" +
+        "<th>가격</th>" +
+        "<th>배송현황</th>" +
+        "</tr>" +
+        "</thead>" +
+        "<tbody>" +
+        "<tr>" +
+        "<td>" +
+        "<a class=\"tbl_order_a\" href=\"/product/" + attach.pno + "\">" +
+        "<div class=\"tbl_firstThumbnail\">" +
+        "<img class=\"orderList_thumb\" src=\"/display?image=" +attach.firstThumbnail + "\">" +
+        "</div>" +
+        "<div class=\"tbl_productName\">"+
+        attach.pname +
+        "</div></a></td>";
+
+    str += orderOptionStr(attach);
+
+    return str;
+}
+
+function orderOptionStr (attach) {
+    let str = '';
+
+    if(attach.psize != null){
+        if(attach.pcolor != null)
+            str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
+        else if(attach.pcolor == null)
+            str += "<td>사이즈 : " + attach.psize + "</td>";
+
+    }else if(attach.pcolor != null)
+        str += "<td>컬러 : " + attach.pcolor + "</td>";
+
+    str += "<td>" + attach.orderCount + "</td>" +
+        "<td>" + attach.odPrice + "</td>";
+
+    if(attach.orderStat == 0)
+        str += "<td>배송준비중</td>";
+    else if(attach.orderStat == 1)
+        str += "<td>배송중</td>";
+    else if(attach.orderStat == 2){
+        str += "<td>배송완료";
+        if(attach.reviewStat == 0)
+            str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.pno + "/" + attach.orderNo + "\"" +
+                            " onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
+        else
+            str += "</td>";
+    }
+    str += "</tr>";
+
+    return str;
 }
 
 function insertReview(obj){
