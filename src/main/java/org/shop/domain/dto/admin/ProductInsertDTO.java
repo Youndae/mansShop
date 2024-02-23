@@ -2,9 +2,9 @@ package org.shop.domain.dto.admin;
 
 import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ProductInsertDTO {
 
     private String pClassification;
@@ -18,6 +18,4 @@ public class ProductInsertDTO {
     private String pColor;
 
     private Long pStock;
-
-
 }

@@ -28,9 +28,7 @@ public interface AdminMapper {
 
     public List<ProductInfoImageDTO> getInfoImg(String pno);
 
-    public void modifyProductThumb(Product product);
-
-    public void modifyProductInfo(Product product);
+    public void modifyProduct(Product product);
 
     public void modifyProductOp(ProductOp productOp);
 

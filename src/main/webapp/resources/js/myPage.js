@@ -1,7 +1,7 @@
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
-var emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-var phonePattern = /^01(?:0|1|6|9)([0-9]{3,4})([0-9]{4})$/;
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
+const emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+const phonePattern = /^01(?:0|1|6|9)([0-9]{3,4})([0-9]{4})$/;
 
 $(document).ready(function(){
     //modifyInfo
@@ -47,14 +47,13 @@ $(document).ready(function(){
     $("#insertMemberQnA").on('click', function(){
         location.href='/myPage/insertMemberQnA';
     })
-
 })
 
 
 $(function(){
     //insertMemberQnA
     $("#insertMyQnA").on('click', function(){
-        var form = $("#myQnA_InsertForm");
+        const form = $("#myQnA_InsertForm");
 
         form.attr("action", "/myPage/insertMemberQnA");
         form.submit();
@@ -62,14 +61,14 @@ $(function(){
 
     //memberReviewDetail
     $("#modifyReview").on('click',function(){
-        var rNum = $(this).val();
+        const rNum = $(this).val();
 
         location.href='/myPage/memberReviewModify/' + rNum;
     });
 
     $("#deleteReview").on('click',function(){
-        var rNum = $(this).val();
-        var result = confirm("리뷰를 삭제하게 되면 해당 상품의 리뷰를 재작성할 수 없습니다.\n 정말 삭제하시겠습니까?");
+        const rNum = $(this).val();
+        const result = confirm("리뷰를 삭제하게 되면 해당 상품의 리뷰를 재작성할 수 없습니다.\n 정말 삭제하시겠습니까?");
 
         if(result){
             $.ajax({
@@ -91,7 +90,7 @@ $(function(){
 
     //memberReviewModify
     $("#reviewModifyProc").on('click', function(){
-        var form = $("#reviewModifyForm");
+        const form = $("#reviewModifyForm");
 
         form.attr("action", "/myPage/memberReviewModify");
         form.submit();
@@ -99,9 +98,9 @@ $(function(){
 
     //modifyCheck
     $("#userCheck").on('click', function(){
-        var userPw = {
-            userPw: $("input[name=userPw]").val()
-        };
+        const userPw = {
+                            userPw: $("input[name=userPw]").val()
+                        };
 
         $.ajax({
             url: '/myPage/modifyCheck',
@@ -112,11 +111,10 @@ $(function(){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
-                if(data == 1){
+                if(data == 1)
                     location.href='/myPage/modifyInfo';
-                }else{
+                else
                     $(".pwOverlap").text("비밀번호가 일치하지 않습니다.");
-                }
             }
         })
     });

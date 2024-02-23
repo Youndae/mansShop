@@ -146,6 +146,19 @@
         WHERE pno=#{pno}
     </select>
 
+
+    <!-- test query -->
+    <update id="modifyProductTest" parameterType="org.shop.domain.entity.Product">
+        UPDATE product
+            <set>
+                pClassification = #{pClassification}
+                , pName = #{pName}
+                , pPrice = #{pPrice}
+                <if test="firstThumbnail != null">, firstThumbnail=#{firstThumbnail}</if>
+            </set>
+        WHERE pno=#{pno}
+    </update>
+
     <update id="modifyProductThumb" parameterType="org.shop.domain.entity.Product">
         UPDATE product SET
             pClassification=#{pClassification}

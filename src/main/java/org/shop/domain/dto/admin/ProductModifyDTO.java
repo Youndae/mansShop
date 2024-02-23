@@ -22,6 +22,4 @@ public class ProductModifyDTO {
     private String pColor;
 
     private Long pStock;
-
-
 }

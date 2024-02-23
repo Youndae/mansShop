@@ -77,6 +77,7 @@ public class AdminController {
 
         int result;
 
+
         try{
             result = adminService.addProduct(dto, firstFiles, thumbFiles, infoFiles);
             log.info("controller result : " + result);

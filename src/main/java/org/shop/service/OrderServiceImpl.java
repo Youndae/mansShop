@@ -43,9 +43,6 @@ public class OrderServiceImpl implements OrderService{
         List<OrderPaymentDTO> dtoList = new ArrayList<>();
 
         for(int i = 0; i < no_array.length; i++){
-            log.info("order payments each");
-            log.info("size_array length : " + size_array.length);
-
             OrderPaymentDTO dto = OrderPaymentDTO.builder()
                     .pOpNo(no_array[i])
                     .pName(name_array[i])
@@ -69,8 +66,6 @@ public class OrderServiceImpl implements OrderService{
             dtoList.add(dto);
         }
 
-        log.info("Last VO : " + dtoList);
-
         return dtoList;
     }
 
@@ -93,22 +88,15 @@ public class OrderServiceImpl implements OrderService{
                             , String oType
                             , HttpServletRequest request
                             , Principal principal) throws Exception{
-
-
-        StringBuffer sb =  new StringBuffer();
-
-        String orderNo = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
-
         String id;
 
-        if(principal == null){
+        if(principal == null)
             id = "Anonymous";
-        }else{
+        else
             id = principal.getName();
-        }
+
 
         ProductOrder productOrder = ProductOrder.builder()
-                .orderNo(orderNo)
                 .userId(id)
                 .addr(dto.getAddr())
                 .orderPhone(dto.getOrderPhone())
@@ -121,14 +109,12 @@ public class OrderServiceImpl implements OrderService{
         orderMapper.orderPayment(productOrder);
 
         long totalCount = 0;
-
         List<ProductOrderDetail> orderDetailList = new ArrayList<>();
 
         for(int i = 0; i < pOpNo.size(); i++){
-
             orderDetailList.add(ProductOrderDetail.builder()
-                    .odNo(orderNo + pOpNo.get(i))
-                    .orderNo(orderNo)
+                    .odNo(productOrder.getOrderNo() + pOpNo.get(i))
+                    .orderNo(productOrder.getOrderNo())
                     .pOpNo(pOpNo.get(i))
                     .orderCount(Integer.parseInt(orderCount.get(i)))
                     .odPrice(Integer.parseInt(odPrice.get(i)))
@@ -143,17 +129,13 @@ public class OrderServiceImpl implements OrderService{
         orderMapper.productOpSales(orderDetailList);
 
         String now = new SimpleDateFormat("yyyy/MM").format(System.currentTimeMillis()).toString();
-
         int salesTermCount = orderMapper.maxSalesTerm(now);
-        log.info("max salesTerm : " + salesTermCount);
-
         long salesSum;
 
-        if(productOrder.getOrderPrice() < 100000){
+        if(productOrder.getOrderPrice() < 100000)
             salesSum = productOrder.getOrderPrice() - 2500;
-        }else{
+        else
             salesSum = productOrder.getOrderPrice();
-        }
 
         Sales sales = Sales.builder()
                 .salesOrders(totalCount)
@@ -161,40 +143,28 @@ public class OrderServiceImpl implements OrderService{
                 .salesTerm(now)
                 .build();
 
-        if(salesTermCount != 1){
-            log.info("salesTerm null");
-
+        if(salesTermCount != 1)
             orderMapper.addTotalSales(sales);
-        }else{
-            log.info("salesTerm not null");
+        else
             orderMapper.updateTotalSales(sales);
-        }
-
 
         //카트에서 결제된 상품은 삭제
-
         Cookie cookie = WebUtils.getCookie(request, "cartCookie");
 
         if(oType != "d"){ //oType = d는 장바구니를 거치지 않은 상품 정보에서 바로 구매한 상품.
-
             Cart cart = new Cart();
 
-            if(cookie != null){ //비회원이라면
+            if(cookie != null) //비회원이라면
                 cart.setCkId(cookie.getValue());
-            }else{
+            else
                 cart.setUserId(productOrder.getUserId());
-            }
 
-            if(orderMapper.deleteCartCheck(cart) == cdNo.size()){ //장바구니 상품을 전체 구매한 경우라면
+            if(orderMapper.deleteCartCheck(cart) == cdNo.size()) //장바구니 상품을 전체 구매한 경우라면
                 orderMapper.deleteOrderCart(cart); //cart 테이블에서 해당 사용자 데이터 삭제
-            }else{
-
+            else
                 orderMapper.deleteOrderCartDetail(cdNo); //cartDetail 테이블에서 해당 데이터만 삭제
-
-            }
         }
+
         return ResultProperties.SUCCESS;
-
     }
-
 }

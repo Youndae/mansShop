@@ -37,7 +37,7 @@ public class MyPageServiceImpl implements MyPageService{
     public int deleteCart(List<String> cdNoList
             , Principal principal
             , HttpServletRequest request
-            , HttpServletResponse response) throws Exception{
+            , HttpServletResponse response) {
 
         Cart cart;
 
@@ -48,10 +48,8 @@ public class MyPageServiceImpl implements MyPageService{
             return ResultProperties.ERROR;
         }
 
-
         if(myPageMapper.cartCount(cart) == cdNoList.size()){ //전체 삭제라면
             //cart테이블에서 해당 아이디의 데이터 삭제
-            log.info("all delete");
             myPageMapper.deleteCart(cart);
 
             //비회원이 전체 삭제를 한 경우에는 쿠키를 삭제한다.
@@ -59,26 +57,20 @@ public class MyPageServiceImpl implements MyPageService{
                 cookieService.deleteCookie(request, response);
 
         }else{
-            log.info("delete detail");
             myPageMapper.deleteCartDetail(cdNoList);
         }
-        return ResultProperties.SUCCESS;
 
+        return ResultProperties.SUCCESS;
     }
 
     @Override
     public int modifyCheckProc(String userPw, Principal principal) {
-        log.info("modifyCheckProc");
-
         String checkPw = myPageMapper.modifyCheck(principal.getName());
 
-        if(passwordEncoder.matches(userPw, checkPw)){
-            log.info("true");
+        if(passwordEncoder.matches(userPw, checkPw))
             return ResultProperties.SUCCESS;
-        }else{
-            log.info("false");
+        else
             return ResultProperties.ERROR;
-        }
     }
 
     @Override
@@ -90,21 +82,13 @@ public class MyPageServiceImpl implements MyPageService{
                 .cPrice(Long.parseLong(cPrice))
                 .build();
 
-        log.info("count impl type : " + countType);
-
-        if(countType.equals("up")){
-            log.info("up");
+        if(countType.equals("up"))
             myPageMapper.cartUp(cartDetail);
-        }else if(countType.equals("down")){
-            log.info("down");
+        else if(countType.equals("down"))
             myPageMapper.cartDown(cartDetail);
-        }
 
-        log.info("impl complete");
         return ResultProperties.SUCCESS;
-
     }
-
 
     @Override
     public int modifyInfo(MemberModifyDTO dto, Principal principal) {
@@ -113,11 +97,12 @@ public class MyPageServiceImpl implements MyPageService{
             return ResultProperties.ERROR;
 
         myPageMapper.modifyInfo(Member.builder()
-                .userId(dto.getUserId())
-                .userName(dto.getUserName())
-                .userPhone(dto.getUserPhone())
-                .userEmail(dto.getUserEmail())
-                .build());
+                                    .userId(dto.getUserId())
+                                    .userName(dto.getUserName())
+                                    .userPhone(dto.getUserPhone())
+                                    .userEmail(dto.getUserEmail())
+                                    .build()
+                            );
 
         return ResultProperties.SUCCESS;
     }
@@ -138,33 +123,29 @@ public class MyPageServiceImpl implements MyPageService{
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) throws Exception{
-
-
         ProductReview productReview = ProductReview.builder()
-                .pno(dto.getPno())
-                .userId(principal.getName())
-                .reviewContent(dto.getReviewContent())
-                .build();
+                                                    .pno(dto.getPno())
+                                                    .userId(principal.getName())
+                                                    .reviewContent(dto.getReviewContent())
+                                                    .build();
 
         myPageMapper.insertProductReview(productReview);
-
         myPageMapper.reviewStatUp(productReview.getPno(), orderNo);
 
         return ResultProperties.SUCCESS;
-
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) throws Exception{
 
-        MyQnA myQna = MyQnA.builder()
-                .userId(principal.getName())
-                .qTitle(dto.getQTitle())
-                .qContent(dto.getQContent())
-                .build();
+        myPageMapper.insertMemberQnA(MyQnA.builder()
+                                        .userId(principal.getName())
+                                        .qTitle(dto.getQTitle())
+                                        .qContent(dto.getQContent())
+                                        .build()
+                                );
 
-        myPageMapper.insertMemberQnA(myQna);
         return ResultProperties.SUCCESS;
     }
 
@@ -176,6 +157,7 @@ public class MyPageServiceImpl implements MyPageService{
                                         .rNum(dto.getRNum())
                                         .reviewContent(dto.getReviewContent())
                                         .build());
+
         return ResultProperties.SUCCESS;
 
     }
@@ -186,6 +168,7 @@ public class MyPageServiceImpl implements MyPageService{
     public int deleteReview(long rNum) throws Exception{
 
         myPageMapper.deleteReview(rNum);
+
         return ResultProperties.SUCCESS;
     }
 
@@ -205,12 +188,13 @@ public class MyPageServiceImpl implements MyPageService{
                             .append(uid)
                             .toString();
 
-        ChatRoom chatRoom = ChatRoom.builder()
-                .chatRoomId(chatRoomId)
-                .userId(uid)
-                .build();
 
-        chatMapper.createChatRoom(chatRoom);
+
+        chatMapper.createChatRoom(ChatRoom.builder()
+                                        .chatRoomId(chatRoomId)
+                                        .userId(uid)
+                                        .build()
+                                );
 
         return chatRoomId;
     }

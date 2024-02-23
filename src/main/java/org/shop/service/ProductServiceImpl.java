@@ -34,7 +34,6 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public ProductQnADTO getProductQnA(Criteria cri, String pno) {
-
         return new ProductQnADTO(
                 productMapper.getProductQnATotal(pno),
                 productMapper.getProductQnA(cri, pno)
@@ -43,13 +42,6 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public ProductReviewDTO getProductReview(Criteria cri, String pno) {
-
-        log.info("ProductReview Service pno : " + pno + " cri" + cri.getPageNum());
-
-        log.info("get ProductReviewTotal : " + productMapper.getProductReviewTotal(pno));
-
-        log.info("getProductReview : " + productMapper.getProductReview(cri, pno));
-
         return new ProductReviewDTO(
                 productMapper.getProductReviewTotal(pno),
                 productMapper.getProductReview(cri, pno));
@@ -59,38 +51,30 @@ public class ProductServiceImpl implements ProductService{
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int addCart(List<String> pOpNo
-            , List<String> pCount
-            , List<String> pPrice
-            , Principal principal
-            , HttpServletRequest request
-            , HttpServletResponse response) throws Exception{
-        log.info("addCart impl");
+                    , List<String> pCount
+                    , List<String> pPrice
+                    , Principal principal
+                    , HttpServletRequest request
+                    , HttpServletResponse response) throws Exception{
 
         CartDetail cartDetail;
-
-        Cart cart;
-
-        cart = cookieService.checkCookie(request, principal, response, true);
-
+        Cart cart = cookieService.checkCookie(request, principal, response, true);
         String cartNo = productMapper.checkCartNo(cart);
 
         //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
         if(cartNo != null){
-
             List<CartDetail> updateCartDetailList = new ArrayList<>();
             List<CartDetail> addCartDetailList = new ArrayList<>();
-
             List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
 
             for(int i = 0; i < pOpNo.size(); i++) {
                 cartDetail = setDetail(cartNo, i, pOpNo, pCount, pPrice);
 
                 //detail에 같은 옵션 상품이 존재한다면
-                if(userCartPOpNoList.contains(pOpNo.get(i))){
+                if(userCartPOpNoList.contains(pOpNo.get(i)))
                     updateCartDetailList.add(cartDetail);
-                }else{ //detail에 같은 옵션 상품이 존재하지 않는다면 detail 테이블에 데이터 추가.
+                else //detail에 같은 옵션 상품이 존재하지 않는다면 detail 테이블에 데이터 추가.
                     addCartDetailList.add(cartDetail);
-                }
             }
 
             if(updateCartDetailList.size() != 0)
@@ -101,7 +85,6 @@ public class ProductServiceImpl implements ProductService{
             //cart 테이블 데이터의 updatedAt(수정일자) 수정.
             productMapper.updateCart(cart);
         }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
-            /*cart.setCartNo(LocalDateTime.now() + RandomStringUtils.random(4, true, true));*/
             cart.setCartNo(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()).toString() + RandomStringUtils.random(4, true, true));
 
             //cart insert
@@ -111,70 +94,61 @@ public class ProductServiceImpl implements ProductService{
 
             for(int i = 0; i < pOpNo.size(); i++){
                 cartDetail = setDetail(cart.getCartNo(), i, pOpNo, pCount, pPrice);
-
                 addCartDetailList.add(cartDetail);
             }
             //detail insert
             productMapper.addCartDetail(addCartDetailList);
         }
         return ResultProperties.SUCCESS;
-
     }
 
     public CartDetail setDetail(String cartNo, int i, List<String> pOpNo, List<String> pCount, List<String> pPrice){
-
-            CartDetail cartDetail = CartDetail.builder()
-                    .cartNo(cartNo)
-                    .cdNo(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()).toString() + pOpNo.get(i) + pCount.get(i))
-                    .pOpNo(pOpNo.get(i))
-                    .cCount(Integer.parseInt(pCount.get(i)))
-                    .cPrice(Long.parseLong(pPrice.get(i)))
-                    .build();
-
-        return cartDetail;
-
+        return CartDetail.builder()
+                .cartNo(cartNo)
+                .cdNo(
+                        new SimpleDateFormat("yyyyMMddHHmmss")
+                                        .format(System.currentTimeMillis()
+                                ) + pOpNo.get(i) + pCount.get(i)
+                )
+                .pOpNo(pOpNo.get(i))
+                .cCount(Integer.parseInt(pCount.get(i)))
+                .cPrice(Long.parseLong(pPrice.get(i)))
+                .build();
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int likeProduct(String pno, Principal principal) throws Exception{
-
         String uid = principal.getName();
-
-        LikeProduct likeProduct = LikeProduct.builder()
-                .pno(pno)
-                .likeNo(uid + pno)
-                .userId(uid)
-                .build();
-
-        productMapper.likeProduct(likeProduct);
+        productMapper.likeProduct(LikeProduct.builder()
+                                            .pno(pno)
+                                            .likeNo(uid + pno)
+                                            .userId(uid)
+                                            .build()
+                                    );
         return ResultProperties.SUCCESS;
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int deLikeProduct(String pno, Principal principal) throws Exception{
-
-        LikeProduct likeProduct = LikeProduct.builder()
-                .pno(pno)
-                .userId(principal.getName())
-                .build();
-
-        productMapper.deLikeProduct(likeProduct);
+        productMapper.deLikeProduct(LikeProduct.builder()
+                                                .pno(pno)
+                                                .userId(principal.getName())
+                                                .build()
+                                        );
         return ResultProperties.SUCCESS;
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) throws Exception{
-
-        ProductQnA productQna = ProductQnA.builder()
-                .pno(dto.getPno())
-                .userId(principal.getName())
-                .pQnAContent(dto.getPQnAContent())
-                .build();
-
-        productMapper.insertPQnA(productQna);
+        productMapper.insertPQnA(ProductQnA.builder()
+                                        .pno(dto.getPno())
+                                        .userId(principal.getName())
+                                        .pQnAContent(dto.getPQnAContent())
+                                        .build()
+                                );
         return ResultProperties.SUCCESS;
     }
 }

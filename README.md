@@ -743,6 +743,26 @@
 >   * 이 처리는 추후 채팅 기록 유지하도록 구현할 때 내용도 같이 넘겨줄 수 있도록 처리 필요.
 
 
+> 24/02/23
+> * 리펙토링
+>   * Product, ProductOp, ProductThumbnail, ProductOrder 엔티티를 @Builder로 생성할 때 서비스단에서 직접 각 엔티티에 대한 기본키를 생성하는 것이 아닌 엔티티 내부에서 생성자를 통해 기본키를 생성하도록 수정.
+>     * 일정 규칙을 갖고 있기 때문에 서비스단 여러 곳에서 사용하도록 두는 것 보다는 각 엔티티 생성시에 처리하는 것이 나을 것이라는 판단에 해당 부분을 수정.
+>   * AdminService.ModifyProduct에서 firstThumbnail 수정 여부에 따른 쿼리 분리 수정
+>     * 수정시에 썸네일의 수정 없이 상품 정보만 수정하는 경우를 고려해 firstThumbnail 수정 여부에 따라 두개의 쿼리로 분리되어 있던 상태.
+>     * 이 쿼리를 동적쿼리를 통해 하나의 쿼리로 처리할 수 있도록 수정.
+>     * 처리는 set과 if를 통해 해결.
+>   * 상품 등록 시 재고(pStock) input의 기본값 0으로 수정
+>     * DTO에서 front로부터 데이터를 받아 담아줄 때 null인 경우 0을 갖도록 하려고 했으나 그렇게 하면 사용하고 있는 DTO를 모두 찾아봐야 한다는 문제가 발생.
+>     * 그래서 상품 등록 페이지의 재고 input value 초기값을 0으로 설정하는 것으로 수정.
+>   * AdminService.imgProc, AdminService.deleteFiles에서 null 체크하도록 수정.
+>     * 이미지 파일 저장 및 저장명을 반환하는 역할을 하는 메소드인데 상품 수정 처리에서 firstThumbnail이 없는 경우 null을 담아 동적 쿼리를 처리하기 위해 수정.
+>     * 불필요하게 검증하도록 하는것은 아닌가 싶었지만 그렇게 하지 않아도 프론트로부터 전달받은 데이터의 존재 여부를 체크해야 하는 상황.
+>     * imgProc 메소드에서 null 체크를 하도록 함으로 실수 등에 의한 NullPointerException에도 대응할 수 있겠다는 판단으로 수정처리.
+>     * deleteFiles의 경우 firstThumbnail은 메소드내에서 null 체크를 하도록 하는 것으로 충분하지만 thumbnail, infoImage에 대해서는 굳이 필요가 없긴 한데, 잘못된 접근을 막기 위해 메소드 내에서 null 체크를 하도록 수정.
+>     * 그러나 thumbnail, infoImage에 대해 deleteFiles를 호출하기 전 이미 null 체크를 하고 있기 때문에 이 방법이 맞는지에 대한 고민은 좀 더 필요함.
+>   * js 파일들 변수 선언 수정.
+>     * 전체적으로 var로 선언 되어있는데 변수 사용에 따라 let, const로 수정
+
 
 
 > WebSocket 목표 및 계획

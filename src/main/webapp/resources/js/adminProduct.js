@@ -1,21 +1,20 @@
-var firstThumbFile = null;
-var thumbFiles = {};
-var infoFiles = {};
-var deleteFirstThumbFile = null;
+let firstThumbFile = null;
+let thumbFiles = {};
+let infoFiles = {};
+let deleteFirstThumbFile = null;
 // var deleteFirstThumbNum = 0;
-var deleteThumbFiles = {};
-var deleteThumbNum = 0;
-var deleteInfoFiles = {};
-var deleteInfoNum = 0;
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
-var numRegex = /\d/;
+let deleteThumbFiles = {};
+let deleteThumbNum = 0;
+let deleteInfoFiles = {};
+let deleteInfoNum = 0;
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
+const numRegex = /\d/;
 
 function validation(fileName) {
     fileName = fileName + "";
-
-    var fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
-    var fileNameExtension = fileName.toLowerCase().substring(fileNameExtensionIndex, fileName.length);
+    const fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
+    const fileNameExtension = fileName.toLowerCase().substring(fileNameExtensionIndex, fileName.length);
 
     if (!((fileNameExtension === 'jpg') || (fileNameExtension === 'gif') || (fileNameExtension === 'png') || (fileNameExtension === 'jpeg'))) {
         alert("jpg, gif, png, jpeg 확장자만 업로드 가능합니다.");
@@ -27,22 +26,21 @@ function validation(fileName) {
 
 
 function addFirstPreview(input) {
-    var file = input[0].files[0];
-    var imgNum = 'f0';
+    const file = input[0].files[0];
+    const imgNum = 'f0';
 
-    if (validation(file.name)) {
+    if (validation(file.name))
         return;
-    } else {
+    else
         setPreviewForm(file, "first", imgNum);
-    }
 }
 
 function addThumbPreview(input) {
     if (input[0].files.length <= 4) {
-        for (var fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
-            var file = input[0].files[fileIndex];
+        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
+            const file = input[0].files[fileIndex];
             if (validation(file.name)) continue;
-            var imgNum = "t" + fileIndex;
+            const imgNum = "t" + fileIndex;
             setPreviewForm(file, "thumb", imgNum);
         }
     } else {
@@ -52,10 +50,10 @@ function addThumbPreview(input) {
 
 function addInfoPreview(input) {
     if (input[0].files.length <= 10) {
-        for (var fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
-            var file = input[0].files[fileIndex];
+        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
+            const file = input[0].files[fileIndex];
             if (validation(file.name)) continue;
-            var imgNum = "i" + fileIndex;
+            const imgNum = "i" + fileIndex;
             setPreviewForm(file, "info", imgNum);
         }
     } else {
@@ -65,9 +63,9 @@ function addInfoPreview(input) {
 
 function setPreviewForm(file, type, imgNum) {
 
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function (img) {
-        var appendStr = "<div class=\"preview-box\" value=\"" + imgNum + "\">" +
+        const appendStr = "<div class=\"preview-box\" value=\"" + imgNum + "\">" +
             "<img class=\"thumbnail img_default\" src=\"" + img.target.result + "\"\/>" +
             "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
             "삭제" + "</a>"
@@ -78,11 +76,11 @@ function setPreviewForm(file, type, imgNum) {
             // var indexNo = imgNum.substr(1, imgNum.length + 1);
             firstThumbFile = file;
         } else if (type == "thumb") {
-            var indexNo = imgNum.substr(1, imgNum.length + 1);
+            const indexNo = imgNum.substr(1, imgNum.length + 1);
             $("#thumbPreview").append(appendStr);
             thumbFiles[indexNo] = file;
         } else if (type == "info") {
-            var indexNo = imgNum.substr(1, imgNum.length + 1);
+            const indexNo = imgNum.substr(1, imgNum.length + 1);
             $("#infoPreview").append(appendStr);
             infoFiles[indexNo] = file;
         }
@@ -91,9 +89,9 @@ function setPreviewForm(file, type, imgNum) {
 }
 
 function deletePreview(obj) {
-    var imgNum = obj.attributes['value'].value;
-    var imgType = imgNum.substr(0, 1);
-    var indexNo = imgNum.substr(1, imgNum.length + 1);
+    const imgNum = obj.attributes['value'].value;
+    const imgType = imgNum.substr(0, 1);
+    const indexNo = imgNum.substr(1, imgNum.length + 1);
 
     if (imgType == "f") {
         delete firstThumbFile[indexNo];
@@ -105,15 +103,14 @@ function deletePreview(obj) {
         delete infoFiles[indexNo];
         $("#infoPreview .preview-box[value=" + imgNum + "]").remove();
     }
-
 }
 
 function deleteOldPreview(obj) {
-    var imgNum = obj.attributes['value'].value;
-    var imgType = imgNum.substr(0, 2);
-    var imgName = $('img[id=' + imgNum + ']').attr("src");
-    var idx = imgName.lastIndexOf('=');
-    var deleteImg = imgName.substring(idx + 1);
+    const imgNum = obj.attributes['value'].value;
+    const imgType = imgNum.substr(0, 2);
+    const imgName = $('img[id=' + imgNum + ']').attr("src");
+    const idx = imgName.lastIndexOf('=');
+    const deleteImg = imgName.substring(idx + 1);
 
     if (imgType == "of") {
         deleteFirstThumbFile = deleteImg;
@@ -134,17 +131,17 @@ $(document).ready(function () {
         location.href='/admin/addProduct';
     })
 
-    var classification = $("#classification").val();
-    var size = $("#size").val();
+    const classification = $("#classification").val();
+    const size = $("#size").val();
 
     $('select[name=pClassification]').val(classification);
     $('select[name=pSize]').val(size);
 
-    var pno = $('input[name=pno]').val();
+    const pno = $('input[name=pno]').val();
 
     (function () {
         $.getJSON("/admin/getFirstThumb", {pno: pno}, function (arr) {
-            var str = img("of", arr);
+            const str = img("of", arr);
 
             $("#firstThumbPreview").append(str);
         })
@@ -152,7 +149,7 @@ $(document).ready(function () {
 
     (function () {
         $.getJSON("/admin/getThumbnail", {pno: pno}, function (arr) {
-            var str = img("ot", arr);
+            const str = img("ot", arr);
 
             $("#thumbPreview").append(str);
         })
@@ -160,17 +157,17 @@ $(document).ready(function () {
 
     (function () {
         $.getJSON("/admin/getInfoImage", {pno: pno}, function (arr) {
-            var str = img("oi", arr);
+            const str = img("oi", arr);
 
             $("#infoPreview").append(str);
         })
     })();
 
     function img(type, arr) {
-        var num = 1;
-        var str = "";
+        let num = 1;
+        let str = "";
         $(arr).each(function (i, attach) {
-            var imgNum = type + num;
+            const imgNum = type + num;
             str += "<div class=\"preview-box\" value=\"" + imgNum + "\">";
             if (type == "of") {
                 str += "<img class=\"firstThumb img_default\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.firstThumbnail + "\"\/>";
@@ -190,9 +187,8 @@ $(document).ready(function () {
 
 
     $("#modifyProduct").on('click', function () {
-        var form = $("#modifyProductForm")[0];
-
-        var formData = new FormData(form);
+        const form = $("#modifyProductForm")[0];
+        const formData = new FormData(form);
 
         if ($('select[name=pClassification]').val() == "default" || $('select[name=pClassification]').val() == null) {
             $("#checkClassification").text("상품 분류를 선택해주세요");
@@ -213,17 +209,16 @@ $(document).ready(function () {
         } else if (Object.keys(infoFiles).length == 0 && ($("#oi1").attr("src") == null)) {
             $("#checkInfo").text("상품정보사진을 선택해주세요");
         } else {
-
             if(firstThumbFile != null){
                 formData.append('firstThumbFile', firstThumbFile);
             }
 
-            for (var index = 0; index < Object.keys(thumbFiles).length; index++) {
+            for (let index = 0; index < Object.keys(thumbFiles).length; index++) {
                 console.log("Thumb index : " + index);
                 formData.append('thumbFiles', thumbFiles[index]);
             }
 
-            for (var index = 0; index < Object.keys(infoFiles).length; index++) {
+            for (let index = 0; index < Object.keys(infoFiles).length; index++) {
                 console.log("info index : " + index);
                 formData.append('infoFiles', infoFiles[index]);
             }
@@ -237,12 +232,12 @@ $(document).ready(function () {
                 formData.append('deleteFirstThumbFile', deleteFirstThumbFile);
             }
 
-            for (var index = 0; index < Object.keys(deleteThumbFiles).length; index++) {
+            for (let index = 0; index < Object.keys(deleteThumbFiles).length; index++) {
                 console.log("delete Thumb index : " + index);
                 formData.append('deleteThumbFiles', deleteThumbFiles[index]);
             }
 
-            for (var index = 0; index < Object.keys(deleteInfoFiles).length; index++) {
+            for (let index = 0; index < Object.keys(deleteInfoFiles).length; index++) {
                 console.log("delete info index : " + index);
                 formData.append('deleteInfoFiles', deleteInfoFiles[index]);
             }
@@ -265,11 +260,10 @@ $(document).ready(function () {
                     xhr.setRequestHeader(header, token);
                 },
                 success: function (result) {
-                    if(result == 1){
+                    if(result == 1)
                         location.href = "/admin/productList";
-                    }else{
+                    else
                         alert("오류가 발생했습니다.");
-                    }
                 },
                 error: function (request, status, error) {
                     alert("code:" + request.status + "\n"
@@ -345,8 +339,8 @@ $(document).ready(function () {
             $('select[name=pSize]').val(null);
         }
 
-        var form = $('#addProductForm')[0];
-        var formData = new FormData(form);
+        const form = $('#addProductForm')[0];
+        const formData = new FormData(form);
 
         if ($('select[name=pClassification]').val() == "default" || $('select[name=pClassification]').val() == null) {
             $("#checkClassification").text("상품 분류를 선택해주세요");
@@ -369,11 +363,11 @@ $(document).ready(function () {
         } else {
             formData.append('firstThumbFile', firstThumbFile);
 
-            for (var index = 0; index < Object.keys(thumbFiles).length; index++) {
+            for (let index = 0; index < Object.keys(thumbFiles).length; index++) {
                 formData.append('thumbFiles', thumbFiles[index]);
             }
 
-            for (var index = 0; index < Object.keys(infoFiles).length; index++) {
+            for (let index = 0; index < Object.keys(infoFiles).length; index++) {
                 formData.append('infoFiles', infoFiles[index]);
             }
 
@@ -407,38 +401,33 @@ $(document).ready(function () {
 
 
     (function () {
-        var pclosed = $("#pClosed").val();
-        var opClosed = $("#opClosed").val();
+        const pclosed = $("#pClosed").val();
+        const opClosed = $("#opClosed").val();
 
-        var opc = "<button type='button' id='closedProductOp'>옵션 비공개</button>";
-        var opo = "<button type='button' id='openProductOp'>옵션 공개</button>";
-        var pc = "<button type='button' id='closedProduct'>상품 비공개</button>";
-        var po = "<button type='button' id='openProduct'>상품 공개</button>";
+        const opc = "<button type='button' id='closedProductOp'>옵션 비공개</button>";
+        const opo = "<button type='button' id='openProductOp'>옵션 공개</button>";
+        const pc = "<button type='button' id='closedProduct'>상품 비공개</button>";
+        const po = "<button type='button' id='openProduct'>상품 공개</button>";
 
-        if (pclosed == 0) {
+        if (pclosed == 0)
             $(".button-area").append(pc);
-        } else if (pclosed == 1) {
+        else if (pclosed == 1)
             $(".button-area").append(po);
-        }
 
-        if (opClosed == 0) {
+        if (opClosed == 0)
             $(".button-area").append(opc);
-        } else if (opClosed == 1) {
+        else if (opClosed == 1)
             $(".button-area").append(opo);
-        }
 
     })();
 
-
     $("#addProductOp").on('click', function () {
-        var form = $("#modifyProductForm");
-
+        const form = $("#modifyProductForm");
         form.submit();
-
     })
 
     $("#closedProductOp").on('click', function () {
-        var pOpNo = {
+        const pOpNo = {
             pOpNo: $("input[name=pOpNo]").val()
         };
 
@@ -453,11 +442,10 @@ $(document).ready(function () {
                 location.reload();
             }
         });
-
     });
 
     $("#openProductOp").on('click', function () {
-        var pOpNo = {
+        const pOpNo = {
             pOpNo: $("input[name=pOpNo]").val()
         };
 
@@ -472,11 +460,10 @@ $(document).ready(function () {
                 location.reload();
             }
         });
-
     });
 
     $("#closedProduct").on('click', function () {
-        var pno = {
+        const pno = {
             pno: $("input[name=pno]").val()
         };
 
@@ -491,11 +478,10 @@ $(document).ready(function () {
                 location.reload();
             }
         });
-
     });
 
     $("#openProduct").on('click', function () {
-        var pno = {
+        const pno = {
             pno: $("input[name=pno]").val()
         };
 
@@ -510,9 +496,5 @@ $(document).ready(function () {
                 location.reload();
             }
         });
-
     });
-
-
 })
-

@@ -67,7 +67,7 @@
                        </div>
                        <div class="label_t2">
                            <label>재고</label>
-                           <input type="text" name="pStock" placeholder="입력하지 않으면 0으로 등록됩니다.">
+                           <input type="text" name="pStock" value="0" placeholder="입력하지 않으면 0으로 등록됩니다.">
                            <div class="overlap" id="checkPStock"></div>
                        </div>
                        <sec:csrfInput/>

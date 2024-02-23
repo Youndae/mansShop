@@ -7,6 +7,7 @@ import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.myPage.MemberOrderListDTO;
 import org.shop.domain.dto.main.NonProductOrderDTO;
 import org.shop.domain.dto.paging.PageDTO;
+import org.shop.domain.entity.Product;
 import org.shop.mapper.MainMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

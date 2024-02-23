@@ -1,7 +1,7 @@
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
-var pOpNoArr = new Array();
-var cdNoArr = new Array();
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
+let pOpNoArr = new Array();
+let cdNoArr = new Array();
 $(document).ready(function(){
     //orderComplete
     $("#orderList").on('click', function(){
@@ -15,14 +15,14 @@ $(document).ready(function(){
 
     //cart
     $("#select_order").on('click', function(){
-        var noArr = new Array();
-        var nameArr = new Array();
-        var sizeArr = new Array();
-        var colorArr = new Array();
-        var countArr = new Array();
-        var priceArr = new Array();
-        var pnoArr = new Array();
-        var cdArr = new Array();
+        let noArr = new Array();
+        let nameArr = new Array();
+        let sizeArr = new Array();
+        let colorArr = new Array();
+        let countArr = new Array();
+        let priceArr = new Array();
+        let pnoArr = new Array();
+        let cdArr = new Array();
 
         $("input[name=check]:checked").each(function(){
             noArr.push($(this).attr("value"));
@@ -46,16 +46,15 @@ $(document).ready(function(){
 
         $("#order_form").attr("action", "/order/orderPayment");
         $("#order_form").submit();
-
     })
 
     $("button[name=up]").on('click', function(){
 
-        var cdNo = $(this).parent('div').siblings("input").val();
-        var count = $(this).parent('div').siblings("span").text();
-        var pPrice = $(this).parent('div').parent('td').next().text().replace(/\D/g, '');
+        const cdNo = $(this).parent('div').siblings("input").val();
+        const count = $(this).parent('div').siblings("span").text();
+        let pPrice = $(this).parent('div').parent('td').next().text().replace(/\D/g, '');
         pPrice = parseInt(pPrice) / parseInt(count);
-        var countType = "up";
+        const countType = "up";
 
         $.ajaxSettings.traditional = true;
         $.ajax({
@@ -83,11 +82,11 @@ $(document).ready(function(){
 
     $("button[name=down]").on('click', function(){
 
-        var cdNo = $(this).parent('div').siblings("input").val();
-        var count = $(this).parent('div').siblings("span").text();
-        var pPrice = $(this).parent('div').parent('td').next().text().replace(/\D/g, '');
+        const cdNo = $(this).parent('div').siblings("input").val();
+        const count = $(this).parent('div').siblings("span").text();
+        let pPrice = $(this).parent('div').parent('td').next().text().replace(/\D/g, '');
         pPrice = parseInt(pPrice) / parseInt(count);
-        var countType = "down";
+        const countType = "down";
 
         if(count == "1"){
             alert("최소 개수입니다.");
@@ -101,11 +100,12 @@ $(document).ready(function(){
                     xhr.setRequestHeader(header, token);
                 },
                 success: function(data){
-                    if(data == 1){
+                    if(data == 1)
                         location.reload();
-                    }if(data == 0){
+
+                    if(data == 0)
                         alert("오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요.");
-                    }
+
                 },
                 error: function(request, status, error){
                     alert("code : " + request.status + "\n"
@@ -146,18 +146,17 @@ $(document).ready(function(){
     });
 
     //memberOrderList
-    var date = new Date();
+    const date = new Date();
     date.setMonth(date.getMonth() - 3);
 
-    var month = 0;
+    let month = 0;
 
-    if((date.getMonth() + 1) >= 10){
+    if((date.getMonth() + 1) >= 10)
         month = date.getMonth() + 1;
-    }else{
+    else
         month = '0' + (date.getMonth() + 1);
-    }
 
-    var regDate = date.getFullYear() + "/" + month + "/01";
+    const regDate = date.getFullYear() + "/" + month + "/01";
 
     getList(regDate);
 });
@@ -165,17 +164,19 @@ $(document).ready(function(){
 
 $(function(){
     $("#select_orderList_term").change(function(){
-        var val = $("#select_orderList_term option:selected").val();
+        const val = $("#select_orderList_term option:selected").val();
+
+        let date;
 
         if(val == "all"){
-            var regDate = new Date(1990,1,1);
+            const regDate = new Date(1990,1,1);
 
-            var date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/" + regDate.getDate();
+            date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/" + regDate.getDate();
         }else{
-            var regDate = new Date();
+            let regDate = new Date();
             regDate.setMonth(regDate.getMonth() - val);
 
-            var date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/01";
+            date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/01";
         }
 
         getList(date);
@@ -186,16 +187,16 @@ $(function(){
 function getList(regDate){
     $(".memberOrderList div").remove();
     $.getJSON("/myPage/selectOrderList", {regDate: regDate}, function(arr){
-        var str = "";
-        var date = "";
-        var totalPrice = 0;
+        let str = "";
+        let date = "";
+        let totalPrice = 0;
 
         $(arr).each(function(i, attach){
 
             if(i == 0){
                 date = attach.orderDate;
 
-                var od = new Date(attach.orderDate);
+                const od = new Date(attach.orderDate);
                 attach.orderDate = od.getFullYear() + "/" + (od.getMonth() + 1) + "/" + od.getDate();
                 str += "<div class=\"orderList_tbl\">" +
                     "<label>" + attach.orderDate + "</label>" +
@@ -219,31 +220,31 @@ function getList(regDate){
                     "<div class=\"tbl_productName\">"+
                     attach.pname +
                     "</div></a></td>";
+
                 if(attach.psize != null){
-                    if(attach.pcolor != null){
+                    if(attach.pcolor != null)
                         str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
-                    }else if(attach.pcolor == null){
+                    else if(attach.pcolor == null)
                         str += "<td>사이즈 : " + attach.psize + "</td>";
-                    }
                 }else if(attach.pcolor != null){
                     str += "<td>컬러 : " + attach.pcolor + "</td>";
                 }
+
                 str += "<td>" + attach.orderCount + "</td>" +
                     "<td>" + attach.odPrice + "</td>";
 
                 totalPrice = attach.orderPrice;
 
-                if(attach.orderStat == 0){
+                if(attach.orderStat == 0)
                     str += "<td>배송준비중</td>";
-                }else if(attach.orderStat == 1){
+                else if(attach.orderStat == 1)
                     str += "<td>배송중</td>";
-                }else if(attach.orderStat == 2){
+                else if(attach.orderStat == 2){
                     str += "<td>배송완료";
-                    if(attach.reviewStat == 0){
+                    if(attach.reviewStat == 0)
                         str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
-                    }else{
+                    else
                         str += "</td>";
-                    }
                 }
                 str += "</tr>";
             }else{
@@ -258,34 +259,34 @@ function getList(regDate){
                         attach.pname +
                         "</div></a></td>";
                     if(attach.psize != null){
-                        if(attach.pcolor != null){
+                        if(attach.pcolor != null)
                             str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
-                        }else if(attach.pcolor == null){
+                        else if(attach.pcolor == null)
                             str += "<td>사이즈 : " + attach.psize + "</td>";
-                        }
-                    }else if(attach.pcolor != null){
-                        str += "<td>컬러 : " + attach.pcolor + "</td>";
-                    }
-                    str += "<td>" + attach.orderCount + "</td>" +
-                        "<td>" + attach.odPrice + "</td>";
 
-                    if(attach.orderStat == 0){
+                    }else if(attach.pcolor != null)
+                        str += "<td>컬러 : " + attach.pcolor + "</td>";
+
+                    str += "<td>" + attach.orderCount + "</td>" +
+                            "<td>" + attach.odPrice + "</td>";
+
+                    if(attach.orderStat == 0)
                         str += "<td>배송준비중</td>";
-                    }else if(attach.orderStat == 1){
+                    else if(attach.orderStat == 1)
                         str += "<td>배송중</td>";
-                    }else if(attach.orderStat == 2){
+                    else if(attach.orderStat == 2){
                         str += "<td>배송완료";
-                        if(attach.reviewStat == 0){
+                        if(attach.reviewStat == 0)
                             str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
-                        }else{
+                        else
                             str += "</td>";
-                        }
+
                     }
                     str += "</tr>";
                 }else{
                     date = attach.orderDate;
 
-                    var od = new Date(attach.orderDate);
+                    const od = new Date(attach.orderDate);
                     attach.orderDate = od.getFullYear() + "/" + (od.getMonth() + 1) + "/" + od.getDate();
 
                     str +=  "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>"+
@@ -311,40 +312,38 @@ function getList(regDate){
                         "<div class=\"tbl_productName\">"+
                         attach.pname +
                         "</div></a></td>";
+
                     if(attach.psize != null){
-                        if(attach.pcolor != null){
+                        if(attach.pcolor != null)
                             str += "<td>사이즈 : " + attach.psize + "  컬러 : " + attach.pcolor + "</td>";
-                        }else if(attach.pcolor == null){
+                        else if(attach.pcolor == null)
                             str += "<td>사이즈 : " + attach.psize + "</td>";
-                        }
-                    }else if(attach.pcolor != null){
+
+                    }else if(attach.pcolor != null)
                         str += "<td>컬러 : " + attach.pcolor + "</td>";
-                    }
+
                     str += "<td>" + attach.orderCount + "</td>" +
-                        "<td>" + attach.odPrice + "</td>";
+                            "<td>" + attach.odPrice + "</td>";
 
                     totalPrice = attach.orderPrice;
 
-                    if(attach.orderStat == 0){
+                    if(attach.orderStat == 0)
                         str += "<td>배송준비중</td>";
-                    }else if(attach.orderStat == 1){
+                    else if(attach.orderStat == 1)
                         str += "<td>배송중</td>";
-                    }else if(attach.orderStat == 2){
+                    else if(attach.orderStat == 2){
                         str += "<td>배송완료";
-                        if(attach.reviewStat == 0){
+                        if(attach.reviewStat == 0)
                             str += "<button type=\"button\" id=\"pReview_insert\" value=\"" + attach.pno + "/" + attach.orderNo + "\" onclick=\"insertReview(this)\">리뷰작성하기</button></td>";
-                        }else{
+                        else
                             str += "</td>";
-                        }
                     }
                     str += "</tr>";
                 }
             }
 
-            if(i == arr.length - 1){
+            if(i == arr.length - 1)
                 str +=  "</tbody></table><span>총 금액 : " + totalPrice.toLocaleString() + " 원</span></div>";
-            }
-
         })
 
         $(".memberOrderList").append(str);
@@ -352,12 +351,10 @@ function getList(regDate){
 }
 
 function insertReview(obj){
-    var val = obj.attributes['value'].value;
-
-    var no = val.split("/");
+    const val = obj.attributes['value'].value;
+    const no = val.split("/");
 
     location.href="/myPage/orderReview/"+no[0] + "/" + no[1];
-
 };
 
 

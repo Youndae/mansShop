@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
-    var side_li = "<ul class=\"sales_category\"><li><a href=\"/admin/salesProductList\">상품별매출</a></li><li><a href=\"/admin/salesTermList\">기간별매출</a></li></ul>"
+    const side_li = "<ul class=\"sales_category\"><li><a href=\"/admin/salesProductList\">상품별매출</a></li><li><a href=\"/admin/salesTermList\">기간별매출</a></li></ul>"
+    const actionForm = $("#pageActionForm");
 
     $(".side_nav ul").append(side_li);
 
@@ -26,10 +27,10 @@ $(document).ready(function(){
 
     $.getJSON("/admin/salesTermSelect", function(arr){
 
-        var str = "";
-        var optionYear = "";
+        let str = "";
+        let optionYear = "";
         $(arr).each(function(i, termYear){
-            var year = termYear.salesTerm.substring(0, 4);
+            const year = termYear.salesTerm.substring(0, 4);
 
             if(optionYear != year){
                 optionYear = year;
@@ -40,7 +41,4 @@ $(document).ready(function(){
 
         $("#select_Term_Year").append(str);
     })
-
-    var actionForm = $("#pageActionForm");
-
 });

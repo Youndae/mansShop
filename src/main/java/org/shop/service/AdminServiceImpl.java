@@ -37,59 +37,40 @@ public class AdminServiceImpl implements AdminService{
 
         int step = 0;
 
-        long stock = 0;
-
-        if(dto.getPStock() != null)
-            stock = dto.getPStock();
-
-        log.info("get pSize : " + dto.getPSize());
-
-        StringBuffer sb = new StringBuffer();
-        String pnoPattern = sb.append(dto.getPClassification())
-                .append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())).toString();
-
-        String firstThumbName;
-
-
-        firstThumbName = imgProc(firstThumb);
-
-
         Product product = Product.builder()
-                .pno(pnoPattern)
-                .pName(dto.getPName())
-                .pClassification(dto.getPClassification())
-                .pPrice(dto.getPPrice())
-                .firstThumbnail(firstThumbName)
-                .build();
-        log.info("product Entity : " + product);
+                                .pClassification(dto.getPClassification())
+                                .pName(dto.getPName())
+                                .pPrice(dto.getPPrice())
+                                .firstThumbnail(imgProc(firstThumb))
+                                .build();
+
         adminMapper.addProduct(product);
 
-        ProductOp productOp = ProductOp.builder()
-                .pOpNo("Op_" + pnoPattern)
-                .pno(pnoPattern)
-                .pSize(dto.getPSize())
-                .pColor(dto.getPColor())
-                .pStock(stock)
-                .build();
-        adminMapper.addProductOp(productOp);
+        adminMapper.addProductOp(ProductOp.builder()
+                                        .pno(product.getPno())
+                                        .pSize(dto.getPSize())
+                                        .pColor(dto.getPColor())
+                                        .pStock(dto.getPStock())
+                                        .build()
+                                );
 
-        log.info("addProductOp success");
-
-        addOtherImg(pnoPattern, step, thumb, infoImg);
+        addOtherImg(product.getPno(), step, thumb, infoImg);
 
         return ResultProperties.SUCCESS;
     }
 
     public String imgProc(MultipartFile image) throws Exception{
-        log.info("imgProc");
+
+        if (image == null)
+            return null;
 
         String originalName = image.getOriginalFilename();
         StringBuffer sb = new StringBuffer();
         String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss")
                                         .format(System.currentTimeMillis()))
-                .append(UUID.randomUUID().toString())
-                .append(originalName.substring(originalName.lastIndexOf(".")))
-                .toString();
+                                        .append(UUID.randomUUID().toString())
+                                        .append(originalName.substring(originalName.lastIndexOf(".")))
+                                        .toString();
 
         File saveFile = new File(FileProperties.FILE_PATH, saveName);
 
@@ -111,49 +92,37 @@ public class AdminServiceImpl implements AdminService{
         //이미지 순서 번호
         int step = adminMapper.maxStep(dto.getPno());
         //상품 재고
-        long stock = 0;
-        if(dto.getPStock() != null)
-            stock = dto.getPStock();
+        long stock = dto.getPStock();
 
-        log.info("productOpVO : " + dto);
+        log.info("productOpDTO : " + dto);
 
-        //상품 엔티티
-        if(firstThumb != null){
-            Product product = Product.builder()
-                    .pno(dto.getPno())
-                    .pName(dto.getPName())
-                    .pClassification(dto.getPClassification())
-                    .pPrice(dto.getPPrice())
-                    .firstThumbnail(imgProc(firstThumb))
-                    .build();
-            adminMapper.modifyProductThumb(product);
-        }else{
-            Product product = Product.builder()
-                    .pno(dto.getPno())
-                    .pName(dto.getPName())
-                    .pClassification(dto.getPClassification())
-                    .pPrice(dto.getPPrice())
-                    .build();
-            adminMapper.modifyProductInfo(product);
-        }
+        //상품 테이블 수정
+        adminMapper.modifyProduct(Product.builder()
+                                            .pno(dto.getPno())
+                                            .pName(dto.getPName())
+                                            .pClassification(dto.getPClassification())
+                                            .pPrice(dto.getPPrice())
+                                            .firstThumbnail(imgProc(firstThumb))
+                                            .build()
+                                        );
 
-        //상품 옵션 엔티티
-        ProductOp productOp = ProductOp.builder()
-                .pOpNo(dto.getPOpNo())
-                .pSize(dto.getPSize())
-                .pColor(dto.getPColor())
-                .pStock(stock)
-                .build();
-
-        adminMapper.modifyProductOp(productOp);
+        //상품 옵션 테이블 수정
+        adminMapper.modifyProductOp(ProductOp.builder()
+                                            .pOpNo(dto.getPOpNo())
+                                            .pSize(dto.getPSize())
+                                            .pColor(dto.getPColor())
+                                            .pStock(stock)
+                                            .build()
+                                    );
 
         log.info("modify productOp success");
 
         //삭제이미지 DB 데이터 삭제 및 파일 삭제
 
-        if(delFirstThumb != null)
-            deleteFiles(delFirstThumb);
+        //delete firstThumbnail
+        deleteFiles(delFirstThumb);
 
+        //delete thumbnail
         if(delThumb != null){
             for(String imageName : delThumb)
                 deleteFiles(imageName);
@@ -161,12 +130,15 @@ public class AdminServiceImpl implements AdminService{
             adminMapper.deleteThumb(delThumb);
         }
 
+        //delete infoImage
         if(delInfoImg != null){
             for(String imageName : delInfoImg)
                 deleteFiles(imageName);
 
             adminMapper.deleteInfoImg(delInfoImg);
         }
+
+        //firstThumb을 제외한 나머지 thumbnail, infoImage 저장 처리
         addOtherImg(dto.getPno(), step, thumb, infoImg);
 
         return ResultProperties.SUCCESS;
@@ -181,17 +153,12 @@ public class AdminServiceImpl implements AdminService{
             List<ProductThumbnail> thumbList = new ArrayList<>();
             for(MultipartFile image : thumb){
                 log.info("Thumbnail save");
-                StringBuffer sb = new StringBuffer();
-                String thumbPattern = sb.append("s_")
-                        .append(pno + "_")
-                        .append(new SimpleDateFormat("yyyyMMddHHmmss")
-                                .format(System.currentTimeMillis()))
-                        .append(UUID.randomUUID()).toString();
+
                 thumbList.add(ProductThumbnail.builder()
-                        .pno(pno)
-                        .thumbNo(thumbPattern)
-                        .pThumbnail(imgProc(image))
-                        .build());
+                                        .pno(pno)
+                                        .pThumbnail(imgProc(image))
+                                        .build()
+                                );
             }
             log.info("thumbNo");
             adminMapper.addProductThumbnail(thumbList);
@@ -213,6 +180,9 @@ public class AdminServiceImpl implements AdminService{
 
     public void deleteFiles(String images) throws Exception{
 
+        if (images == null)
+            return;
+
         File file = new File(FileProperties.FILE_PATH + images);
 
         if(file.exists())
@@ -224,20 +194,14 @@ public class AdminServiceImpl implements AdminService{
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int addProductOp(ProductOpInsertDTO dto) throws Exception{
-        StringBuffer sb = new StringBuffer();
 
-        ProductOp productOp = ProductOp.builder()
-                .pOpNo(sb.append("Op_")
-                        .append(dto.getPClassification())
-                        .append(new SimpleDateFormat("yyyyMMddHHmmss")
-                                .format(System.currentTimeMillis())).toString())
+        adminMapper.addProductOp(ProductOp.builder()
                 .pno(dto.getPno())
                 .pSize(dto.getPSize())
                 .pColor(dto.getPColor())
                 .pStock(dto.getPStock())
-                .build();
+                .build());
 
-        adminMapper.addProductOp(productOp);
         return ResultProperties.SUCCESS;
     }
 
@@ -245,15 +209,12 @@ public class AdminServiceImpl implements AdminService{
     @Transactional(rollbackFor = {Exception.class})
     public int qnAReplyProc(MyQnAReplyDTO dto, Principal principal) throws Exception{
 
-        MyQnAReply myQnaReply = MyQnAReply.builder()
-                .qno(dto.getQno())
-                .userId(principal.getName())
-                .qrContent(dto.getQrContent())
-                .build();
-
-        log.info("QnAReply Controller : " + myQnaReply);
-
-        adminMapper.adminQnAReply(myQnaReply);
+        adminMapper.adminQnAReply(MyQnAReply.builder()
+                                            .qno(dto.getQno())
+                                            .userId(principal.getName())
+                                            .qrContent(dto.getQrContent())
+                                            .build()
+                                );
 
         return ResultProperties.SUCCESS;
     }
@@ -262,15 +223,16 @@ public class AdminServiceImpl implements AdminService{
     @Transactional(rollbackFor = {Exception.class})
     public int productQnAReplyProc(ProductQnAReplyDTO dto, Principal principal) throws Exception{
 
-        ProductQnA productQna = ProductQnA.builder()
-                .pno(dto.getPno())
-                .userId(principal.getName())
-                .pQnAContent(dto.getPQnAContent())
-                .pQnANo(dto.getPQnANo())
-                .build();
+        adminMapper.productQnAReply(ProductQnA.builder()
+                                            .pno(dto.getPno())
+                                            .userId(principal.getName())
+                                            .pQnAContent(dto.getPQnAContent())
+                                            .pQnANo(dto.getPQnANo())
+                                            .build()
+                                    );
 
-        adminMapper.productQnAReply(productQna);
         adminMapper.productQnAComplete(dto.getPQnANo());
+
         return ResultProperties.SUCCESS;
 
     }

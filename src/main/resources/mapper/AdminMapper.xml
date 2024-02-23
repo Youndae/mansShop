@@ -146,20 +146,15 @@
         WHERE pno=#{pno}
     </select>
 
-    <update id="modifyProductThumb" parameterType="org.shop.domain.entity.Product">
-        UPDATE product SET
-            pClassification=#{pClassification}
-            , pName=#{pName}
-            , pPrice=#{pPrice}
-            , firstThumbnail=#{firstThumbnail}
-        WHERE pno=#{pno}
-    </update>
 
-    <update id="modifyProductInfo" parameterType="org.shop.domain.entity.Product">
-        UPDATE product SET
-            pClassification=#{pClassification}
-            , pName=#{pName}
-            , pPrice=#{pPrice}
+    <update id="modifyProduct" parameterType="org.shop.domain.entity.Product">
+        UPDATE product
+            <set>
+                pClassification = #{pClassification}
+                , pName = #{pName}
+                , pPrice = #{pPrice}
+                <if test="firstThumbnail != null">, firstThumbnail=#{firstThumbnail}</if>
+            </set>
         WHERE pno=#{pno}
     </update>
 

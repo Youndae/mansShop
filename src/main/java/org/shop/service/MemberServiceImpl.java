@@ -37,8 +37,6 @@ public class MemberServiceImpl implements MemberService{
     @Transactional(rollbackFor = {Exception.class})
     public int join(JoinDTO dto) throws Exception {
 
-        log.info("service join");
-
         Member member = Member.builder()
                 .userId(dto.getUserId())
                 .userPw(passwordEncoder.encode(dto.getUserPw()))
@@ -70,13 +68,12 @@ public class MemberServiceImpl implements MemberService{
                 (userPhone == null && userEmail == null))
             return null;
 
-        Member member = Member.builder()
-                .userName(userName)
-                .userPhone(userPhone)
-                .userEmail(userEmail)
-                .build();
-
-        String result = memberMapper.searchId(member);
+        String result = memberMapper.searchId(Member.builder()
+                                                    .userName(userName)
+                                                    .userPhone(userPhone)
+                                                    .userEmail(userEmail)
+                                                    .build()
+                                            );
 
         if(result == null)
             return null;
@@ -90,13 +87,12 @@ public class MemberServiceImpl implements MemberService{
         if(userId == null || userName == null)
             return null;
 
-        Member member = Member.builder()
-                .userId(userId)
-                .userName(userName)
-                .userEmail(userEmail)
-                .build();
-
-        int checkResult = memberMapper.checkUser(member);
+        int checkResult = memberMapper.checkUser(Member.builder()
+                                                        .userId(userId)
+                                                        .userName(userName)
+                                                        .userEmail(userEmail)
+                                                        .build()
+                                                );
 
         if(checkResult == 0)
             return null;
@@ -213,19 +209,18 @@ public class MemberServiceImpl implements MemberService{
     public int resetPw(String userId, int cno, String password) {
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-
         String certificationValue = stringValueOperations.get(userId);
-
         redisTemplate.delete(userId);
 
-        int checkResult = Integer.parseInt(certificationValue);
-
-        if(certificationValue == null || checkResult != cno)
+        if(certificationValue == null || Integer.parseInt(certificationValue) != cno)
             return 0;
 
         password = passwordEncoder.encode(password);
-
-        int modifyResult = memberMapper.modifyPw(Member.builder().userId(userId).userPw(password).build());
+        int modifyResult = memberMapper.modifyPw(Member.builder()
+                                                        .userId(userId)
+                                                        .userPw(password)
+                                                        .build()
+                                                );
 
         if(modifyResult == 0)
             return 0;

@@ -26,18 +26,15 @@ public class CookieServiceImpl implements CookieService{
         if(principal != null){//회원이라면 아이디값만 있으면 되기 때문에 아이디 값만 set
             cart = Cart.builder().userId(principal.getName()).build();
         }else if(addStat){//장바구니 추가
-
             if(cookie == null)//쿠키가 존재하지 않는 사용자라면
                 cookie = createCookie();
 
             cookie = extendedCookie(cookie, response);
-
             cart = Cart.builder().ckId(cookie.getValue()).userId("Anonymous").build();
 
         }else {// 장바구니 페이지 및 delete
             if(cookie != null){//쿠키가 존재하는 사용자라면
                 cookie = extendedCookie(cookie, response);
-
                 cart = Cart.builder().ckId(cookie.getValue()).userId(null).build();
             }
             //장바구니 페이지에 접근 시 쿠키가 존재하지 않는다면 데이터가 없으므로
