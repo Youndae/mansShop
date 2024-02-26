@@ -764,6 +764,14 @@
 >     * 전체적으로 var로 선언 되어있는데 변수 사용에 따라 let, const로 수정
 
 
+> 24/02/26
+> * 리펙토링
+>   * myPageOrder.js와 nonOrder.js에서 주문 목록을 요청하고 파싱하는 코드를 orderListStr.js 파일로 분리.
+>   * 두 페이지에서 리스트 데이터 파싱의 차이는 배송완료 후 리뷰를 작성할 수 있는지 없는지의 차이정도만 있기 때문에 orderListStr.js의 orderListStr 함수를 통해 요청하도록 수정.
+>   * orderListStr 함수에서는 전달받은 데이터를 파싱하고 두번째 매개변수로 리스트 type을 받도록 해 회원인지 비회원인지를 구분하여 리뷰작성 버튼 출력 여부를 결정.
+>   * 각 페이지의 js파일에서 호출할 수 있도록 jQuery.functionName = function(attr, attr) 형태로 처리.
+
+
 
 > WebSocket 목표 및 계획
 > * 채팅기능의 정상 동작 및 테스트

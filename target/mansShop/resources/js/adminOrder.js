@@ -1,5 +1,5 @@
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
 
 $(document).ready(function(){
 
@@ -10,18 +10,18 @@ $(document).ready(function(){
     })
 
     //adminQnA
-    var qno = {
+    const qno = {
         qno : $("#qno").val(),
     };
     (function(){
         $.getJSON("/admin/getQnAReply", qno, function(arr){
-            var str = "<ul>";
+            let str = "<ul>";
             $(arr).each(function(i, reply){
                 console.log("reply get");
 
-                var date = new Date(reply.qrRegDate);
+                const date = new Date(reply.qrRegDate);
 
-                var regDate = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+                const regDate = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
 
                 str += "<li class=\"QnADetail_reply_content\">" +
                         "<div class=\"QnADetail_reply_header\">" +
@@ -56,40 +56,31 @@ $(document).ready(function(){
     });
 
     $("#tbl_orderList a").on('click', function(e){
-
         e.preventDefault();
-        var orderNo = $(this).text();
-        var str = "";
+        const orderNo = $(this).text();
+        let str = "";
 
-        console.log('tbl_orderList');
         getInfo(orderNo, function(info){
-            console.log('getInfo in');
             $(".modal-body span[name=orderNo]").text(info.orderNo);
             $(".modal-body span[name=recipient]").text(info.recipient);
             $(".modal-body span[name=orderPhone]").text(info.orderPhone);
             $(".modal-body span[name=addr]").text(info.addr);
             $(".modal-body span[name=orderMemo]").text(info.orderMemo);
 
-            if(info.userId == "Anonymous"){
+            if(info.userId == "Anonymous")
                 $(".modal-body span[name=userId]").text("비회원");
-            }else{
+            else
                 $(".modal-body span[name=userId]").text(info.userId);
-            }
 
-            if(info.orderStat == 1){
+            if(info.orderStat == 1)
                 $("#shipping").hide();
-            }
-
         });
 
         (function(){
             $.getJSON("/admin/orderInfoTable", {orderNo:orderNo}, function(arr){
-                console.log('orderInfoTable in');
                 str += getInfoTable(arr);
-
                 $(".order_detail_info_list").append(str);
-
-             $(".modal").show();
+                $(".modal").show();
             })
         })();
     });
@@ -100,8 +91,7 @@ $(document).ready(function(){
     });
 
     $(".shipping_btn button").on('click', function(){
-
-        var orderNo = {
+        const orderNo = {
             orderNo : $('span[name=orderNo]').text(),
         }
 
@@ -115,22 +105,19 @@ $(document).ready(function(){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
-
                 if(data == 1){
                     $(".modal").hide();
                     location.reload();
                 }else{
                     alert("오류가 발생했습니다.");
                 }
-
             }
         })
     })
-
 });
 
 function reply_del(obj){
-    var replyNo = obj.attributes['value'].value;
+    const replyNo = obj.attributes['value'].value;
 
     $.ajax({
         url: '/admin/QnAReplyDel',
@@ -152,7 +139,7 @@ function reply_del(obj){
 
 $(function(){
     $("#replyForm_submit").on('click', function(){
-        var form = $("#replyForm").serialize();
+        const form = $("#replyForm").serialize();
 
         $.ajax({
             url: '/admin/QnAReply',
@@ -162,11 +149,11 @@ $(function(){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
-                if(data == 1){
+                if(data == 1)
                     location.reload();
-                }else{
+                else
                     alert("오류가 발생했습니다.");
-                }
+
             },
             error : function(request, status, error){
                 alert("code:" + request.status + "\n"
@@ -178,7 +165,6 @@ $(function(){
 });
 
 function getInfo(orderNo, callback, error){
-    console.log('getInfo');
     $.get("/admin/orderInfo/"+orderNo + ".json", function(result){
         if(callback)
             callback(result);
@@ -189,7 +175,7 @@ function getInfo(orderNo, callback, error){
 }
 
 function getInfoTable(arr){
-    var str = "";
+    let str = "";
     $(arr).each(function(i, info){
         str +=
             "<tr class=\"tbl_tr_m_10\">" +
@@ -197,20 +183,17 @@ function getInfoTable(arr){
             "<td>"+info.pclassification+"</td>" +
             "<td>"+info.pname+"</td>";
 
-        if(info.psize != null){
+        if(info.psize != null)
             str += "<td>"+info.psize+"</td>";
-        }else{
+        else
             str += "<td></td>";
-        }
 
-        if(info.pcolor != null){
+        if(info.pcolor != null)
             str += "<td>"+info.pcolor+"</td>";
-        }else{
+        else
             str += "<td></td>";
-        }
 
         str += "<td>"+info.orderCount+"</td></tr>";
-
     })
     return str;
 }

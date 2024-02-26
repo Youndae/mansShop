@@ -1,9 +1,9 @@
 $(document).ready(function(){
-    var userSearchForm = $("#searchActionForm");
+    const userSearchForm = $("#searchActionForm");
 
     $("#shipping").on('click', function(){
-        var orderSearchForm = $("#userOrderSearch");
-        var userId = $(".modal-body span[name=userId]").text();
+        const orderSearchForm = $("#userOrderSearch");
+        const userId = $(".modal-body span[name=userId]").text();
 
         orderSearchForm.find("input[name='keyword']").val(userId);
         orderSearchForm.find("input[name='pageNum']").val("1");
@@ -12,9 +12,8 @@ $(document).ready(function(){
     });
 
     $("#searchActionForm button").on('click', function(e){
-        if(!userSearchForm.find("input[name='keyword']").val()){
+        if(!userSearchForm.find("input[name='keyword']").val())
             alert('키워드 입력');
-        }
 
         userSearchForm.find("input[name='pageNum']").val("1");
         e.preventDefault();
@@ -25,21 +24,21 @@ $(document).ready(function(){
     $("#tbl_userList a").on('click', function(e){
         e.preventDefault();
 
-        var userId = $(this).text();
-        var formatPhone = "";
+        const userId = $(this).text();
+        let formatPhone = "";
         getUserInfo(userId, function(info){
             $(".modal-body span[name=userId]").text(info.userId);
             $(".modal-body span[name=userName]").text(info.userName);
 
             $(".modal-body span[name=userEmail]").text(info.userEmail);
 
-            var date = new Date(info.joinRegDate);
+            const date = new Date(info.joinRegDate);
 
             info.joinRegDate = date.getFullYear() + "/" + (date.getMonth()+1) + "/" + date.getDate();
 
             $(".modal-body span[name=joinRegDate]").text(info.joinRegDate);
 
-            var birth = new Date(info.userBirth);
+            const birth = new Date(info.userBirth);
 
             info.userBirth = birth.getFullYear() + "/" + (birth.getMonth()+1) + "/" + birth.getDate();
 
@@ -53,9 +52,7 @@ $(document).ready(function(){
 
             $(".modal-body span[name=userPhone]").text(formatPhone);
         });
-
         $(".modal").show();
-
     });
 
     $(".modalClose").on('click', function(){

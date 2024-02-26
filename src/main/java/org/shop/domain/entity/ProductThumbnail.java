@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @ToString
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ProductThumbnail {
