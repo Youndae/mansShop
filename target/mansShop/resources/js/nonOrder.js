@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    var recipient = $("#recipient").val();
-    var orderPhone = $("#orderPhone").val();
+    const recipient = $("#recipient").val();
+    const orderPhone = $("#orderPhone").val();
 
     $.getJSON("/getNonOrderList", {recipient: recipient, orderPhone: orderPhone}, function(arr) {
         let str = jQuery.orderListStr(arr, 'Anonymous');

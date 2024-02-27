@@ -1,6 +1,6 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.admin.*;
@@ -24,12 +24,12 @@ import java.util.Map;
 @RequestMapping("/admin/")
 @Controller
 @Log4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AdminController {
 
-    private AdminMapper adminMapper;
+    private final AdminMapper adminMapper;
 
-    private AdminService adminService;
+    private final AdminService adminService;
 
     //상품 목록
     @GetMapping("/productList")

@@ -11,7 +11,6 @@ import org.shop.mapper.MemberMapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberMapper memberMapper;
 
-    private final BCryptPasswordEncoder passwordEncoder;
+//    private final BCryptPasswordEncoder passwordEncoder;
 
     private final JavaMailSender javaMailSender;
 
@@ -39,7 +38,7 @@ public class MemberServiceImpl implements MemberService{
 
         Member member = Member.builder()
                 .userId(dto.getUserId())
-                .userPw(passwordEncoder.encode(dto.getUserPw()))
+                .userPw(dto.getUserPw())
                 .userName(dto.getUserName())
                 .userEmail(dto.getUserEmail())
                 .userBirth(dto.getUserBirth())
@@ -57,33 +56,20 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public String searchId(String userName, String userPhone, String userEmail) {
-
-        if(userPhone == "")
-            userPhone = null;
-
-        if(userEmail == "")
-            userEmail = null;
-
         if(userName == null ||
-                (userPhone == null && userEmail == null))
+                (userPhone.equals("") && userEmail.equals("")))
             return null;
 
-        String result = memberMapper.searchId(Member.builder()
-                                                    .userName(userName)
-                                                    .userPhone(userPhone)
-                                                    .userEmail(userEmail)
-                                                    .build()
-                                            );
-
-        if(result == null)
-            return null;
-
-        return result;
+        return memberMapper.searchId(Member.builder()
+                                            .userName(userName)
+                                            .userPhone(userPhone)
+                                            .userEmail(userEmail)
+                                            .build()
+                                    );
     }
 
     @Override
     public String searchPw(String userId, String userName, String userEmail) {
-
         if(userId == null || userName == null)
             return null;
 
@@ -187,7 +173,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public String checkCno(SearchIdDTO dto) {
-
         String result = null;
 
         try{
@@ -215,7 +200,6 @@ public class MemberServiceImpl implements MemberService{
         if(certificationValue == null || Integer.parseInt(certificationValue) != cno)
             return 0;
 
-        password = passwordEncoder.encode(password);
         int modifyResult = memberMapper.modifyPw(Member.builder()
                                                         .userId(userId)
                                                         .userPw(password)

@@ -1,16 +1,14 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.admin.ProductInfoImageDTO;
 import org.shop.domain.dto.admin.ProductThumbnailDTO;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.product.*;
-import org.shop.domain.entity.*;
 import org.shop.mapper.AdminMapper;
 import org.shop.mapper.ProductMapper;
-import org.shop.service.CookieService;
 import org.shop.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,14 +27,14 @@ import java.util.Map;
 @RequestMapping("/product")
 @Controller
 @Log4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProductController {
 
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
 
-    private ProductService productService;
+    private final ProductService productService;
 
-    private AdminMapper adminMapper;
+    private final AdminMapper adminMapper;
 
     //상품 상세 페이지
     @GetMapping("/{pno}")

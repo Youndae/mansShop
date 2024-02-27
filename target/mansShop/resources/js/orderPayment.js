@@ -1,8 +1,8 @@
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
 $(document).ready(function(){
     $("#orderPay").on('click', function(){
-        var type = $("input[name=select_payment]:checked").val();
+        const type = $("input[name=select_payment]:checked").val();
 
         $("input[name=orderPrice]").val($("span.total_price").text().replace(/\D/g, ''));
 
@@ -14,10 +14,10 @@ $(document).ready(function(){
             var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
             $("input[name=addr]").val(saveAddr);
 
-            var table_tbody = $("#order_payment_list");
-            var table_tr = table_tbody.children();
-            var form = $("#order_form")[0];
-            var formData = new FormData(form);
+            const table_tbody = $("#order_payment_list");
+            const table_tr = table_tbody.children();
+            const form = $("#order_form")[0];
+            let formData = new FormData(form);
 
             for(var i = 0; i < table_tr.length; i++){
                 formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
@@ -39,7 +39,7 @@ $(document).ready(function(){
                 },
                 success: function(data){
                     if(data == 1){
-                        var oType = "H";
+                        const oType = "H";
                         location.href='orderComplete/'+oType;
                     }else{
                         alert("오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요.");
@@ -63,8 +63,8 @@ function daum_address(){
     new daum.Postcode({
         oncomplete: function(data) {
 
-            var addr = '';
-            var extraAddr = '';
+            let addr = '';
+            let extraAddr = '';
 
             if (data.userSelectedType === 'R') {
                 addr = data.roadAddress;
@@ -88,7 +88,6 @@ function daum_address(){
                 }
 
                 addr += extraAddr;
-
             }
 
             document.getElementById('postCode').value = data.zonecode;
@@ -99,19 +98,18 @@ function daum_address(){
 }
 
 function order() {
-    var IMP = window.IMP;
+    let IMP = window.IMP;
     IMP.init('imp78285136');
-    var totalPrice = parseInt($("input[name=orderPrice]").val());
-    var name = $("input[name=recipient]").val();
-    var phone = $("input[name=orderPhone]").val();
-    var saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
-    var payAddr = $("#address").val() + " " + $("#addrDetail").val();
+    const totalPrice = parseInt($("input[name=orderPrice]").val());
+    const name = $("input[name=recipient]").val();
+    let phone = $("input[name=orderPhone]").val();
+    const saveAddr = $("#postCode").val() + " " + $("#address").val() + " " + $("#addrDetail").val();
+    const payAddr = $("#address").val() + " " + $("#addrDetail").val();
 
     $("input[name=addr]").val(saveAddr);
 
-
-    var table_tbody = $("#order_payment_list");
-    var table_tr = table_tbody.children();
+    const table_tbody = $("#order_payment_list");
+    const table_tr = table_tbody.children();
 
     if(phone.length == 11){
         phone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
@@ -119,8 +117,8 @@ function order() {
         phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
     }
 
-    var form = $("#order_form")[0];
-    var formData = new FormData(form);
+    const form = $("#order_form")[0];
+    let formData = new FormData(form);
 
     for(var i = 0; i < table_tr.length; i++){
         formData.append('pOpNo', table_tr.eq(i).attr("data_opNo"));
@@ -130,12 +128,13 @@ function order() {
         formData.append('cdNo', table_tr.eq(i).attr("data_cdNo"));
     }
 
-    var pName = table_tr.eq(0).attr("data_pName");
+    const pName = table_tr.eq(0).attr("data_pName");
+    let orderName = '';
 
     if(table_tr.length == 1){
-        var orderName = pName;
+        orderName = pName;
     }else{
-        var orderName = pName + " 외 " + (table_tr.length - 1) + " 건";
+        orderName = pName + " 외 " + (table_tr.length - 1) + " 건";
     }
 
 
@@ -181,7 +180,7 @@ function order() {
                 }
             });
         } else {
-            var msg = '결제에 실패하였습니다.';
+            let msg = '결제에 실패하였습니다.';
             msg += '에러내용 : ' + rsp.error_msg;
             alert(msg);
         }

@@ -2,7 +2,6 @@ package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.product.ProductQnADTO;
@@ -60,15 +59,16 @@ public class ProductServiceImpl implements ProductService{
         CartDetail cartDetail;
         Cart cart = cookieService.checkCookie(request, principal, response, true);
         String cartNo = productMapper.checkCartNo(cart);
+        cart.setCartNo(cartNo);
+        List<CartDetail> addCartDetailList = new ArrayList<>();
 
         //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
         if(cartNo != null){
             List<CartDetail> updateCartDetailList = new ArrayList<>();
-            List<CartDetail> addCartDetailList = new ArrayList<>();
             List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
 
             for(int i = 0; i < pOpNo.size(); i++) {
-                cartDetail = setDetail(cartNo, i, pOpNo, pCount, pPrice);
+                cartDetail = buildCartDetail(cartNo, pOpNo.get(i), pCount.get(i), pPrice.get(i));
 
                 //detail에 같은 옵션 상품이 존재한다면
                 if(userCartPOpNoList.contains(pOpNo.get(i)))
@@ -85,34 +85,29 @@ public class ProductServiceImpl implements ProductService{
             //cart 테이블 데이터의 updatedAt(수정일자) 수정.
             productMapper.updateCart(cart);
         }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
-            cart.setCartNo(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()).toString() + RandomStringUtils.random(4, true, true));
-
             //cart insert
             productMapper.addCart(cart);
 
-            List<CartDetail> addCartDetailList = new ArrayList<>();
+            for(int i = 0; i < pOpNo.size(); i++)
+                addCartDetailList.add(buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i)));
 
-            for(int i = 0; i < pOpNo.size(); i++){
-                cartDetail = setDetail(cart.getCartNo(), i, pOpNo, pCount, pPrice);
-                addCartDetailList.add(cartDetail);
-            }
             //detail insert
             productMapper.addCartDetail(addCartDetailList);
         }
         return ResultProperties.SUCCESS;
     }
 
-    public CartDetail setDetail(String cartNo, int i, List<String> pOpNo, List<String> pCount, List<String> pPrice){
+    public CartDetail buildCartDetail(String cartNo, String pOpNo, String pCount, String pPrice){
         return CartDetail.builder()
                 .cartNo(cartNo)
                 .cdNo(
                         new SimpleDateFormat("yyyyMMddHHmmss")
                                         .format(System.currentTimeMillis()
-                                ) + pOpNo.get(i) + pCount.get(i)
+                                ) + pOpNo + pCount
                 )
-                .pOpNo(pOpNo.get(i))
-                .cCount(Integer.parseInt(pCount.get(i)))
-                .cPrice(Long.parseLong(pPrice.get(i)))
+                .pOpNo(pOpNo)
+                .cCount(Integer.parseInt(pCount))
+                .cPrice(Long.parseLong(pPrice))
                 .build();
     }
 

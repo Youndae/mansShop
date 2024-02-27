@@ -772,6 +772,11 @@
 >   * 각 페이지의 js파일에서 호출할 수 있도록 jQuery.functionName = function(attr, attr) 형태로 처리.
 
 
+> 24/02/27
+> * 리펙토링
+>   * 장바구니 관련 처리 CartService 생성해서 분리.
+>   * 주문 처리인 OrderService.orderPayment 매출데이터 처리 sales() 메소드로 분리하고 장바구니 삭제 처리는 CartService로 연결.
+
 
 > WebSocket 목표 및 계획
 > * 채팅기능의 정상 동작 및 테스트

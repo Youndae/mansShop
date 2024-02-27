@@ -2,7 +2,6 @@ let firstThumbFile = null;
 let thumbFiles = {};
 let infoFiles = {};
 let deleteFirstThumbFile = null;
-// var deleteFirstThumbNum = 0;
 let deleteThumbFiles = {};
 let deleteThumbNum = 0;
 let deleteInfoFiles = {};

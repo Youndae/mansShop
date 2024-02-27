@@ -1,11 +1,10 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.member.JoinDTO;
 import org.shop.domain.dto.member.SearchIdDTO;
-import org.shop.domain.entity.Member;
 import org.shop.mapper.MemberMapper;
 import org.shop.service.MemberService;
 import org.springframework.stereotype.Controller;
@@ -19,12 +18,12 @@ import java.security.Principal;
 @RequestMapping("/member/")
 @Controller
 @Log4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    private MemberMapper memberMapper;
+    private final MemberMapper memberMapper;
 
     //회원 가입 페이지
     @GetMapping("/join")

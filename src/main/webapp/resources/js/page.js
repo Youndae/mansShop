@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    var actionForm = $("#pageActionForm");
-    var searchForm = $("#searchActionForm");
+    const actionForm = $("#pageActionForm");
+    const searchForm = $("#searchActionForm");
 
     $(".paginate_button a").on("click", function (e) {
         e.preventDefault();

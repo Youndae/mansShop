@@ -12,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,37 +31,6 @@ public class MyPageServiceImpl implements MyPageService{
     private final ChatMapper chatMapper;
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int deleteCart(List<String> cdNoList
-            , Principal principal
-            , HttpServletRequest request
-            , HttpServletResponse response) {
-
-        Cart cart;
-
-        try{
-            cart = cookieService.checkCookie(request, principal, response, false);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultProperties.ERROR;
-        }
-
-        if(myPageMapper.cartCount(cart) == cdNoList.size()){ //전체 삭제라면
-            //cart테이블에서 해당 아이디의 데이터 삭제
-            myPageMapper.deleteCart(cart);
-
-            //비회원이 전체 삭제를 한 경우에는 쿠키를 삭제한다.
-            if(cart.getUserId() == null)
-                cookieService.deleteCookie(request, response);
-
-        }else{
-            myPageMapper.deleteCartDetail(cdNoList);
-        }
-
-        return ResultProperties.SUCCESS;
-    }
-
-    @Override
     public int modifyCheckProc(String userPw, Principal principal) {
         String checkPw = myPageMapper.modifyCheck(principal.getName());
 
@@ -71,23 +38,6 @@ public class MyPageServiceImpl implements MyPageService{
             return ResultProperties.SUCCESS;
         else
             return ResultProperties.ERROR;
-    }
-
-    @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int cartCount(String cdNo, String cPrice, String countType) throws Exception{
-
-        CartDetail cartDetail = CartDetail.builder()
-                .cdNo(cdNo)
-                .cPrice(Long.parseLong(cPrice))
-                .build();
-
-        if(countType.equals("up"))
-            myPageMapper.cartUp(cartDetail);
-        else if(countType.equals("down"))
-            myPageMapper.cartDown(cartDetail);
-
-        return ResultProperties.SUCCESS;
     }
 
     @Override

@@ -106,7 +106,7 @@
     <update id="updateCart" parameterType="org.shop.domain.entity.Cart">
         UPDATE cart SET
             updatedAt = sysdate
-        <include refid="cartId"></include>
+        WHERE cartNo = #{cartNo}
     </update>
 
     <select id="checkCartNo" resultType="String">

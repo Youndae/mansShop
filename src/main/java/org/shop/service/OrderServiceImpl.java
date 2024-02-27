@@ -1,18 +1,20 @@
 package org.shop.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.order.OrderPaymentDTO;
 import org.shop.domain.dto.order.ProductOrderDTO;
-import org.shop.domain.entity.*;
+import org.shop.domain.entity.ProductOrder;
+import org.shop.domain.entity.ProductOrderDetail;
+import org.shop.domain.entity.Sales;
 import org.shop.mapper.OrderMapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,10 +23,12 @@ import java.util.List;
 
 @Service
 @Log4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
 
-    private OrderMapper orderMapper;
+    private final OrderMapper orderMapper;
+
+    private final CartService cartService;
 
     @Override
     public List<OrderPaymentDTO> orderProduct(HashMap<String, Object> commandMap) {
@@ -87,6 +91,7 @@ public class OrderServiceImpl implements OrderService{
                             , List<String> pno
                             , String oType
                             , HttpServletRequest request
+                            , HttpServletResponse response
                             , Principal principal) throws Exception{
         String id;
 
@@ -94,7 +99,6 @@ public class OrderServiceImpl implements OrderService{
             id = "Anonymous";
         else
             id = principal.getName();
-
 
         ProductOrder productOrder = ProductOrder.builder()
                 .userId(id)
@@ -105,8 +109,6 @@ public class OrderServiceImpl implements OrderService{
                 .orderPayment(dto.getOrderPayment())
                 .recipient(dto.getRecipient())
                 .build();
-
-        orderMapper.orderPayment(productOrder);
 
         long totalCount = 0;
         List<ProductOrderDetail> orderDetailList = new ArrayList<>();
@@ -124,47 +126,36 @@ public class OrderServiceImpl implements OrderService{
             totalCount = totalCount + Long.parseLong(orderCount.get(i));
         }
 
+        orderMapper.orderPayment(productOrder);
         orderMapper.orderPaymentOp(orderDetailList);
         orderMapper.productSales(orderDetailList);
         orderMapper.productOpSales(orderDetailList);
+        sales(productOrder.getOrderPrice(), totalCount);
 
+        if(oType != "d")
+            cartService.deleteCart(cdNo, principal, request, response);
+
+
+        return ResultProperties.SUCCESS;
+    }
+
+    public void sales(long orderPrice, long totalCount) {
         String now = new SimpleDateFormat("yyyy/MM").format(System.currentTimeMillis()).toString();
         int salesTermCount = orderMapper.maxSalesTerm(now);
-        long salesSum;
 
-        if(productOrder.getOrderPrice() < 100000)
-            salesSum = productOrder.getOrderPrice() - 2500;
-        else
-            salesSum = productOrder.getOrderPrice();
+        if(orderPrice < 100000)
+            orderPrice -= 2500;
 
         Sales sales = Sales.builder()
-                .salesOrders(totalCount)
-                .salesSum(salesSum)
-                .salesTerm(now)
-                .build();
+                            .salesOrders(totalCount)
+                            .salesSum(orderPrice)
+                            .salesTerm(now)
+                            .build();
 
         if(salesTermCount != 1)
             orderMapper.addTotalSales(sales);
         else
             orderMapper.updateTotalSales(sales);
 
-        //카트에서 결제된 상품은 삭제
-        Cookie cookie = WebUtils.getCookie(request, "cartCookie");
-
-        if(oType != "d"){ //oType = d는 장바구니를 거치지 않은 상품 정보에서 바로 구매한 상품.
-            Cart cart = new Cart();
-
-            if(cookie != null) //비회원이라면
-                cart.setCkId(cookie.getValue());
-            else
-                cart.setUserId(productOrder.getUserId());
-
-            if(orderMapper.deleteCartCheck(cart) == cdNo.size()) //장바구니 상품을 전체 구매한 경우라면
-                orderMapper.deleteOrderCart(cart); //cart 테이블에서 해당 사용자 데이터 삭제
-            else
-                orderMapper.deleteOrderCartDetail(cdNo); //cartDetail 테이블에서 해당 데이터만 삭제
-        }
-
-        return ResultProperties.SUCCESS;
     }
 }

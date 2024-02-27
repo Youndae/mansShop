@@ -1,75 +1,89 @@
-var token = $("meta[name='_csrf']").attr("content");
-var header = $("meta[name='_csrf_header']").attr("content");
-var noArr = new Array();
-var nameArr = new Array();
-var sizeArr = new Array();
-var colorArr = new Array();
-var countArr = new Array();
-var priceArr = new Array();
-var numArr = new Array();
-var pnoArr = new Array();
+const token = $("meta[name='_csrf']").attr("content");
+const header = $("meta[name='_csrf_header']").attr("content");
+let noArr = new Array();
+let nameArr = new Array();
+let sizeArr = new Array();
+let colorArr = new Array();
+let countArr = new Array();
+let priceArr = new Array();
+let numArr = new Array();
+let pnoArr = new Array();
+let rPageNum = 1;
+let qPageNum = 1;
 
 $(document).ready(function () {
 
-    var pno = $("#pno").val();
+    const pno = $("#pno").val();
     (function () {
         $.getJSON("/product/getProductThumb", {pno: pno}, function (arr) {
-            var str = "";
-            var num = 2;
+            let str = "";
+            let num = 2;
             $(arr).each(function (i, attach) {
-                var thumbId = "thumb" + num;
+                const thumbId = "thumb" + num;
                 str += "<img id=\"" + thumbId + "\" src=\"/display?image=" + attach.pthumbnail + "\" onclick=\"firstThumb(this)\">";
             })
             $(".thumb").append(str);
         });
 
         $.getJSON("/product/getProductOp", {pno: pno}, function (arr) {
-            var str = "<option value=\"default\">------</option>";
+            let str = "<option value=\"default\">------</option>";
+
+
 
             $(arr).each(function (i, op) {
+                let optionStr = '';
+                const sizeOption = "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
+                    "사이즈 : " + op.psize + "</option>";
+                const colorOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
+                    "컬러 : " + op.pcolor + "</option>";
+                const defaultOption = "<option value=\"" + op.popNo + "\"></option>";
+                const colorSizeOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
+                    "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
 
-                if(op.pcolor == null){
+                if(op.pcolor == null && op.psize != null)
+                    optionStr = sizeOption;
+                else if(op.pcolor != null && op.psize == null)
+                    optionStr = colorOption;
+                else if(op.pcolor != null && op.psize != null)
+                    optionStr = colorSizeOption;
+                else
+                    optionStr = defaultOption;
+
+                str += optionStr;
+
+                /*if(op.pcolor == null){
                     if(op.psize != null){
                         str += "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
-                            "사이즈 : " + op.psize + "</option>";
+                                    "사이즈 : " + op.psize + "</option>";
                     }else{
                         str += "<option value=\"" + op.popNo + "\">" +
-                            "</option>";
+                                 "</option>";
                     }
-
                 }else if(op.psize == null){
                     if(op.pcolor != null){
                         str += "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
-                            "컬러 : " + op.pcolor + "</option>";
+                                 "컬러 : " + op.pcolor + "</option>";
                     }
-
                 }else{
                     str += "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
-                        "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
-                }
-
-
+                                "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
+                }*/
             })
-
             $("#option_select_box").append(str);
         });
 
         $.getJSON("/product/getProductInfo", {pno: pno}, function (arr) {
-            var str = "<div class=\"productInfo_img\">";
+            let str = "<div class=\"productInfo_img\">";
             $(arr).each(function (i, info) {
                 str += "<div class=\"infoImg\"><img class=\"infoImg\" src=\"/display?image=" + info.pimg + "\"></div>";
             })
-
             str += "</div>";
 
             $(".product_detail_info").append(str);
         })
 
         showReviewList(1);
-
         showProductQnAList(1);
-
-
     })();
 
 
@@ -102,57 +116,61 @@ $(document).ready(function () {
     }
 
     function showProductQnAList(page) {
-        var QnAUL = $(".product_QnA");
+        let QnAUL = $(".product_QnA");
 
         getProductQnAList({pno: pno, page: page || 1}, function (QnACount, QnAList) {
-
-            if (QnAList == null || QnAList.length == 0) {
+            if (QnAList == null || QnAList.length == 0)
                 return;
-            }
 
-            var str = "";
+            let str = "";
 
             for (var i = 0, len = QnAList.length || 0; i < len; i++) {
-                var QnARegDate = new Date(QnAList[i].pqnARegDate);
+                const QnARegDate = new Date(QnAList[i].pqnARegDate);
 
                 QnAList[i].pqnARegDate = QnARegDate.getFullYear() + "/" +
-                    (QnARegDate.getMonth() + 1) + "/" +
-                    QnARegDate.getDate();
+                                            (QnARegDate.getMonth() + 1) + "/" +
+                                            QnARegDate.getDate();
 
-                if (QnAList[i].pqnAAnswer == "0") {
+                if (QnAList[i].pqnAAnswer == "0")
                     QnAList[i].pqnAAnswer = "미답변";
-                } else if (QnAList[i].pqnAAnswer == "1") {
+                else if (QnAList[i].pqnAAnswer == "1")
                     QnAList[i].pqnAAnswer = "답변완료";
-                }
-
 
                 if (QnAList[i].pqnAIndent == "0") {
-                    str += "<li class=\"QnA_content\">";
-                    str += "<div class=\"QnA_content_header\"><strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>";
-                    str += "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small>";
-                    str += "<small class=\"pull-right answer\">" + QnAList[i].pqnAAnswer + "</small></div>";
-                    str += "<div class=\"QnA_content_content\"><p>" + QnAList[i].pqnAContent + "</p></div></li>";
+                    str += "<li class=\"QnA_content\">" +
+                                "<div class=\"QnA_content_header\">" +
+                                    "<strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>" +
+                                    "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small>" +
+                                    "<small class=\"pull-right answer\">" + QnAList[i].pqnAAnswer + "</small>" +
+                                "</div>" +
+                                "<div class=\"QnA_content_content\">" +
+                                    "<p>" + QnAList[i].pqnAContent + "</p>" +
+                                "</div>" +
+                            "</li>";
                 } else if (QnAList[i].pqnAIndent == "1") {
-                    str += "<div class=\"QnA_Content_Reply\">";
-                    str += "<li class=\"QnA_content\">";
-                    str += "<div><div class=\"QnA_content_header\"><strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>";
-                    str += "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small></div>";
-                    str += "<div class=\"QnA_content_content\"><p>" + QnAList[i].pqnAContent + "</p></div></li>";
-                    str += "</div>";
+                    str += "<div class=\"QnA_Content_Reply\">" +
+                                "<li class=\"QnA_content\">" +
+                                    "<div>" +
+                                        "<div class=\"QnA_content_header\">" +
+                                            "<strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>" +
+                                            "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small>" +
+                                        "</div>" +
+                                        "<div class=\"QnA_content_content\">" +
+                                            "<p>" + QnAList[i].pqnAContent + "</p>" +
+                                        "</div>" +
+                                    "</div>" +
+                                "</li>" +
+                            "</div>";
                 }
             }
-
             QnAUL.html(str);
-
             showPaginate(QnACount, "q");
         })
     }
 
     $(".QnAPaging").on('click', "li a", function (e) {
         e.preventDefault();
-
-        var targetPageNum = $(this).attr("href");
-
+        const targetPageNum = $(this).attr("href");
         qPageNum = targetPageNum;
 
         showProductQnAList(qPageNum);
@@ -160,34 +178,29 @@ $(document).ready(function () {
 
 
     function showReviewList(page) {
-
-        var reviewUL = $(".review");
-
+        let reviewUL = $(".review");
 
         getReviewList({pno: pno, page: page || 1}, function (reviewCount, reviewList) {
-
-            if (reviewList == null || reviewList.length == 0) {
+            if (reviewList == null || reviewList.length == 0)
                 return;
-            }
-
-            var str = "";
-
-            for (var i = 0, len = reviewList.length || 0; i < len; i++) {
-
-                var reviewRegDate = new Date(reviewList[i].reviewDate);
-
+            let str = "";
+            for (let i = 0, len = reviewList.length || 0; i < len; i++) {
+                let reviewRegDate = new Date(reviewList[i].reviewDate);
                 reviewList[i].reviewDate = reviewRegDate.getFullYear() + "/" +
-                    (reviewRegDate.getMonth() + 1) + "/" +
-                    reviewRegDate.getDate();
+                                            (reviewRegDate.getMonth() + 1) + "/" +
+                                            reviewRegDate.getDate();
 
-                str += "<li class=\"review_content\">";
-                str += "<div class=\"review_content_header\"><strong class='reviewer'>" + reviewList[i].userId + "</strong>";
-                str += "<small class='pull-right text-muted'>" + reviewList[i].reviewDate + "</small></div>";
-                str += "<div class=\"review_content_content\"><p>" + reviewList[i].reviewContent + "</p></div></li>";
+                str += "<li class=\"review_content\">" +
+                            "<div class=\"review_content_header\">" +
+                                "<strong class='reviewer'>" + reviewList[i].userId + "</strong>" +
+                                "<small class='pull-right text-muted'>" + reviewList[i].reviewDate + "</small>" +
+                            "</div>" +
+                            "<div class=\"review_content_content\">" +
+                                "<p>" + reviewList[i].reviewContent + "</p>" +
+                            "</div>" +
+                        "</li>";
             }
-
             reviewUL.html(str);
-
             showPaginate(reviewCount, "r");
         })
     }
@@ -195,18 +208,14 @@ $(document).ready(function () {
 
     $(".reviewPaging").on('click', "li a", function (e) {
         e.preventDefault();
-
-        var targetPageNum = $(this).attr("href");
+        const targetPageNum = $(this).attr("href");
 
         rPageNum = targetPageNum;
-
         showReviewList(rPageNum);
     })
 
-
     $("#QnAInsert").on('click', function () {
-
-        var content = $("#product_QnA_InsertForm").serialize();
+        let content = $("#product_QnA_InsertForm").serialize();
 
         if ($("#pQnAContent").val() == "") {
             $("#QnAContentOverlap").text("문의 내용을 입력하세요");
@@ -219,11 +228,10 @@ $(document).ready(function () {
                     xhr.setRequestHeader(header, token);
                 },
                 success: function (data) {
-                    if(data == 1){
+                    if(data == 1)
                         location.reload();
-                    }else{
+                    else
                         alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
-                    }
                 },
                 error: function (request, status, error) {
                     alert("code : " + request.status + "\n"
@@ -231,13 +239,12 @@ $(document).ready(function () {
                         + "\n" + "error : " + error);
                 }
             });
-
         }
     })
 
 
     $("#likeProduct").on('click', function () {
-        var pno = $("#pno").val();
+        let pno = $("#pno").val();
 
         $.ajax({
             url: "/product/likeProduct",
@@ -247,11 +254,10 @@ $(document).ready(function () {
                 xhr.setRequestHeader(header, token);
             },
             success: function (data) {
-                if(data == 1){
+                if(data == 1)
                     location.reload();
-                }else{
+                else
                     alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
-                }
             },
             error: function (request, status, error) {
                 alert("code : " + request.status + "\n"
@@ -262,7 +268,7 @@ $(document).ready(function () {
     })
 
     $("#deLike").on('click', function () {
-        var pno = {
+        const pno = {
             pno : $("#pno").val(),
         }
 
@@ -275,11 +281,10 @@ $(document).ready(function () {
                 xhr.setRequestHeader(header, token);
             },
             success: function (data) {
-                if(data == 1){
+                if(data == 1)
                     location.reload();
-                }else{
+                else
                     alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
-                }
             },
             error: function (request, status, error) {
                 alert("code : " + request.status + "\n"
@@ -290,18 +295,17 @@ $(document).ready(function () {
     })
 
     $("#anonymous").on('click', function () {
-        var result = confirm("관심상품으로 등록하기 위해서는 로그인이 필요합니다.\n 로그인 하시겠습니까?");
+        const result = confirm("관심상품으로 등록하기 위해서는 로그인이 필요합니다.\n 로그인 하시겠습니까?");
 
-        if (result) {
+        if (result)
             location.href = '/member/login';
-        }
     })
 
 });//document.ready End
 
 function getProductQnAList(param, callback, error) {
-    var pno = param.pno;
-    var page = param.page || 1;
+    const pno = param.pno;
+    const page = param.page || 1;
 
     $.getJSON("/product/productQnAPages/" + pno + "/" + page + ".json", function (data) {
         if (callback){
@@ -314,8 +318,8 @@ function getProductQnAList(param, callback, error) {
 }
 
 function getReviewList(param, callback, error) {
-    var pno = param.pno;
-    var page = param.page || 1;
+    const pno = param.pno;
+    const page = param.page || 1;
 
     $.getJSON("/product/reviewPages/" + pno + "/" + page + ".json", function (data) {
         if (callback)
@@ -326,21 +330,17 @@ function getReviewList(param, callback, error) {
     });
 }
 
-var rPageNum = 1;
-var qPageNum = 1;
-
 function showPaginate(count, type) {
 
-    if (type == "r") {
-        var endNum = Math.ceil(rPageNum / 10.0) * 10;
-    } else if (type == "q") {
-        var endNum = Math.ceil(qPageNum / 10.0) * 10;
-    }
+    let endNum = 0;
+    if (type == "r")
+        endNum = Math.ceil(rPageNum / 10.0) * 10;
+    else if (type == "q")
+        endNum = Math.ceil(qPageNum / 10.0) * 10;
 
-
-    var startNum = endNum - 9;
-    var prev = startNum != 1;
-    var next = false;
+    let startNum = endNum - 9;
+    let prev = startNum != 1;
+    let next = false;
 
     if (endNum * 10 >= count)
         endNum = Math.ceil(count / 10.0);
@@ -348,21 +348,19 @@ function showPaginate(count, type) {
     if (endNum * 10 < count)
         next = true;
 
-    var str = "<ul class=\"pagination\">";
+    let str = "<ul class=\"pagination\">";
 
     if (prev)
         str += "<li class=\"paginate_button previous\"><a href=\"" + (startNum - 1) + "\">Prev</a></li>";
 
     if (type == "r")
-        for (var i = startNum; i <= endNum; i++) {
-            var active = rPageNum == i ? "active" : "";
-
+        for (let i = startNum; i <= endNum; i++) {
+            let active = rPageNum == i ? "active" : "";
             str += "<li class=\"paginate_button " + active + "\"><a href=\"" + i + "\">" + i + "</a></li>";
         }
     else if (type == "q")
-        for (var i = startNum; i <= endNum; i++) {
-            var active = qPageNum == i ? "active" : "";
-
+        for (let i = startNum; i <= endNum; i++) {
+            let active = qPageNum == i ? "active" : "";
             str += "<li class=\"paginate_button " + active + "\"><a href=\"" + i + "\">" + i + "</a></li>";
         }
 
@@ -379,50 +377,48 @@ function showPaginate(count, type) {
 
 
 function countUp(obj) {
-    var id = obj.attributes['value'].value;
-    var price = parseInt($("#pPrice").val());
-
-    var count = parseInt($("input[name=" + id + "]").val());
+    const id = obj.attributes['value'].value;
+    const price = parseInt($("#pPrice").val());
+    let total = 0;
+    let count = parseInt($("input[name=" + id + "]").val());
     count = count + 1;
 
     $("input[name=" + id + "]").val(count);
 
-    var opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
+    let opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
 
     opPrice = opPrice + price;
 
     $("tr[id=" + id + "] td[name=productPrice] span").text(opPrice.toLocaleString() + " 원");
 
     if ($(".totalPrice p span").text().replace(/\D/g, '') == "0") {
-        var total = parseInt($(".totalPrice p span").text());
+        total = parseInt($(".totalPrice p span").text());
     } else {
-        var total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+        total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
     }
 
     total = total + price;
     $(".totalPrice p span").text(total.toLocaleString() + " 원");
-
 }
 
 function countDown(obj) {
-    var id = obj.attributes['value'].value;
-    var price = parseInt($("#pPrice").val());
+    const id = obj.attributes['value'].value;
+    const price = parseInt($("#pPrice").val());
 
-    var count = parseInt($("input[name=" + id + "]").val());
+    let count = parseInt($("input[name=" + id + "]").val());
 
     if(count != 1){
         count = count - 1;
 
         $("input[name=" + id + "]").val(count);
 
-        var opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
+        let opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
 
         opPrice = opPrice - price;
 
         $("tr[id=" + id + "] td[name=productPrice] span").text(opPrice.toLocaleString() + " 원");
 
-
-        var total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+        let total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
 
         total = total - price;
         $(".totalPrice p span").text(total.toLocaleString() + " 원");
@@ -432,9 +428,9 @@ function countDown(obj) {
 }
 
 function opRemove(obj) {
-    var id = obj.attributes['value'].value;
-    var opPrice = parseInt($(".tempOrderTableData #" + id + " td[name=productPrice] span").text().replace(/\D/g, ''));
-    var totalPrice = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+    const id = obj.attributes['value'].value;
+    let opPrice = parseInt($(".tempOrderTableData #" + id + " td[name=productPrice] span").text().replace(/\D/g, ''));
+    let totalPrice = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
 
     totalPrice = totalPrice - opPrice;
 
@@ -442,7 +438,7 @@ function opRemove(obj) {
 
     $(".tempOrderTableData #" + id).remove();
 
-    var pcNum = id.substring(12);
+    const pcNum = id.substring(12);
 
     noArr.splice(pcNum, 1);
     nameArr.splice(pcNum, 1);
@@ -452,84 +448,79 @@ function opRemove(obj) {
 }
 
 function firstThumb(obj) {
-    var imgName = obj.attributes['src'].value.substring(15);
+    const imgName = obj.attributes['src'].value.substring(15);
 
-    var str = "<img id=\"firstThumb\" src=\"/display?image=" + imgName + "\">";
+    const str = "<img id=\"firstThumb\" src=\"/display?image=" + imgName + "\">";
 
     $(".firstThumbnail #firstThumb").remove();
 
     $(".firstThumbnail").append(str);
 }
 
-var num = 0;
-
-
 $(function () {
+    let num = 0;
+    let total = 0;
+
     $(".productInfo_Info #option_select_box").change(function () {
-        var option_txt = $("#option_select_box option:selected").text();
-
-        var option_val = $("#option_select_box option:selected").val();
-
-        var option = option_val.split('/');
-
-        var p = parseInt($("#pPrice").val());
-
-        var dataStr = "";
+        const option_txt = $("#option_select_box option:selected").text();
+        const option_val = $("#option_select_box option:selected").val();
+        const option = option_val.split('/');
+        const p = parseInt($("#pPrice").val());
+        let dataStr = "";
 
         dataStr += "<tr class=\"product_temp_cart\" id=\"productCount" + num + "\" value=\"" + option[0] + "\">" +
-            "<td>" + option_txt + "</td>" +
-            "<td class=\"product_temp_cart_input\">" +
-            "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\" readonly>" +
-            "<div class=\"pCount\">" +
-            "<div class=\"pCount_up_down\">" +
-            "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'><img src=\"/display?image=up.jpg\"></button>" +
-            "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'><img src=\"/display?image=down.jpg\"></button>" +
-            "</div>" +
-            "<div class=\"pCount_remove\">" +
-            "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'><img src=\"/display?image=del.jpg\"></button>" +
-            "</div>" +
-            "</div>" +
-            "</td>" +
-            "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
-            "<input type=\"hidden\" name=\"color\" value=\"" + option[1] + "\">" +
-            "<input type=\"hidden\" name=\"size\" value=\"" + option[2] + "\">" +
-            "</tr>";
+                        "<td>" + option_txt + "</td>" +
+                        "<td class=\"product_temp_cart_input\">" +
+                            "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\" readonly>" +
+                            "<div class=\"pCount\">" +
+                                "<div class=\"pCount_up_down\">" +
+                                    "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>" +
+                                        "<img src=\"/display?image=up.jpg\">" +
+                                    "</button>" +
+                                    "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>" +
+                                        "<img src=\"/display?image=down.jpg\">" +
+                                    "</button>" +
+                                "</div>" +
+                                "<div class=\"pCount_remove\">" +
+                                    "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>" +
+                                        "<img src=\"/display?image=del.jpg\">" +
+                                    "</button>" +
+                                "</div>" +
+                            "</div>" +
+                        "</td>" +
+                        "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
+                        "<input type=\"hidden\" name=\"color\" value=\"" + option[1] + "\">" +
+                        "<input type=\"hidden\" name=\"size\" value=\"" + option[2] + "\">" +
+                    "</tr>";
 
         noArr.push(option[0]);
         nameArr.push($(".name").text());
         colorArr.push(option[1]);
         sizeArr.push(option[2]);
         numArr.push(num);
-
         num++;
 
+        if ($(".totalPrice p span").text().replace(/\D/g, "") == "0")
+            total = parseInt($(".totalPrice p span").text());
+        else
+            total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
 
-        if ($(".totalPrice p span").text().replace(/\D/g, "") == "0") {
-            var total = parseInt($(".totalPrice p span").text());
-        } else {
-            var total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
-        }
         total = total + p;
         $(".totalPrice p span").text(total.toLocaleString() + " 원");
-
         $(".tempOrderTableData").append(dataStr);
     })
 
-
     $(function () {
         $("#cart").on('click', function () {
-
             if(numArr.length == 0){
                 alert("상품 옵션을 선택해주세요.");
             }else{
-
-                for (var i = 0; i < numArr.length; i++) {
-                    var n = numArr[i];
-                    var tVal = "productCount" + n;
+                for (let i = 0; i < numArr.length; i++) {
+                    const n = numArr[i];
+                    const tVal = "productCount" + n;
                     countArr.push($("input[name=" + tVal + "]").val());
                     priceArr.push($("tr[id=" + tVal + "] td[name=productPrice] span").text().replace(/\D/g, ''));
                 }
-
 
                 $.ajaxSettings.traditional = true;
                 $.ajax({
@@ -541,11 +532,10 @@ $(function () {
                         xhr.setRequestHeader(header, token);
                     },
                     success: function (data) {
-                        if(data == 0){
+                        if(data == 0)
                             alert("오류가 발생했습니다.\n 잠시후 다시 시도해주세요.");
-                        }else{
+                        else
                             alert("장바구니에 상품이 담겼습니다.");
-                        }
                     },
                     error: function (request, status, error) {
                         alert("code : " + request.status + "\n"
@@ -559,10 +549,9 @@ $(function () {
 
     $(function () {
         $("#buy").on('click', function () {
-
             for (var i = 0; i < numArr.length; i++) {
-                var n = numArr[i];
-                var tVal = "productCount" + n;
+                const n = numArr[i];
+                const tVal = "productCount" + n;
                 countArr.push($("input[name=" + tVal + "]").val());
                 priceArr.push($("tr[id=" + tVal + "] td[name=productPrice] span").text().replace(/\D/g, ''));
                 pnoArr.push($("#pno").val());

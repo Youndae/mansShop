@@ -1,7 +1,6 @@
 package org.shop.service;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.domain.FileProperties;
 import org.shop.domain.ResultProperties;
@@ -14,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.security.Principal;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +20,10 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService{
 
-    private AdminMapper adminMapper;
+    private final AdminMapper adminMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})

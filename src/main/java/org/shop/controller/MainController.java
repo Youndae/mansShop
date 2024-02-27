@@ -1,13 +1,12 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.FileProperties;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.myPage.MemberOrderListDTO;
 import org.shop.domain.dto.main.NonProductOrderDTO;
 import org.shop.domain.dto.paging.PageDTO;
-import org.shop.domain.entity.Product;
 import org.shop.mapper.MainMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,11 +29,11 @@ import java.util.List;
 @Controller
 @Log4j
 @PreAuthorize("permitAll()")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MainController {
 
 
-    private MainMapper mainMapper;
+    private final MainMapper mainMapper;
 
     //메인페이지. BEST 상품 출력
     @GetMapping("/")

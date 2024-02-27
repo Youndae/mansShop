@@ -10,11 +10,7 @@ import java.util.List;
 
 public interface MyPageService {
 
-    public int deleteCart(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) throws Exception;
-
     public int modifyCheckProc(String userPw, Principal principal);
-
-    public int cartCount(String cdNo, String cPrice, String countType) throws Exception;
 
     public int modifyInfo(MemberModifyDTO dto, Principal principal);
 

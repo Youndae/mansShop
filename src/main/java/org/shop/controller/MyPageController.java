@@ -1,22 +1,19 @@
 package org.shop.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.myPage.*;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.paging.PageDTO;
 import org.shop.domain.entity.Cart;
-import org.shop.domain.entity.ProductOrder;
 import org.shop.mapper.MyPageMapper;
+import org.shop.service.CartService;
 import org.shop.service.CookieService;
 import org.shop.service.MyPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,22 +21,21 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RequestMapping("/myPage/")
 @Controller
 @Log4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MyPageController {
 
-    private MyPageService myPageService;
+    private final MyPageService myPageService;
 
-    private MyPageMapper myPageMapper;
+    private final MyPageMapper myPageMapper;
 
-    private CookieService cookieService;
+    private final CookieService cookieService;
+
+    private final CartService cartService;
 
     //회원 정보 수정 페이지 접근 전 비밀번호 체크 페이지
     @GetMapping("/modifyCheck")
@@ -306,7 +302,7 @@ public class MyPageController {
         int result;
 
         try{
-            result = myPageService.deleteCart(cdNoList, principal, request, response);
+            result = cartService.deleteCart(cdNoList, principal, request, response);
         }catch (Exception e){
             result = ResultProperties.ERROR;
         }
@@ -324,7 +320,7 @@ public class MyPageController {
 
         int result;
         try{
-            result = myPageService.cartCount(cdNo, cPrice, countType);
+            result = cartService.cartCount(cdNo, cPrice, countType);
         }catch (Exception e){
             result = ResultProperties.ERROR;
         }
