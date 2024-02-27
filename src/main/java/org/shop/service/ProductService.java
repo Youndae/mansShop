@@ -17,12 +17,17 @@ public interface ProductService {
 
     public ProductQnADTO getProductQnA(Criteria cri, String pno);
 
-    public int addCart(List<String> pOpNo, List<String> pCount, List<String> pPrice, Principal principal, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    public String addCart(List<String> pOpNo
+                        , List<String> pCount
+                        , List<String> pPrice
+                        , Principal principal
+                        , HttpServletRequest request
+                        , HttpServletResponse response);
 
 
-    public int likeProduct(String pno, Principal principal) throws Exception;
+    public String likeProduct(String pno, Principal principal);
 
-    public int deLikeProduct(String pno, Principal principal) throws Exception;
+    public String deLikeProduct(String pno, Principal principal);
 
-    public int qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) throws Exception;
+    public String qnAInsertProc(ProductQnAInsertDTO dto, Principal principal);
 }

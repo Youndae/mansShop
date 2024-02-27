@@ -50,16 +50,14 @@ public class MyPageController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String modifyCheckProc(@RequestParam("userPw") String userPw, Principal principal){
 
-        return String.valueOf(myPageService.modifyCheckProc(userPw, principal));
+        return myPageService.modifyCheckProc(userPw, principal);
     }
 
     //회원 정보 수정 페이지
     @GetMapping("/modifyInfo")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void getModifyInfo(Model model, Principal principal){
-        String userId = principal.getName();
-
-        model.addAttribute("info", myPageMapper.getModifyInfo(userId));
+        model.addAttribute("info", myPageMapper.getModifyInfo(principal.getName()));
     }
 
     //회원 정보 수정 처리
@@ -67,8 +65,7 @@ public class MyPageController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String modifyInfo(MemberModifyDTO dto, Principal principal){
 
-        if(myPageService.modifyInfo(dto, principal) == 0)
-            return "/accessError";
+        myPageService.modifyInfo(dto, principal);
 
         return "redirect:/myPage/modifyInfo";
     }
@@ -90,8 +87,6 @@ public class MyPageController {
     @ResponseBody
     public ResponseEntity<List<MemberOrderListDTO>> getOrderList(String regDate, Principal principal) {
 
-        log.info("select OrderList");
-
         return new ResponseEntity<>(myPageService.getOrderList(regDate, principal), HttpStatus.OK);
     }
 
@@ -100,20 +95,15 @@ public class MyPageController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void memberReviewList(Model model, Principal principal, Criteria cri){
         cri.setKeyword(principal.getName());
-
         model.addAttribute("rList", myPageMapper.memberReviewList(cri));
-
         int total = myPageMapper.getReviewTotal(cri);
-
         model.addAttribute("pageMaker", new PageDTO(cri, total));
-
     }
 
     //회원 리뷰 상세 페이지
     @GetMapping("/memberReviewDetail/{rNum}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDetail(Model model, @PathVariable long rNum){
-
         model.addAttribute("rDetail", myPageMapper.memberReviewDetail(rNum));
 
         return "/myPage/memberReviewDetail";
@@ -123,7 +113,6 @@ public class MyPageController {
     @GetMapping("/memberReviewModify/{rNum}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewModify(Model model, @PathVariable long rNum){
-
         model.addAttribute("rModify", myPageMapper.memberReviewDetail(rNum));
 
         return "/myPage/memberReviewModify";
@@ -133,19 +122,7 @@ public class MyPageController {
     @PatchMapping("/memberReviewModify")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewModifyProc(ProductReviewModifyDTO dto){
-
-        log.info("modify rNum : " + dto.getRNum());
-
-        int result;
-
-        try{
-            result = myPageService.memberReviewModify(dto);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        if(result == ResultProperties.ERROR)
-            return "/accessError";
+        myPageService.memberReviewModify(dto);
 
         return "redirect:/myPage/memberReviewDetail/"+ dto.getRNum();
     }
@@ -156,17 +133,7 @@ public class MyPageController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberReviewDelete(@PathVariable long rNum){
 
-        log.info("memberReviewDelete rNum : " + rNum);
-
-        int result;
-
-        try{
-            result = myPageService.deleteReview(rNum);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        return String.valueOf(result);
+        return myPageService.deleteReview(rNum);
     }
 
     //리뷰 작성 페이지
@@ -193,19 +160,7 @@ public class MyPageController {
     public String insertReview(ProductReviewInsertDTO dto
                                 , @RequestParam("orderNo") String orderNo
                                 , Principal principal){
-
-        log.info("order Review");
-
-        int result;
-
-        try{
-            result = myPageService.insertReviewProc(dto, orderNo, principal);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        if(result == ResultProperties.ERROR)
-            return "accessError";
+        myPageService.insertReviewProc(dto, orderNo, principal);
 
         return "redirect:/myPage/memberOrderList";
     }
@@ -214,15 +169,9 @@ public class MyPageController {
     @GetMapping("/memberQnAList")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void memberQnAList(Model model, Principal principal, Criteria cri){
-        //회원 QnA 목록
-        log.info("memberQnAList");
-
         cri.setKeyword(principal.getName());
-
         model.addAttribute("qList", myPageMapper.memberQnAList(cri));
-
         int total = myPageMapper.getQnATotal(cri);
-
         model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
@@ -230,11 +179,7 @@ public class MyPageController {
     @GetMapping("/memberQnADetail/{qno}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String memberQnADetail(@PathVariable long qno, Model model){
-        //회원 QnA Detail
-        log.info("myQnADetail qno : " + qno);
-
         model.addAttribute("qDetail", myPageMapper.memberQnADetail(qno));
-
         model.addAttribute("qReply", myPageMapper.memberQnAReply(qno));
 
         return "/myPage/memberQnADetail";
@@ -251,16 +196,7 @@ public class MyPageController {
     @PostMapping("/insertMemberQnA")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String insertMemberQnA(MyQnAInsertDTO dto, Principal principal){
-
-        int result;
-        try{
-            result = myPageService.insertMyQnAProc(dto, principal);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        if(result == ResultProperties.ERROR)
-            return "accessError";
+        myPageService.insertMyQnAProc(dto, principal);
 
         return "redirect:/myPage/memberQnAList";
     }
@@ -270,45 +206,27 @@ public class MyPageController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public void likeList(Model model, Principal principal, Criteria cri){
         cri.setKeyword(principal.getName());
-
         cri.setAmount(8);
-
         model.addAttribute("lList", myPageMapper.likeList(cri));
-
         int total = myPageMapper.getLikeTotal(cri);
-
         model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
     //회원 장바구니 페이지
     @GetMapping("/cart")
     public String cart(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        log.info("get Cart List");
-
         Cart cart = cookieService.checkCookie(request, principal, response, false);
-
         model.addAttribute("cartList", myPageMapper.getCartList(cart));
 
         return "myPage/cart";
-
     }
 
     //회원 장바구니 선택목록 삭제 처리
     @DeleteMapping("/deleteCart")
     @ResponseBody
     public String deleteCart(@RequestBody List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        log.info("delete Cart : " + cdNoList);
 
-        int result;
-
-        try{
-            result = cartService.deleteCart(cdNoList, principal, request, response);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        return String.valueOf(result);
-
+        return cartService.deleteCart(cdNoList, principal, request, response);
     }
 
     //회원 장바구니 수량 증감
@@ -316,23 +234,13 @@ public class MyPageController {
     @ResponseBody
     public String cartUp(@RequestParam("cdNo")String cdNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType){
 
-        log.info("cdNo : " + cdNo + ", cPrice : " + cPrice + ", countType : " + countType);
-
-        int result;
-        try{
-            result = cartService.cartCount(cdNo, cPrice, countType);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        return String.valueOf(result);
+        return cartService.cartCount(cdNo, cPrice, countType);
     }
 
     //채팅 문의 리스트
     @GetMapping("/chatQnA")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String chatQnA(Principal principal, Model model){
-
         //채팅 저장 처리 및 내역 출력 기능 구현 후 서비스 호출해서 qList로 전달
         model.addAttribute("qList", null);
 

@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.ExecutorException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.webjars.NotFoundException;
+
+import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 @Slf4j
@@ -19,4 +22,13 @@ public class GlobalExceptionHandler {
 
         return null;
     }
+
+    @ExceptionHandler({NotFoundException.class, IllegalArgumentException.class, AccessDeniedException.class})
+    public String accessErrorPageHandle(Exception e) {
+        log.error("redirect accessError. Exception : " + e.getMessage());
+
+        return "/accessError";
+    }
+
+
 }

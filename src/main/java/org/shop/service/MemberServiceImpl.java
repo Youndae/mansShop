@@ -33,8 +33,8 @@ public class MemberServiceImpl implements MemberService{
     private final RedisTemplate redisTemplate;
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int join(JoinDTO dto) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void join(JoinDTO dto) {
 
         Member member = Member.builder()
                 .userId(dto.getUserId())
@@ -47,11 +47,7 @@ public class MemberServiceImpl implements MemberService{
                 .build();
 
         memberMapper.join(member);
-
         memberMapper.joinAuth(member.getUserId());
-
-        return ResultProperties.SUCCESS;
-
     }
 
     @Override
@@ -81,7 +77,7 @@ public class MemberServiceImpl implements MemberService{
                                                 );
 
         if(checkResult == 0)
-            return null;
+            return ResultProperties.FAIL;
 
         Random ran = new Random();
         int certificationNo = ran.nextInt(899999) + 100001;
@@ -93,10 +89,10 @@ public class MemberServiceImpl implements MemberService{
             MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
             javaMailSender.send(mailForm);
 
-            return "success";
+            return ResultProperties.SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
-            return "error";
+            return ResultProperties.ERROR;
         }
 
         /* searchPw
@@ -172,33 +168,32 @@ public class MemberServiceImpl implements MemberService{
     }*/
 
     @Override
-    public String checkCno(SearchIdDTO dto) {
+    public String checkCno(String userId, int cno) {
         String result = null;
 
         try{
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-            result = stringValueOperations.get(dto.getUserId());
+            result = stringValueOperations.get(userId);
         }catch(Exception e){
             log.error(e.getMessage());
-            return "error";
+            return ResultProperties.ERROR;
         }
 
-        if(result != null && dto.getCno() == Integer.parseInt(result))
-            return "success";
+        if(result != null && cno == Integer.parseInt(result))
+            return ResultProperties.SUCCESS;
 
-
-        return "fail";
+        return ResultProperties.FAIL;
     }
 
     @Override
-    public int resetPw(String userId, int cno, String password) {
+    public String resetPw(String userId, int cno, String password) {
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         String certificationValue = stringValueOperations.get(userId);
         redisTemplate.delete(userId);
 
         if(certificationValue == null || Integer.parseInt(certificationValue) != cno)
-            return 0;
+            return ResultProperties.ERROR;
 
         int modifyResult = memberMapper.modifyPw(Member.builder()
                                                         .userId(userId)
@@ -207,9 +202,9 @@ public class MemberServiceImpl implements MemberService{
                                                 );
 
         if(modifyResult == 0)
-            return 0;
+            return ResultProperties.ERROR;
 
-        return 1;
+        return ResultProperties.SUCCESS;
 
         /* resetPw
         기존 DB에서 cno를 관리하던 코드

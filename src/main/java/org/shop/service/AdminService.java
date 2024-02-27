@@ -9,19 +9,19 @@ import java.util.List;
 
 public interface AdminService {
 
-    public int addProduct(ProductInsertDTO dto, MultipartFile firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg) throws Exception;
+    public String addProduct(ProductInsertDTO dto, MultipartFile firstThumb, List<MultipartFile> thumb, List<MultipartFile> infoImg);
 
 
-    public int modifyProduct(ProductModifyDTO modify, MultipartFile firstThumb, List<MultipartFile> thumb
+    public String modifyProduct(ProductModifyDTO modify, MultipartFile firstThumb, List<MultipartFile> thumb
                                 , List<MultipartFile> infoImg, String delFirstThumb, List<String> delThumb
-                                , List<String> delInfoImg) throws Exception;
+                                , List<String> delInfoImg);
 
-    public int addProductOp(ProductOpInsertDTO dto) throws Exception;
+    public String addProductOp(ProductOpInsertDTO dto);
 
 
-    public int qnAReplyProc(MyQnAReplyDTO dto, Principal principal) throws Exception;
+    public String qnAReplyProc(MyQnAReplyDTO dto, Principal principal);
 
-    int productQnAReplyProc(ProductQnAReplyDTO dto, Principal principal) throws Exception;
+    String productQnAReplyProc(ProductQnAReplyDTO dto, Principal principal);
 
-    int qnaReplyDelete(int replyNo) throws Exception;
+    String qnaReplyDelete(int replyNo);
 }

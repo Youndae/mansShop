@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CartService {
 
-    public int deleteCart(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response);
+    public String deleteCart(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response);
 
-    public int cartCount(String cdNo, String cPrice, String countType);
+    public String cartCount(String cdNo, String cPrice, String countType);
 }

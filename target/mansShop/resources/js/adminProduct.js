@@ -65,10 +65,11 @@ function setPreviewForm(file, type, imgNum) {
     let reader = new FileReader();
     reader.onload = function (img) {
         const appendStr = "<div class=\"preview-box\" value=\"" + imgNum + "\">" +
-            "<img class=\"thumbnail img_default\" src=\"" + img.target.result + "\"\/>" +
-            "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
-            "삭제" + "</a>"
-            + "</div>";
+                                "<img class=\"thumbnail img_default\" src=\"" + img.target.result + "\"\/>" +
+                                "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
+                                    "삭제" +
+                                "</a>" +
+                            "</div>";
 
         if (type == "first") {
             $("#firstThumbPreview").append(appendStr);
@@ -222,11 +223,6 @@ $(document).ready(function () {
                 formData.append('infoFiles', infoFiles[index]);
             }
 
-            /*for (var index = 0; index < Object.keys(deleteFirstThumbFile).length; index++) {
-                console.log("delete first Thumb index : " + index);
-                formData.append('deleteFirstThumbFile', deleteFirstThumbFile[index]);
-            }*/
-
             if(deleteFirstThumbFile != null){
                 formData.append('deleteFirstThumbFile', deleteFirstThumbFile);
             }
@@ -240,12 +236,6 @@ $(document).ready(function () {
                 console.log("delete info index : " + index);
                 formData.append('deleteInfoFiles', deleteInfoFiles[index]);
             }
-
-            /*console.log("formdata : " + formData.get('deleteFirstThumbFile'));
-                for (var v of formData.entries()) {
-                    console.log("form Data val : " + v);
-            }*/
-
 
             $.ajax({
                 url: '/admin/modifyProduct',

@@ -778,6 +778,15 @@
 >   * 주문 처리인 OrderService.orderPayment 매출데이터 처리 sales() 메소드로 분리하고 장바구니 삭제 처리는 CartService로 연결.
 
 
+> 24/02/28
+> * 리펙토링 마무리
+>   * GlobalExceptionHandler에 NotFoundException, IllegalArgumentExcpetion, AccessDeniedException 발생 시 accessError 페이지로 이동하도록 처리
+>   * ExceptionHandler를 추가하면서 불필요하던 try-catch 구문 삭제.
+>     * Exception이 발생하더라도 결과값을 반환해야 하는 기능만 서비스단에서 try-catch를 통해 반환하도록 처리
+>   * 특정 데이터를 반환하는 것이 아닌 경우에는 모두 ResultProperties에서 값을 가져다 반환하도록 수정.
+>   * 리펙토링 후 전체 기능 테스트 완료.
+
+
 > WebSocket 목표 및 계획
 > * 채팅기능의 정상 동작 및 테스트
 > * manager 기능 페이지의 구현 마무리

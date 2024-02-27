@@ -34,21 +34,7 @@ public class MemberController {
     //회원가입 처리
     @PostMapping("/join")
     public String join(JoinDTO dto) {
-        log.info("memberVO : " + dto);
-
-        int result;
-
-        try{
-            result = memberService.join(dto);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        if(result == ResultProperties.ERROR){
-            return "/accessError";
-        }
-
-        log.info("join Success");
+        memberService.join(dto);
 
         return "member/login";
     }
@@ -56,12 +42,7 @@ public class MemberController {
     //로그인 페이지
     @GetMapping("/login")
     public String login(String error, HttpServletRequest request, Principal principal){
-        log.info("error : " + error);
-
         String referer = request.getHeader("Referer");
-
-        log.info("Referer : " + referer);
-
         request.getSession().setAttribute("prevPage", referer);
 
         if(referer != null && referer.equals("http://localhost:8080/member/login") && principal != null){
@@ -80,8 +61,6 @@ public class MemberController {
     @ResponseBody
     public String checkUserId(@RequestParam("UserId") String userId) throws Exception{
 
-        log.info("userId : " + userId);
-
         return String.valueOf(memberMapper.idCheck(userId));
     }
 
@@ -97,8 +76,6 @@ public class MemberController {
                                 , @RequestParam(value = "userPhone", required = false) String userPhone
                                 , @RequestParam(value = "userEmail", required = false) String userEmail){
 
-        log.info("userName : " + userName + ", userPhone : " + userPhone + ", userEmail : " + userEmail);
-
         return memberService.searchId(userName, userPhone, userEmail);
     }
 
@@ -113,8 +90,6 @@ public class MemberController {
                                 , @RequestParam("userName") String userName
                                 , @RequestParam("userEmail") String userEmail){
 
-        log.info("userId : " + userId + ", userName : " + userName);
-
         return memberService.searchPw(userId, userName, userEmail);
     }
 
@@ -122,45 +97,26 @@ public class MemberController {
     @PostMapping("/certifyPw")
     @ResponseBody
     public String certifyPw(@RequestParam("userId") String userId
-                            , @RequestParam("cno") int cno) throws IOException {
+                            , @RequestParam("cno") int cno) {
 
-        log.info("certifyPw");
-
-        SearchIdDTO dto = SearchIdDTO.builder()
-                .userId(userId)
-                .cno(cno)
-                .build();
-
-        return memberService.checkCno(dto);
+        return memberService.checkCno(userId, cno);
     }
 
     @GetMapping("/pwReset")
     public String resetPassword(@RequestParam("userId") String userId,
                                 @RequestParam("cno") int cno, Model model){
-        log.info("id : " + userId + ", cno : " + cno);
-
         /*
             service에서 userId랑 cno 기반 검증해서 certify에 존재하는지 확인.
             존재한다면 페이지로 리턴.
          */
 
-        SearchIdDTO dto = SearchIdDTO.builder().userId(userId).cno(cno).build();
+        String result = memberService.checkCno(userId, cno);
+        SearchIdDTO dto = SearchIdDTO.builder()
+                                    .userId(userId)
+                                    .cno(cno)
+                                    .build();
 
-        /*dto = memberService.checkResetUser(dto);
-
-        log.info("dto : " + dto);
-
-        if(dto != null){
-            model.addAttribute("info", dto);
-
-            return "/member/pwReset";
-        }else{
-            return "/accessError";
-        }*/
-
-        String result = memberService.checkCno(dto);
-
-        if(result.equals("success")){
+        if(result.equals(ResultProperties.SUCCESS)){
             model.addAttribute("info", dto);
             return "/member/pwReset";
         }else
@@ -172,15 +128,11 @@ public class MemberController {
     public String resetPw(@RequestParam("userId") String userId
                             , @RequestParam("cno") int cno
                             , @RequestParam("password") String password){
+        String result = memberService.resetPw(userId, cno, password);
 
-        log.info("userId : " + userId + ", cno : " + cno + ", password : " + password);
-
-        int result = memberService.resetPw(userId, cno, password);
-
-        if(result == 1)
+        if(result.equals(ResultProperties.SUCCESS))
             return "redirect:/member/login";
         else
             return "redirect:/accessError";
-
     }
 }

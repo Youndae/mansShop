@@ -31,20 +31,20 @@ public class MyPageServiceImpl implements MyPageService{
     private final ChatMapper chatMapper;
 
     @Override
-    public int modifyCheckProc(String userPw, Principal principal) {
+    public String modifyCheckProc(String userPw, Principal principal) {
         String checkPw = myPageMapper.modifyCheck(principal.getName());
 
         if(passwordEncoder.matches(userPw, checkPw))
             return ResultProperties.SUCCESS;
-        else
-            return ResultProperties.ERROR;
+
+        return ResultProperties.ERROR;
     }
 
     @Override
-    public int modifyInfo(MemberModifyDTO dto, Principal principal) {
+    public void modifyInfo(MemberModifyDTO dto, Principal principal) {
 
         if(!dto.getUserId().equals(principal.getName()))
-            return ResultProperties.ERROR;
+            throw new AccessDeniedException("userId not equals principal");
 
         myPageMapper.modifyInfo(Member.builder()
                                     .userId(dto.getUserId())
@@ -53,8 +53,6 @@ public class MyPageServiceImpl implements MyPageService{
                                     .userEmail(dto.getUserEmail())
                                     .build()
                             );
-
-        return ResultProperties.SUCCESS;
     }
 
     @Override
@@ -71,8 +69,8 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) throws Exception{
+    @Transactional(rollbackFor = Exception.class)
+    public String insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) {
         ProductReview productReview = ProductReview.builder()
                                                     .pno(dto.getPno())
                                                     .userId(principal.getName())
@@ -86,8 +84,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) throws Exception{
+    public String insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) {
 
         myPageMapper.insertMemberQnA(MyQnA.builder()
                                         .userId(principal.getName())
@@ -100,8 +97,7 @@ public class MyPageServiceImpl implements MyPageService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int memberReviewModify(ProductReviewModifyDTO dto) throws Exception{
+    public String memberReviewModify(ProductReviewModifyDTO dto) {
 
         myPageMapper.memberReviewModify(ProductReview.builder()
                                         .rNum(dto.getRNum())
@@ -109,17 +105,18 @@ public class MyPageServiceImpl implements MyPageService{
                                         .build());
 
         return ResultProperties.SUCCESS;
-
     }
 
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int deleteReview(long rNum) throws Exception{
-
-        myPageMapper.deleteReview(rNum);
-
-        return ResultProperties.SUCCESS;
+    public String deleteReview(long rNum) {
+        try {
+            myPageMapper.deleteReview(rNum);
+            return ResultProperties.SUCCESS;
+        }catch (Exception e) {
+            log.error("deleteReview Exception : " + e.getMessage());
+            return ResultProperties.ERROR;
+        }
     }
 
     @Override

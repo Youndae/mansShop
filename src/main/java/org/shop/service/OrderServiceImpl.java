@@ -82,8 +82,8 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int orderPayment(ProductOrderDTO dto
+    @Transactional(rollbackFor = Exception.class)
+    public String orderPayment(ProductOrderDTO dto
                             , List<String> cdNo
                             , List<String> pOpNo
                             , List<String> orderCount
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService{
                             , String oType
                             , HttpServletRequest request
                             , HttpServletResponse response
-                            , Principal principal) throws Exception{
+                            , Principal principal) {
         String id;
 
         if(principal == null)
@@ -134,7 +134,6 @@ public class OrderServiceImpl implements OrderService{
 
         if(oType != "d")
             cartService.deleteCart(cdNo, principal, request, response);
-
 
         return ResultProperties.SUCCESS;
     }

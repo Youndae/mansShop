@@ -8,6 +8,7 @@ import java.sql.Date;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 public class MemberInfoDTO {
 
     private String userId;

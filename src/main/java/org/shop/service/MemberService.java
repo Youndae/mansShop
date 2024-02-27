@@ -5,7 +5,7 @@ import org.shop.domain.dto.member.SearchIdDTO;
 
 public interface MemberService {
 
-    public int join(JoinDTO dto) throws Exception;
+    public void join(JoinDTO dto);
 
     public String searchId(String userName, String userPhone, String userEmail);
 
@@ -13,7 +13,7 @@ public interface MemberService {
 
 //    public SearchIdDTO checkResetUser(SearchIdDTO dto);
 
-    public int resetPw(String userId, int cno, String password);
+    public String resetPw(String userId, int cno, String password);
 
-    public String checkCno(SearchIdDTO dto);
+    public String checkCno(String userId, int cno);
 }

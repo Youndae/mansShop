@@ -26,18 +26,13 @@ public class OrderController {
     //주문 페이지
     @PostMapping("/orderPayment")
     public void orderPayment(@RequestParam HashMap<String, Object> commandMap, Model model){
-
-        log.info("order payments");
         model.addAttribute("oList", orderService.orderProduct(commandMap));
         model.addAttribute("orderType", commandMap.get("oType").toString());
-
     }
 
     //결제 완료 페이지
     @GetMapping("/orderComplete/{oType}")
     public String orderComplete(@PathVariable("oType") String oType, Model model){
-
-        log.info("orderComplete");
         model.addAttribute("type", oType);
 
         return "order/orderComplete";
@@ -57,26 +52,7 @@ public class OrderController {
                         , HttpServletRequest request
                         , HttpServletResponse response){
 
-        /*log.info("oType : " + oType);
 
-        log.info("pOpNo : " + pOpNo);
-        log.info("orderCount : " + orderCount);
-        log.info("odPrice : " + odPrice);*/
-
-        int result;
-
-        log.info("controller /payment");
-
-        try{
-            result = orderService.orderPayment(dto, cdNo, pOpNo, orderCount, odPrice, pno, oType, request, response, principal);
-        }catch (Exception e){
-            result = ResultProperties.ERROR;
-        }
-
-        log.info("return success");
-
-        return String.valueOf(result);
+        return orderService.orderPayment(dto, cdNo, pOpNo, orderCount, odPrice, pno, oType, request, response, principal);
     }
-
-
 }

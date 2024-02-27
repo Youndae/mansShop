@@ -48,13 +48,13 @@ public class ProductServiceImpl implements ProductService{
 
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int addCart(List<String> pOpNo
+    @Transactional(rollbackFor = Exception.class)
+    public String addCart(List<String> pOpNo
                     , List<String> pCount
                     , List<String> pPrice
                     , Principal principal
                     , HttpServletRequest request
-                    , HttpServletResponse response) throws Exception{
+                    , HttpServletResponse response) {
 
         CartDetail cartDetail;
         Cart cart = cookieService.checkCookie(request, principal, response, true);
@@ -112,38 +112,55 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int likeProduct(String pno, Principal principal) throws Exception{
-        String uid = principal.getName();
-        productMapper.likeProduct(LikeProduct.builder()
-                                            .pno(pno)
-                                            .likeNo(uid + pno)
-                                            .userId(uid)
-                                            .build()
-                                    );
-        return ResultProperties.SUCCESS;
+    public String likeProduct(String pno, Principal principal) {
+        try{
+            String uid = principal.getName();
+            productMapper.likeProduct(LikeProduct.builder()
+                    .pno(pno)
+                    .likeNo(uid + pno)
+                    .userId(uid)
+                    .build()
+            );
+
+            return ResultProperties.SUCCESS;
+        }catch (Exception e) {
+            log.error("likeProduct Exception : " + e.getMessage());
+            return ResultProperties.ERROR;
+        }
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int deLikeProduct(String pno, Principal principal) throws Exception{
-        productMapper.deLikeProduct(LikeProduct.builder()
-                                                .pno(pno)
-                                                .userId(principal.getName())
-                                                .build()
-                                        );
-        return ResultProperties.SUCCESS;
+    public String deLikeProduct(String pno, Principal principal){
+        try{
+            productMapper.deLikeProduct(LikeProduct.builder()
+                    .pno(pno)
+                    .userId(principal.getName())
+                    .build()
+            );
+
+            return ResultProperties.SUCCESS;
+        }catch (Exception e ){
+            log.error("deLikeProduct Exception  : " + e.getMessage());
+            return ResultProperties.ERROR;
+        }
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public int qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) throws Exception{
-        productMapper.insertPQnA(ProductQnA.builder()
-                                        .pno(dto.getPno())
-                                        .userId(principal.getName())
-                                        .pQnAContent(dto.getPQnAContent())
-                                        .build()
-                                );
-        return ResultProperties.SUCCESS;
+    public String qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) {
+        try{
+            productMapper.insertPQnA(ProductQnA.builder()
+                    .pno(dto.getPno())
+                    .userId(principal.getName())
+                    .pQnAContent(dto.getPQnAContent())
+                    .build()
+            );
+
+            return ResultProperties.SUCCESS;
+        }catch (Exception e) {
+            log.error("QnAInsertProc Exception : " + e.getMessage());
+            return ResultProperties.ERROR;
+        }
+
+
     }
 }

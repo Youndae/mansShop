@@ -38,13 +38,7 @@ public class MainController {
     //메인페이지. BEST 상품 출력
     @GetMapping("/")
     public String main(Model model, Criteria cri){
-
-        log.info("main page");
-
-        log.info("keyword : " + cri.getKeyword());
-
         model.addAttribute("productClassification", "BEST");
-
         model.addAttribute("pList", mainMapper.mainBest());
 
         return"main/main";
@@ -53,11 +47,7 @@ public class MainController {
     //new 상품 리스트
     @GetMapping("/new")
     public String newProduct(Model model){
-        //새로운 상품
-        log.info("new");
-
         model.addAttribute("productClassification", "NEW");
-
         model.addAttribute("pList", mainMapper.mainNew());
 
         return "main/main";
@@ -66,17 +56,12 @@ public class MainController {
     //분류별 상품 리스트
     @GetMapping("/{classification}")
     public String productClassification(@PathVariable("classification") String classification, Model model, Criteria cri){
-        log.info("classification : " + classification);
-
         cri.setKeyword(classification);
         cri.setAmount(12);
 
         model.addAttribute("productClassification", classification);
-
         model.addAttribute("pList", mainMapper.mainClassification(cri));
-
         int total = mainMapper.getProductTotal(cri);
-
         model.addAttribute("pageMaker", new PageDTO(cri, total));
 
 
@@ -87,12 +72,8 @@ public class MainController {
     @GetMapping("/searchProduct")
     public String searchProduct(Model model, Criteria cri){
         //상품 검색
-        log.info("searchProduct");
-
         model.addAttribute("pList", mainMapper.searchProduct(cri));
-
         int total = mainMapper.getSearchProduct(cri);
-
         model.addAttribute("pageMaker", new PageDTO(cri, total));
 
         return "main/main";
@@ -102,22 +83,17 @@ public class MainController {
     @GetMapping("/display")
     @ResponseBody
     public ResponseEntity<byte[]> getFile(String image){
-        log.info("main thumbnail : " + image);
-
         File file = new File(FileProperties.FILE_PATH + image);
-
-        log.info("file : " + file);
-
         ResponseEntity<byte[]> result = null;
 
         try{
             HttpHeaders header = new HttpHeaders();
-
             header.add("Content-Type", Files.probeContentType(file.toPath()));
             result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
         }catch (IOException e){
             e.printStackTrace();
         }
+
         return result;
     }
 
@@ -135,16 +111,12 @@ public class MainController {
     @ResponseBody
     public ResponseEntity<List<MemberOrderListDTO>> getNonOrderList(String recipient, String orderPhone){
 
-        log.info("getNonOrderList recipient : " + recipient + ", orderPhone : " + orderPhone);
-
         return new ResponseEntity<>(mainMapper.getNonOrderList(recipient, orderPhone),HttpStatus.OK);
     }
 
     //오류 페이지
     @GetMapping("/accessError")
     public String accessDenied(Authentication auth, Model model){
-        log.info("access Denied : " + auth);
-
         model.addAttribute("msg", "Access Denied");
 
         return "/accessError";

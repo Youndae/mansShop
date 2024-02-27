@@ -16,13 +16,6 @@
 
     <context:property-placeholder location="classpath:config/jdbc.properties, classpath:config/redis.properties"/>
 
-
-    <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-            p:driverClassName="${jdbc.oracle.driverClassName}"
-            p:url="${jdbc.oracle.url}"
-            p:username="${jdbc.oracle.userName}"
-            p:password="${jdbc.oracle.password}"/>-->
-
     <bean id="dataSourceOracle" class="org.apache.commons.dbcp.BasicDataSource"
           p:driverClassName="${jdbc.oracle.driverClassName}"
           p:url="${jdbc.oracle.url}"

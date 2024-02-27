@@ -10,19 +10,19 @@ import java.util.List;
 
 public interface MyPageService {
 
-    public int modifyCheckProc(String userPw, Principal principal);
+    public String modifyCheckProc(String userPw, Principal principal);
 
-    public int modifyInfo(MemberModifyDTO dto, Principal principal);
+    public void modifyInfo(MemberModifyDTO dto, Principal principal);
 
     public List<MemberOrderListDTO> getOrderList(String regDate, Principal principal);
 
-    public int insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) throws Exception;
+    public String insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal);
 
-    public int insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) throws Exception;
+    public String insertMyQnAProc(MyQnAInsertDTO dto, Principal principal);
 
-    int memberReviewModify(ProductReviewModifyDTO dto) throws Exception;
+    String memberReviewModify(ProductReviewModifyDTO dto);
 
-    int deleteReview(long rNum) throws Exception;
+    String deleteReview(long rNum);
 
     public String createChatRoom(Principal principal);
 

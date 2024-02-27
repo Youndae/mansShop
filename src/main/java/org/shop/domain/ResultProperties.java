@@ -2,9 +2,9 @@ package org.shop.domain;
 
 public interface ResultProperties {
 
-    int SUCCESS = 1;
+    String SUCCESS = "1";
 
-    int ERROR = 0;
+    String ERROR = "0";
 
-    int ACCESS_DENIED = -1;
+    String FAIL = "-1";
 }

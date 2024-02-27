@@ -89,11 +89,11 @@ $(document).ready(function(){
                     xhr.setRequestHeader(header, token);
                 },
                 success: function(data){
-                    if(data == '')
+                    if(data == -1)
                         $(".searchOverlap").text("일치하는 정보가 없습니다.");
-                    else if(data == 'error')
+                    else if(data == 0)
                         alert('오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요');
-                    else if(data == 'success'){
+                    else if(data == 1){
                         document.getElementById('userId').disabled = true;
                         document.getElementById('userName').disabled = true;
                         document.getElementById('userEmail').disabled = true;
@@ -380,11 +380,11 @@ $(document).on('click', "#certifi-btn", function(){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
-                if(data == 'fail')
+                if(data == -1)
                     $('.certifi-overlap').text('유효하지 않은 인증번호입니다.');
-                else if(data == 'error')
+                else if(data == 0)
                     alert('오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요');
-                else if(data == 'success'){
+                else if(data == 1){
                     $('#formId').val(uid);
                     $('#formCno').val(certify);
                     $('#pwForm').submit();
