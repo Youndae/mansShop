@@ -32,9 +32,6 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public List<OrderPaymentDTO> orderProduct(HashMap<String, Object> commandMap) {
-
-        log.info("order payments impl");
-
         String[] no_array = splitMapData("pOpNo", commandMap);
         String[] name_array = splitMapData("pName", commandMap);
         String[] size_array = splitMapData("pSize", commandMap);
@@ -47,25 +44,20 @@ public class OrderServiceImpl implements OrderService{
         List<OrderPaymentDTO> dtoList = new ArrayList<>();
 
         for(int i = 0; i < no_array.length; i++){
+            String size = size_array[i].equals("nonSize") ? null : size_array[i];
+            String color = color_array[i].equals("nonColor") ? null : color_array[i];
+            String cartDetailNo = cd_array == null ? null : cd_array[i];
+
             OrderPaymentDTO dto = OrderPaymentDTO.builder()
                     .pOpNo(no_array[i])
                     .pName(name_array[i])
                     .cCount(Integer.parseInt(count_array[i]))
                     .cPrice(Long.parseLong(price_array[i]))
+                    .pSize(size)
+                    .pColor(color)
+                    .cdNo(cartDetailNo)
                     .pno(pno_array[i])
                     .build();
-
-            if(size_array.length != 0 && size_array[i] != null){
-                dto.setPSize(size_array[i]);
-            }
-
-            if(color_array.length != 0 && color_array[i] != null){
-                dto.setPColor(color_array[i]);
-            }
-
-            if(cd_array != null){
-                dto.setCdNo(cd_array[i]);
-            }
 
             dtoList.add(dto);
         }
@@ -93,35 +85,30 @@ public class OrderServiceImpl implements OrderService{
                             , HttpServletRequest request
                             , HttpServletResponse response
                             , Principal principal) {
-        String id;
-
-        if(principal == null)
-            id = "Anonymous";
-        else
-            id = principal.getName();
+        String id = principal == null ? "Anonymous" : principal.getName();
 
         ProductOrder productOrder = ProductOrder.builder()
-                .userId(id)
-                .addr(dto.getAddr())
-                .orderPhone(dto.getOrderPhone())
-                .orderMemo(dto.getOrderMemo())
-                .orderPrice(dto.getOrderPrice())
-                .orderPayment(dto.getOrderPayment())
-                .recipient(dto.getRecipient())
-                .build();
+                                                .userId(id)
+                                                .addr(dto.getAddr())
+                                                .orderPhone(dto.getOrderPhone())
+                                                .orderMemo(dto.getOrderMemo())
+                                                .orderPrice(dto.getOrderPrice())
+                                                .orderPayment(dto.getOrderPayment())
+                                                .recipient(dto.getRecipient())
+                                                .build();
 
         long totalCount = 0;
         List<ProductOrderDetail> orderDetailList = new ArrayList<>();
 
         for(int i = 0; i < pOpNo.size(); i++){
             orderDetailList.add(ProductOrderDetail.builder()
-                    .odNo(productOrder.getOrderNo() + pOpNo.get(i))
-                    .orderNo(productOrder.getOrderNo())
-                    .pOpNo(pOpNo.get(i))
-                    .orderCount(Integer.parseInt(orderCount.get(i)))
-                    .odPrice(Integer.parseInt(odPrice.get(i)))
-                    .pno(pno.get(i))
-                    .build());
+                            .odNo(productOrder.getOrderNo() + pOpNo.get(i))
+                            .orderNo(productOrder.getOrderNo())
+                            .pOpNo(pOpNo.get(i))
+                            .orderCount(Integer.parseInt(orderCount.get(i)))
+                            .odPrice(Integer.parseInt(odPrice.get(i)))
+                            .pno(pno.get(i))
+                            .build());
 
             totalCount = totalCount + Long.parseLong(orderCount.get(i));
         }
@@ -130,8 +117,10 @@ public class OrderServiceImpl implements OrderService{
         orderMapper.orderPaymentOp(orderDetailList);
         orderMapper.productSales(orderDetailList);
         orderMapper.productOpSales(orderDetailList);
+        //매출 데이터 처리
         sales(productOrder.getOrderPrice(), totalCount);
 
+        //oType != "d" 라면 장바구니를 통한 구매이기 때문에 장바구니에서 해당 데이터를 삭제
         if(oType != "d")
             cartService.deleteCart(cdNo, principal, request, response);
 

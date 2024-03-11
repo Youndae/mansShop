@@ -28,13 +28,14 @@ $(document).ready(function(){
         $("input[name=check]:checked").each(function(){
             noArr.push($(this).attr("value"));
             nameArr.push($(this).attr("data_pName"));
-            sizeArr.push($(this).attr("data_pSize"));
-            colorArr.push($(this).attr("data_pColor"));
+            sizeArr.push($(this).attr("data_pSize") == '' ? 'nonSize' : $(this).attr("data_pSize"));
+            colorArr.push($(this).attr("data_pColor") == '' ? 'nonColor' : $(this).attr("data_pColor"));
             countArr.push($(this).attr("data_cCount"));
             priceArr.push($(this).attr("data_cPrice"));
             pnoArr.push($(this).attr("data_pno"));
             cdArr.push($(this).attr("data_cdNo"))
         });
+
 
         $("input[name=pOpNo]").val(noArr);
         $("input[name=pName]").val(nameArr);

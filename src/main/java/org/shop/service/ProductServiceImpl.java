@@ -55,7 +55,6 @@ public class ProductServiceImpl implements ProductService{
                     , Principal principal
                     , HttpServletRequest request
                     , HttpServletResponse response) {
-
         CartDetail cartDetail;
         Cart cart = cookieService.checkCookie(request, principal, response, true);
         String cartNo = productMapper.checkCartNo(cart);
@@ -63,6 +62,8 @@ public class ProductServiceImpl implements ProductService{
         List<CartDetail> addCartDetailList = new ArrayList<>();
 
         //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
+        //userCartPOpNoList에 해당 데이터의 pOpNo 리스트를 조회해 담아주고
+        //추가할 상품의 pOpNo와 비교해 수량 증감 || 상품 추가 여부를 판단한다.
         if(cartNo != null){
             List<CartDetail> updateCartDetailList = new ArrayList<>();
             List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
@@ -88,9 +89,10 @@ public class ProductServiceImpl implements ProductService{
             //cart insert
             productMapper.addCart(cart);
 
-            for(int i = 0; i < pOpNo.size(); i++)
-                addCartDetailList.add(buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i)));
-
+            for(int i = 0; i < pOpNo.size(); i++) {
+                cartDetail = buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i));
+                addCartDetailList.add(cartDetail);
+            }
             //detail insert
             productMapper.addCartDetail(addCartDetailList);
         }

@@ -91,7 +91,7 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${list.PSize == ''}">
+                                    <c:when test="${list.PSize == null}">
                                         <c:choose>
                                             <c:when test="${list.PColor != null}">
                                                 색상 : <c:out value="${list.PColor}"/>
@@ -100,7 +100,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <c:choose>
-                                            <c:when test="${list.PColor == ''}">
+                                            <c:when test="${list.PColor == null}">
                                                 사이즈 : <c:out value="${list.PSize}"/>
                                             </c:when>
                                             <c:otherwise>

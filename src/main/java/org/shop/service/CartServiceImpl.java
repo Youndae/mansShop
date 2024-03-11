@@ -25,6 +25,30 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public String deleteCart(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        /**
+         * 장바구니 데이터 삭제 시 전체삭제라면 true
+         * 부분 삭제라면 false를 리턴
+         *
+         * @Param
+         * cart -> 데이터 조회를 위해 필요.
+         *
+         *
+         *
+         *
+         * 장바구니 삭제.
+         * Cart, cdNoList
+         *
+         * 전체 삭제하면 cart를 넘겨 삭제.
+         * 일부 삭제라면 cdNoList를 넘겨 삭제.
+         */
+
+        new Exception("Exception 발생!!");
+
+        return "";
+
+
+/*
+
         Cart cart;
 
         try{
@@ -51,7 +75,7 @@ public class CartServiceImpl implements CartService{
         }catch (Exception e) {
             log.error("deleteCart Exception : " + e.getMessage());
             return ResultProperties.ERROR;
-        }
+        }*/
     }
 
     @Override
