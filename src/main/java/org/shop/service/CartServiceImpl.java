@@ -24,58 +24,22 @@ public class CartServiceImpl implements CartService{
     private final MyPageMapper myPageMapper;
 
     @Override
-    public String deleteCart(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        /**
-         * 장바구니 데이터 삭제 시 전체삭제라면 true
-         * 부분 삭제라면 false를 리턴
-         *
-         * @Param
-         * cart -> 데이터 조회를 위해 필요.
-         *
-         *
-         *
-         *
-         * 장바구니 삭제.
-         * Cart, cdNoList
-         *
-         * 전체 삭제하면 cart를 넘겨 삭제.
-         * 일부 삭제라면 cdNoList를 넘겨 삭제.
-         */
+    public String deleteCartCheck(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        Cart cart = cookieService.checkCookie(request, principal, response, false);
 
-        new Exception("Exception 발생!!");
+        if(myPageMapper.cartCount(cart) == cdNoList.size()){ //전체 삭제라면
+            //cart테이블에서 해당 아이디의 데이터 삭제
+            myPageMapper.deleteCart(cart);
 
-        return "";
+            //비회원이 전체 삭제를 한 경우에는 쿠키를 삭제한다.
+            if(cart.getUserId() == null)
+                cookieService.deleteCookie(request, response);
 
-
-/*
-
-        Cart cart;
-
-        try{
-            cart = cookieService.checkCookie(request, principal, response, false);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultProperties.ERROR;
+        }else{
+            myPageMapper.deleteCartDetail(cdNoList);
         }
 
-        try{
-            if(myPageMapper.cartCount(cart) == cdNoList.size()){ //전체 삭제라면
-                //cart테이블에서 해당 아이디의 데이터 삭제
-                myPageMapper.deleteCart(cart);
-
-                //비회원이 전체 삭제를 한 경우에는 쿠키를 삭제한다.
-                if(cart.getUserId() == null)
-                    cookieService.deleteCookie(request, response);
-
-            }else{
-                myPageMapper.deleteCartDetail(cdNoList);
-            }
-
-            return ResultProperties.SUCCESS;
-        }catch (Exception e) {
-            log.error("deleteCart Exception : " + e.getMessage());
-            return ResultProperties.ERROR;
-        }*/
+        return ResultProperties.SUCCESS;
     }
 
     @Override

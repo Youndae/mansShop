@@ -117,11 +117,14 @@ public class AdminServiceImpl implements AdminService{
         }
 
         //상품 썸네일, 정보이미지 파일 저장 및 데이터 리스트화 및 데이터 저장
-        if(!thumb.isEmpty())
-            adminMapper.addProductThumbnail(saveProductThumbnail(dto.getPno(), thumb));
-
-        if(!infoImg.isEmpty())
-            adminMapper.addProductInfo(saveProductInfoImage(dto.getPno(), step, infoImg));
+        if(!thumb.isEmpty()) {
+            List<ProductThumbnail> addProductThumbList = saveProductThumbnail(dto.getPno(), thumb);
+            adminMapper.addProductThumbnail(addProductThumbList);
+        }
+        if(!infoImg.isEmpty()) {
+            List<ProductImg> addProductImageList = saveProductInfoImage(dto.getPno(), step, infoImg);
+            adminMapper.addProductInfo(addProductImageList);
+        }
 
         return ResultProperties.SUCCESS;
     }

@@ -9,7 +9,6 @@ import org.shop.domain.entity.ProductOrder;
 import org.shop.domain.entity.ProductOrderDetail;
 import org.shop.domain.entity.Sales;
 import org.shop.mapper.OrderMapper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,7 +121,7 @@ public class OrderServiceImpl implements OrderService{
 
         //oType != "d" 라면 장바구니를 통한 구매이기 때문에 장바구니에서 해당 데이터를 삭제
         if(oType != "d")
-            cartService.deleteCart(cdNo, principal, request, response);
+            cartService.deleteCartCheck(cdNo, principal, request, response);
 
         return ResultProperties.SUCCESS;
     }
@@ -144,6 +143,5 @@ public class OrderServiceImpl implements OrderService{
             orderMapper.addTotalSales(sales);
         else
             orderMapper.updateTotalSales(sales);
-
     }
 }

@@ -495,8 +495,8 @@ $(function () {
 
         noArr.push(option[0]);
         nameArr.push($(".name").text());
-        colorArr.push(option[1]);
-        sizeArr.push(option[2]);
+        colorArr.push(option[1] == undefined ? 'nonColor' : option[1]);
+        sizeArr.push(option[2] == undefined ? 'nonSize' : option[2]);
         numArr.push(num);
         num++;
 

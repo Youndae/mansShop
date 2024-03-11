@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.webjars.NotFoundException;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice

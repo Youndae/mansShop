@@ -226,7 +226,8 @@ public class MyPageController {
     @ResponseBody
     public String deleteCart(@RequestBody List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
-        return cartService.deleteCart(cdNoList, principal, request, response);
+
+        return cartService.deleteCartCheck(cdNoList, principal, request, response);
     }
 
     //회원 장바구니 수량 증감
