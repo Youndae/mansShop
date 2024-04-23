@@ -23,92 +23,28 @@ function validation(fileName) {
     }
 }
 
-
-/*function addFirstPreview(input) {
-    const file = input[0].files[0];
-    const imgNum = 'f0';
-
-    if (validation(file.name))
-        return;
-    else
-        setPreviewForm(file, "first", imgNum);
-}
-
-function addThumbPreview(input) {
-    if (input[0].files.length <= 4) {
-        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
-            const file = input[0].files[fileIndex];
-            if (validation(file.name)) continue;
-            const imgNum = "t" + fileIndex;
-            setPreviewForm(file, "thumb", imgNum);
-        }
-    } else {
-        alert("썸네일은 4장까지만 업로드 가능합니다.");
-    }
-}
-
-function addInfoPreview(input) {
-    if (input[0].files.length <= 10) {
-        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
-            const file = input[0].files[fileIndex];
-            if (validation(file.name)) continue;
-            const imgNum = "i" + fileIndex;
-            setPreviewForm(file, "info", imgNum);
-        }
-    } else {
-        alert("정보이미지 10장까지만 업로드 가능합니다.");
-    }
-}
-
-function setPreviewForm(file, type, imgNum) {
-
-    let reader = new FileReader();
-    reader.onload = function (img) {
-        const appendStr = "<div class=\"preview-box\" value=\"" + imgNum + "\">" +
-                                "<img class=\"thumbnail img_default\" src=\"" + img.target.result + "\"\/>" +
-                                "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
-                                    "삭제" +
-                                "</a>" +
-                            "</div>";
-
-        if (type == "first") {
-            $("#firstThumbPreview").append(appendStr);
-            // var indexNo = imgNum.substr(1, imgNum.length + 1);
-            firstThumbFile = file;
-        } else if (type == "thumb") {
-            const indexNo = imgNum.substr(1, imgNum.length + 1);
-            $("#thumbPreview").append(appendStr);
-            thumbFiles[indexNo] = file;
-        } else if (type == "info") {
-            const indexNo = imgNum.substr(1, imgNum.length + 1);
-            $("#infoPreview").append(appendStr);
-            infoFiles[indexNo] = file;
-        }
-    };
-    reader.readAsDataURL(file);
-}*/
-
 function addFirstPreview(input) {
     const file = input[0].files[0];
     const imgNum = 'f0';
-    const previewForm = $("#firstThumbPreview");
+    const previewElement = $("#firstThumbPreview");
 
     if (validation(file.name))
         return;
     else {
-        setPreviewForm(file, imgNum, previewForm);
+        setPreviewForm(file, imgNum, previewElement);
         firstThumbFile = file;
     }
 }
 
 function addThumbPreview(input) {
-    const previewForm = $("#thumbPreview");
+    const previewElement = $("#thumbPreview");
     if (input[0].files.length <= 4) {
         for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
             const file = input[0].files[fileIndex];
-            if (validation(file.name)) continue;
+            if (validation(file.name))
+                continue;
             const imgNum = "t" + fileIndex;
-            setPreviewForm(file, imgNum, previewForm);
+            setPreviewForm(file, imgNum, previewElement);
             thumbFiles[fileIndex] = file;
         }
     } else {
@@ -117,13 +53,14 @@ function addThumbPreview(input) {
 }
 
 function addInfoPreview(input) {
-    const previewForm = $("#infoPreview");
+    const previewElement = $("#infoPreview");
     if (input[0].files.length <= 10) {
         for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
             const file = input[0].files[fileIndex];
-            if (validation(file.name)) continue;
+            if (validation(file.name))
+                continue;
             const imgNum = "i" + fileIndex;
-            setPreviewForm(file, imgNum, previewForm);
+            setPreviewForm(file, imgNum, previewElement);
             infoFiles[fileIndex] = file;
         }
     } else {
@@ -131,7 +68,7 @@ function addInfoPreview(input) {
     }
 }
 
-function setPreviewForm(file, imgNum, previewForm) {
+function setPreviewForm(file, imgNum, previewElement) {
 
     let reader = new FileReader();
     reader.onload = function (img) {
@@ -141,8 +78,8 @@ function setPreviewForm(file, imgNum, previewForm) {
             "삭제" +
             "</a>" +
             "</div>";
-        
-        previewForm.append(appendStr);
+
+        previewElement.append(appendStr);
     };
 
     reader.readAsDataURL(file);
@@ -198,52 +135,6 @@ $(document).ready(function () {
     $('select[name=pSize]').val(size);
 
     const pno = $('input[name=pno]').val();
-
-    /*(function () {
-        $.getJSON("/admin/first-thumb", {pno: pno}, function (arr) {
-            const str = img("of", arr);
-
-            $("#firstThumbPreview").append(str);
-        })
-    })();
-
-    (function () {
-        $.getJSON("/admin/thumbnail", {pno: pno}, function (arr) {
-            const str = img("ot", arr);
-
-            $("#thumbPreview").append(str);
-        })
-    })();
-
-    (function () {
-        $.getJSON("/admin/info-image", {pno: pno}, function (arr) {
-            const str = img("oi", arr);
-
-            $("#infoPreview").append(str);
-        })
-    })();
-
-    function img(type, arr) {
-        let num = 1;
-        let str = "";
-        $(arr).each(function (i, attach) {
-            const imgNum = type + num;
-            str += "<div class=\"preview-box\" value=\"" + imgNum + "\">";
-            if (type == "of") {
-                str += "<img class=\"firstThumb img_default\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.firstThumbnail + "\"\/>";
-            } else if (type == "ot") {
-                str += "<img class=\"thumb img_default\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.pthumbnail + "\"\/>";
-            } else if (type == "oi") {
-                str += "<img class=\"infoImg\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.pimg + "\"\/>";
-            }
-            str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deleteOldPreview(this)\">";
-            str += "삭제" + "</a>";
-            str += "</div>";
-            num++;
-        });
-
-        return str;
-    }*/
 
     (function () {
         $.getJSON("/admin/first-thumb", {pno: pno}, function (arr) {

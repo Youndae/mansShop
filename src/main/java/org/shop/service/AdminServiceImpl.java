@@ -2,11 +2,11 @@ package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.domain.FileProperties;
 import org.shop.domain.ResultProperties;
 import org.shop.domain.dto.admin.*;
 import org.shop.domain.entity.*;
 import org.shop.mapper.AdminMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +25,9 @@ import java.util.UUID;
 public class AdminServiceImpl implements AdminService{
 
     private final AdminMapper adminMapper;
+
+    @Value("#{filePath['file.path']}")
+    private String filePath;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -139,7 +142,7 @@ public class AdminServiceImpl implements AdminService{
                 .append(UUID.randomUUID().toString())
                 .append(originalName.substring(originalName.lastIndexOf(".")))
                 .toString();
-        File saveFile = new File(FileProperties.FILE_PATH, saveName);
+        File saveFile = new File(filePath, saveName);
 
         try {
             image.transferTo(saveFile);
@@ -186,7 +189,7 @@ public class AdminServiceImpl implements AdminService{
         if (images == null)
             return;
 
-        File file = new File(FileProperties.FILE_PATH + images);
+        File file = new File(filePath + images);
 
         if(file.exists())
             file.delete();

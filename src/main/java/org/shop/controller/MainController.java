@@ -2,12 +2,12 @@ package org.shop.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.FileProperties;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.myPage.MemberOrderListDTO;
 import org.shop.domain.dto.main.NonProductOrderDTO;
 import org.shop.domain.dto.paging.PageDTO;
 import org.shop.mapper.MainMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +34,9 @@ public class MainController {
 
 
     private final MainMapper mainMapper;
+
+    @Value("#{filePath['file.path']}")
+    private String filePath;
 
     //메인페이지. BEST 상품 출력
     @GetMapping("/")
@@ -83,7 +86,7 @@ public class MainController {
     @GetMapping("/display")
     @ResponseBody
     public ResponseEntity<byte[]> getFile(String image){
-        File file = new File(FileProperties.FILE_PATH + image);
+        File file = new File(filePath + image);
         ResponseEntity<byte[]> result = null;
 
         try{

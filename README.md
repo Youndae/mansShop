@@ -1,10 +1,12 @@
 # Man's Shop 개인 프로젝트
 
-### 목적
+## 목적
 * 시큐리티를 적용해 관리자와 사용자의 권한을 분리
 * 결제 API 적용
+* 현재 서비스 중인 쇼핑몰을 참고해 최대한 기능을 구현
+* 실제 서비스되어도 될 정도의 수준까지 계속해서 개선하는 것이 목표
 #
-### 사용기술
+## 사용기술
 * Spring 5.0.7
 * Maven
 * MyBatis
@@ -21,12 +23,362 @@
 * I'mport API
 * Daum 주소 API
 #
-### 상품 데이터 및 참고 사이트
+## 상품 데이터 및 참고 사이트
 * 자뎅(https://zardins.com)
+#
+## 기능
+* 사용자
+  * 상품 목록 및 상세
+  * 상품 구매 및 장바구니
+  * 구매 상품 리뷰 작성
+  * 상품 문의
+  * 사용자 문의
+  * 정보 수정
+  * 상품 찜하기
+  * 주문내역
+* 관리자
+  * 상품 등록 및 수정, 관리
+  * 매출 내역
+  * 사용자 문의 관리
+  * 주문 상품 관리
+  * 회원 관리
+#
+## ERD
+<img src="./src/main/webapp/resources/README_image/ERD.jpg"/>
+
+#
+## 기능
+#
+### 인증 / 인가
+<img src="./src/main/webapp/resources/README_image/security_classDiagram.jpg"/>
+
+인증 / 인가에 대한 처리는 Spring Security로 처리했으며, 4개의 클래스를 생성해 Custom하는 방법으로 구현했습니다.   
+AuthenticationSuccessHandler에서는 관리자 로그인의 경우 관리자 페이지로 이동하도록 했으며, 사용자는 referer를 통해 로그인 이전에 보고 있던 페이지로 연결할 수 있도록 처리했습니다.   
+Spring Security 설정 방식은 xml 방식으로 처리했으며 암호화는 BCryptPasswordEncoder를 사용했고 csrf 토큰을 활성화 한 상태로 구현했습니다.
+권한 처리는 PreAuthorize Annotation을 통해 메소드 혹은 컨트롤러 단위로 관리할 수 있도록 처리했습니다.
+
+#
+
+### 사용자
+<img src="./src/main/webapp/resources/README_image/product.jpg"/>
+
+메인 화면과 상품 상세 페이지입니다.   
+초기 화면으로는 판매량이 높은 순서대로 12개의 상품이 출력됩니다.   
+상품 상세 페이지에서는 옵션 선택과 장바구니, 구매, 찜하기, 구매자 리뷰, 상품 문의 기능을 사용할 수 있습니다.
+
+그 외 사용자 파트로는 마이페이지가 있습니다.   
+마이페이지에서는 정보 수정, 주문 조회, 구매 상품의 리뷰 작성 및 수정 또는 삭제, 찜 목록, 문의 기능이 있습니다.   
+
+#
+
+### 사용자 - 장바구니
+<p style="color: gray">ProductServiceImpl</p>
+
+```java
+@Override
+@Transactional(rollbackFor = Exception.class)
+public String addCart(List<String> pOpNo
+                     , List<String> pCount
+                    , List<String> pPrice
+                    , Principal principal
+                    , HttpServletRequest request
+                    , HttpServletResponse response) {
+      CartDetail cartDetail;
+      Cart cart = cookieService.checkCookie(request, principal, response, true);
+      String cartNo = productMapper.checkCartNo(cart);
+      cart.setCartNo(cartNo);
+      List<CartDetail> addCartDetailList = new ArrayList<>();
+
+      //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
+      //userCartPOpNoList에 해당 데이터의 pOpNo 리스트를 조회해 담아주고
+      //추가할 상품의 pOpNo와 비교해 수량 증감 || 상품 추가 여부를 판단한다.
+      if(cartNo != null){
+          List<CartDetail> updateCartDetailList = new ArrayList<>();
+          List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
+
+          for(int i = 0; i < pOpNo.size(); i++) {
+              cartDetail = buildCartDetail(cartNo, pOpNo.get(i), pCount.get(i), pPrice.get(i));
+
+              //detail에 같은 옵션 상품이 존재한다면
+              if(userCartPOpNoList.contains(pOpNo.get(i)))
+                  updateCartDetailList.add(cartDetail);
+              else //detail에 같은 옵션 상품이 존재하지 않는다면 detail 테이블에 데이터 추가.
+                  addCartDetailList.add(cartDetail);
+          }
+
+          if(updateCartDetailList.size() != 0)
+              productMapper.updateCartDetail(updateCartDetailList);
+
+          if(addCartDetailList.size() != 0)
+              productMapper.addCartDetail(addCartDetailList);
+          //cart 테이블 데이터의 updatedAt(수정일자) 수정.
+          productMapper.updateCart(cart);
+      }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
+          //cart insert
+          productMapper.addCart(cart);
+
+          for(int i = 0; i < pOpNo.size(); i++) {
+              cartDetail = buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i));
+              addCartDetailList.add(cartDetail);
+          }
+          //detail insert
+          productMapper.addCartDetail(addCartDetailList);
+      }
+      return ResultProperties.SUCCESS;
+}
+
+public CartDetail buildCartDetail(String cartNo, String pOpNo, String pCount, String pPrice){
+      return CartDetail.builder()
+              .cartNo(cartNo)
+              .cdNo(
+                      new SimpleDateFormat("yyyyMMddHHmmss")
+                                      .format(System.currentTimeMillis()
+                              ) + pOpNo + pCount
+              )
+              .pOpNo(pOpNo)
+              .cCount(Integer.parseInt(pCount))
+              .cPrice(Long.parseLong(pPrice))
+              .build();
+}
+```
+
+장바구니 기능은 회원만 사용할 수 있도록 처리했다가 리팩토링을 진행하면서 비회원도 사용할 수 있도록 수정하게 되었습니다.   
+비회원의 장바구니 데이터 관리를 위해 cookie를 사용했습니다.   
+비회원 장바구니 데이터의 userId는 Anonymous로 처리하고, cno라는 컬럼에 쿠키값을 넣어 해당 쿠키 데이터를 조회하는 것으로 처리할 수 있도록 구현했습니다.
+
+이 처리를 위해 장바구니 담기 기능은 CookieService의 checkCookie 메소드를 먼저 호출합니다.
+해당 메소드에서는 회원인 경우 사용자 아이디를 담아 반환하고, 비회원인 경우에는 Cookie값을 담아 반환합니다.   
+그리고 비회원인데 첫 상품을 담는 것이라 Cookie가 존재하지 않는다면 Cookie를 생성한 뒤 값을 담아 반환하도록 했습니다.   
+
+비회원의 쿠키 만료기간은 7일로 설정했습니다.   
+데이터베이스의 7일이 지난 비회원의 장바구니 데이터의 처리를 위해 Scheduler를 통해 매일 새벽 3시에 7일이 지난 데이터를 삭제하는 프로시저를 호출하도록 처리해 데이터를 관리하도록 했습니다.
+
+#
+
+## 사용자 - 주문 결제
+<img src="./src/main/webapp/resources/README_image/order.jpg">
+
+#
+
+결제 페이지에서는 두개의 API를 사용했습니다.    
+Kakao 우편번호 서비스 API를 통해 주소를 처리하도록 하고, 결제 API는 I'mport API를 사용해 처리했습니다.   
+
+<p style="color: gray">OrderServiceImpl</p>
+
+```java
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String orderPayment(ProductOrderDTO dto
+                            , List<String> cdNo
+                            , List<String> pOpNo
+                            , List<String> orderCount
+                            , List<String> odPrice
+                            , List<String> pno
+                            , String oType
+                            , HttpServletRequest request
+                            , HttpServletResponse response
+                            , Principal principal) {
+        String id = principal == null ? "Anonymous" : principal.getName();
+
+        ProductOrder productOrder = ProductOrder.builder()
+                                                .userId(id)
+                                                .addr(dto.getAddr())
+                                                .orderPhone(dto.getOrderPhone())
+                                                .orderMemo(dto.getOrderMemo())
+                                                .orderPrice(dto.getOrderPrice())
+                                                .orderPayment(dto.getOrderPayment())
+                                                .recipient(dto.getRecipient())
+                                                .build();
+
+        long totalCount = 0;
+        List<ProductOrderDetail> orderDetailList = new ArrayList<>();
+
+        for(int i = 0; i < pOpNo.size(); i++){
+            orderDetailList.add(ProductOrderDetail.builder()
+                            .odNo(productOrder.getOrderNo() + pOpNo.get(i))
+                            .orderNo(productOrder.getOrderNo())
+                            .pOpNo(pOpNo.get(i))
+                            .orderCount(Integer.parseInt(orderCount.get(i)))
+                            .odPrice(Integer.parseInt(odPrice.get(i)))
+                            .pno(pno.get(i))
+                            .build());
+
+            totalCount = totalCount + Long.parseLong(orderCount.get(i));
+        }
+
+        orderMapper.orderPayment(productOrder);
+        orderMapper.orderPaymentOp(orderDetailList);
+        orderMapper.productSales(orderDetailList);
+        orderMapper.productOpSales(orderDetailList);
+        //매출 데이터 처리
+        sales(productOrder.getOrderPrice(), totalCount);
+
+        //oType != "d" 라면 장바구니를 통한 구매이기 때문에 장바구니에서 해당 데이터를 삭제
+        if(oType != "d")
+            cartService.deleteCartCheck(cdNo, principal, request, response);
+
+        return ResultProperties.SUCCESS;
+    }
+
+    public void sales(long orderPrice, long totalCount) {
+        String now = new SimpleDateFormat("yyyy/MM").format(System.currentTimeMillis()).toString();
+        int salesTermCount = orderMapper.maxSalesTerm(now);
+
+        if(orderPrice < 100000)
+            orderPrice -= 2500;
+
+        Sales sales = Sales.builder()
+                            .salesOrders(totalCount)
+                            .salesSum(orderPrice)
+                            .salesTerm(now)
+                            .build();
+
+        if(salesTermCount != 1)
+            orderMapper.addTotalSales(sales);
+        else
+            orderMapper.updateTotalSales(sales);
+  }
+```
+
+비회원의 구매는 장바구니때와 마찬가지로 userId에 Anonymous라는 값을 갖도록 처리했습니다.    
+처리 과정은 주문 테이블에 저장 -> 주문 상세 테이블에 저장 -> 매출 테이블에 저장 또는 수정 -> 장바구니를 통한 구매라면 장바구니에서 결제한 상품의 삭제 순서로 처리합니다.   
+장바구니를 통한 구매인지 아닌지를 확인하기 위해 결제 페이지 접근 시 요청을 보낸 페이지에 따라 oType을 같이 전달하도록 처리했습니다.   
+매출 관련 데이터는 실시간으로 처리할 필요가 없어 추후 batch를 통해 처리하는 방법으로 개선하고자 계획하고 있습니다.
+
+#
+
+## 사용자 - 아이디 / 비밀번호 찾기
+<img src="./src/main/webapp/resources/README_image/searchPw_sequence.jpg">
+
+아이디 찾기 기능은 email 또는 휴대폰 번호 중 하나를 택해 사용자 이름과 같이 요청하면 해당하는 정보를 조회해 반환하도록 처리했습니다.   
+비밀번호 찾기의 경우 아이디, 사용자 이름, email을 담아 요청하면 서버에서 일치하는 정보가 있는지 체크한 뒤 6자리의 인증번호를 생성합니다.   
+인증번호는 생성된 뒤 redis에 'userId : 인증번호' 구조로 저장한 뒤 사용자 email로 전송됩니다.   
+사용자가 인증번호를 입력하게 되면 서버에서는 아이디와 인증번호를 같이 전달받고 redis 데이터와 비교한 뒤 일치한다면 비밀번호 변경 페이지에 접근하게 됩니다.   
+비밀번호 변경 요청에서도 인증번호를 담고 있다가 같이 요청하도록 해 비정상적인 비밀번호 변경 페이지의 접근에서 요청이 발생하더라도 대응할 수 있도록 처리했습니다.
+
+메일 전송은 JavaMailSender와 Gmail의 IMAP 설정으로 처리했습니다.   
+Redis는 RedisTemplate을 통해 처리했으며, 저장되는 인증번호 데이터의 만료 시간은 6분으로 처리했습니다.   
+Redis에 저장된 인증번호의 삭제 시점은 만료 시간이 종료되거나 비밀번호 변경 요청이 발생하는 시점에 처리됩니다.   
+
+비밀번호 변경 페이지 접근에 대한 처리는 고민이 많았습니다.   
+인증번호와 사용자 아이디를 변경 페이지에서 갖고 있도록 하기 위해 Get 요청 시 전달해야 할 필요가 있었는데 그럼 URL에 노출된다는 문제가 있었습니다.   
+문제를 해결하기 위해 Post 요청으로 처리하는 것도 고려했으나, Post 요청의 개념에서 너무 벗어나는 것 아닌가 라는 생각에 Get 요청에서 해결하는 방법을 찾았습니다.   
+이 문제는 변경 페이지에서 script 태그를 통해 URL 파라미터를 출력하지 않도록 하는 방법으로 해결할 수 있었습니다.
+
+#
+
+## 관리자
+<img src="./src/main/webapp/resources/README_image/admin.jpg">
+
+관리자 페이지에는 상품관리, 주문 관리, 회원 문의 관리, 상품 문의 관리, 회원 관리, 매출 관리 기능이 있습니다.   
+모두 리스트 데이터로 테이블 구조로 구성되어있습니다.   
+상품 관리에서는 상품의 추가 및 수정, 옵션 추가, 상품 및 옵션 노출 여부를 관리할 수 있습니다.   
+주문 목록에서는 모든 회원 및 비회원의 주문 내역을 확인할 수 있으며 관리자가 주문내역 확인 후 배송 처리 버튼을 누를 시 '배송중'으로 상태를 변경할 수 있도록 처리했습니다.   
+문의사항과 상품 문의는 관리자가 확인 후 바로 답변을 댓글 형태로 작성할 수 있도록 처리했으며, 회원 목록에서는 회원 정보와 주문내역을 확인 할 수 있도록 처리했습니다.   
+매출관리는 상품별, 기간별 매출을 확인할 수 있도록 구현했습니다.   
+
+## 관리자 - 상품 관리
+
+<p style="color: gray">AdminServiceImpl</p>
+
+```java
+    @Value("#{filePath['file.path']}")
+    private String filePath;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String modifyProduct(ProductModifyDTO dto
+                                , MultipartFile firstThumb
+                                , List<MultipartFile> thumb
+                                , List<MultipartFile> infoImg
+                                , String delFirstThumb
+                                , List<String> delThumb
+                                , List<String> delInfoImg) {
+        //이미지 순서 번호
+        int step = adminMapper.maxStep(dto.getPno());
+        //상품 재고
+        long stock = dto.getPStock();
+
+        //상품 테이블 수정
+        adminMapper.modifyProduct(Product.builder()
+                                            .pno(dto.getPno())
+                                            .pName(dto.getPName())
+                                            .pClassification(dto.getPClassification())
+                                            .pPrice(dto.getPPrice())
+                                            .firstThumbnail(imgProc(firstThumb))
+                                            .build()
+                                        );
+        //상품 옵션 테이블 수정
+        adminMapper.modifyProductOp(ProductOp.builder()
+                                            .pOpNo(dto.getPOpNo())
+                                            .pSize(dto.getPSize())
+                                            .pColor(dto.getPColor())
+                                            .pStock(stock)
+                                            .build()
+                                    );
+
+        //삭제이미지 DB 데이터 삭제 및 파일 삭제
+        //firstThumbnail 파일 삭제
+        deleteFiles(delFirstThumb);
+        //썸네일 파일 삭제
+        if(!delThumb.isEmpty()){
+            for(String imageName : delThumb)
+                deleteFiles(imageName);
+
+            adminMapper.deleteThumb(delThumb);
+        }
+
+        //정보 이미지 파일 삭제
+        if(!delInfoImg.isEmpty()){
+            for(String imageName : delInfoImg)
+                deleteFiles(imageName);
+
+            adminMapper.deleteInfoImg(delInfoImg);
+        }
+
+        //상품 썸네일, 정보이미지 파일 저장 및 데이터 리스트화 및 데이터 저장
+        if(!thumb.isEmpty()) {
+            List<ProductThumbnail> addProductThumbList = saveProductThumbnail(dto.getPno(), thumb);
+            adminMapper.addProductThumbnail(addProductThumbList);
+        }
+        if(!infoImg.isEmpty()) {
+            List<ProductImg> addProductImageList = saveProductInfoImage(dto.getPno(), step, infoImg);
+            adminMapper.addProductInfo(addProductImageList);
+        }
+
+        return ResultProperties.SUCCESS;
+    }
+```
+
+상품 관리 중 수정 코드입니다.   
+상품 관련 테이블은 여러가지 테이블로 분리되어있습니다.   
+가장 기본적으로 상품 정보를 담고 있는 Product, 상품 옵션을 담고 있는 ProductOp, 상품 썸네일 정보를 담고 있는 ProductThumbnail, 상품 정보 이미지에 대한 데이터를 담고 있는 ProductImg로 분리했습니다.      
+Product 테이블을 중심으로 뻗어있기 때문에 상품 정보를 먼저 처리한 뒤 옵션 데이터를 수정하고 이후 파일에 대한 처리를 수행합니다.   
+이미지 파일의 처리는 imgProc이라는 메소드로 분리해 처리했으며 해당 메소드에서는 파일 저장만을 처리합니다.   
+대표 썸네일을 제외한 다른 이미지들에 대해서는 여러장이 존재할 수 있기 때문에 저장된 파일에 대한 데이터를 리스트에 담아 동적 쿼리로 처리합니다.   
+파일 경로에 대해서는 file.properties로 properties 파일을 생성해 관리합니다.
+
+## 느낀점과 고민중인 부분
+DTO, Entity, VO에 대해 다시 알아보며 VO 하나만으로 작성되어 있던 도메인 모델을 개선하며 DTO, Entity의 역할을 명확하게 하고 이해할 수 있는 기회였습니다.   
+VO는 어디에 사용해야 할지 아직 감을 잡지 못해 사용하지 못했지만 이해도를 좀 더 높여 명확하게 사용하는 것을 목표로 하고 있습니다.
+
+리팩토링을 거치면서 발생한 문제로는 비밀번호 찾기 기능 중 인증 번호 입력 후 변경 페이지 접근이 있습니다.   
+비밀번호 찾기를 통해 사용자 메일로 인증번호를 받고 정상적인 인증번호를 입력하게 되면 비밀번호 변경 페이지에 접근해 이후 처리를 할 수 있습니다.   
+여기서 문제되는 점이 변경 페이지 접근에 대한 제어였습니다.   
+로그인하지 않은 사용자가 접근하기 때문에 Spring Security를 통한 권한 관리로 처리할 수 없었기에 사용자 아이디와 인증번호를 받아 다시 한번 체크하는 방법으로 제어할 수 있도록 했습니다.   
+그러나 Get 요청으로 처리하는 경우 URL에 아이디와 인증번호가 노출되기 때문에 임시적인 인증을 위한 값이더라도 노출되는 것은 단점이라고 생각했습니다.   
+문제 해결 방법으로 Post 요청으로 처리하는 것을 고려했지만 Post 요청의 개념에서 너무 벗어나는 것 아닌가 라는 생각에 다른 방법을 찾게 되었습니다.   
+이 문제를 해결하기 위해 URL에서 파라미터를 출력하지 않는 방법이 있는지에 대해 찾아보게 되었으며, 변경 페이지에서 script 태그를 통해 랜더링 후 URL에서 파라미터를 출력하지 않도록 하는 방법으로 해결 할 수 있었습니다.   
+
+아쉬운 부분으로는 사용자 결제 처리 과정입니다.   
+결제가 완료 된 후 결제 관련 데이터를 처리한 후 매출 관련 데이터를 처리하고 있습니다.   
+매출 관련 데이터의 경우 사용자가 알지 않아도 되는 데이터이고 해당 프로젝트에서는 연, 월별 매출 데이터를 관리자에게 보여주기 때문에 실시간으로 처리해야 할 필요가 없다고 생각합니다.   
+그래서 이 부분에 대해 특정 시간에 처리하도록 batch를 통한 처리를 하는 것이 좋겠다는 생각이 들어 학습 후 바로 적용하려고 계획 중에 있습니다.
+
 #
 
 ---
-### History
+# History
 
 >2021/05/20   
 >   * 프로젝트 기본 셋팅 및 테스트   
