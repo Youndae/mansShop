@@ -1,11 +1,15 @@
 # Man's Shop 개인 프로젝트
 
+<br/>
+
 ## 목적
 * 시큐리티를 적용해 관리자와 사용자의 권한을 분리
 * 결제 API 적용
 * 현재 서비스 중인 쇼핑몰을 참고해 최대한 기능을 구현
 * 실제 서비스되어도 될 정도의 수준까지 계속해서 개선하는 것이 목표
-#
+
+<br/>
+
 ## 사용기술
 * Spring 5.0.7
 * Maven
@@ -22,10 +26,14 @@
 * 사용 IDE  :  IntelliJ
 * I'mport API
 * Daum 주소 API
-#
+
+<br/>
+
 ## 상품 데이터 및 참고 사이트
 * 자뎅(https://zardins.com)
-#
+
+<br/>
+
 ## 기능
 * 사용자
   * 상품 목록 및 상세
@@ -42,14 +50,28 @@
   * 사용자 문의 관리
   * 주문 상품 관리
   * 회원 관리
-#
+
+<br/>
+
 ## ERD
 <img src="./src/main/webapp/resources/README_image/ERD.jpg"/>
 
-#
+<br/>
+
 ## 기능
-#
-### 인증 / 인가
+
+<br/>
+
+### 목차
+* 인증 / 인가
+* 사용자 - 장바구니
+* 사용자 - 주문 결제
+* 사용자 - 아이디 / 비밀번호 찾기
+* 관리자 - 상품 관리
+
+<br/>
+
+## 인증 / 인가
 <img src="./src/main/webapp/resources/README_image/security_classDiagram.jpg"/>
 
 인증 / 인가에 대한 처리는 Spring Security로 처리했으며, 4개의 클래스를 생성해 Custom하는 방법으로 구현했습니다.   
@@ -57,9 +79,9 @@ AuthenticationSuccessHandler에서는 관리자 로그인의 경우 관리자 �
 Spring Security 설정 방식은 xml 방식으로 처리했으며 암호화는 BCryptPasswordEncoder를 사용했고 csrf 토큰을 활성화 한 상태로 구현했습니다.
 권한 처리는 PreAuthorize Annotation을 통해 메소드 혹은 컨트롤러 단위로 관리할 수 있도록 처리했습니다.
 
-#
+<br/>
 
-### 사용자
+## 사용자
 <img src="./src/main/webapp/resources/README_image/product.jpg"/>
 
 메인 화면과 상품 상세 페이지입니다.   
@@ -69,9 +91,12 @@ Spring Security 설정 방식은 xml 방식으로 처리했으며 암호화는 B
 그 외 사용자 파트로는 마이페이지가 있습니다.   
 마이페이지에서는 정보 수정, 주문 조회, 구매 상품의 리뷰 작성 및 수정 또는 삭제, 찜 목록, 문의 기능이 있습니다.   
 
-#
+<br/>
 
-### 사용자 - 장바구니
+## 사용자 - 장바구니
+
+<br/>
+
 <p style="color: gray">ProductServiceImpl</p>
 
 ```java
@@ -153,15 +178,18 @@ public CartDetail buildCartDetail(String cartNo, String pOpNo, String pCount, St
 비회원의 쿠키 만료기간은 7일로 설정했습니다.   
 데이터베이스의 7일이 지난 비회원의 장바구니 데이터의 처리를 위해 Scheduler를 통해 매일 새벽 3시에 7일이 지난 데이터를 삭제하는 프로시저를 호출하도록 처리해 데이터를 관리하도록 했습니다.
 
-#
+<br/>
 
 ## 사용자 - 주문 결제
+
 <img src="./src/main/webapp/resources/README_image/order.jpg">
 
-#
+<br/>
 
 결제 페이지에서는 두개의 API를 사용했습니다.    
 Kakao 우편번호 서비스 API를 통해 주소를 처리하도록 하고, 결제 API는 I'mport API를 사용해 처리했습니다.   
+
+<br/>
 
 <p style="color: gray">OrderServiceImpl</p>
 
@@ -245,7 +273,7 @@ Kakao 우편번호 서비스 API를 통해 주소를 처리하도록 하고, 결
 장바구니를 통한 구매인지 아닌지를 확인하기 위해 결제 페이지 접근 시 요청을 보낸 페이지에 따라 oType을 같이 전달하도록 처리했습니다.   
 매출 관련 데이터는 실시간으로 처리할 필요가 없어 추후 batch를 통해 처리하는 방법으로 개선하고자 계획하고 있습니다.
 
-#
+<br/>
 
 ## 사용자 - 아이디 / 비밀번호 찾기
 <img src="./src/main/webapp/resources/README_image/searchPw_sequence.jpg">
@@ -265,7 +293,7 @@ Redis에 저장된 인증번호의 삭제 시점은 만료 시간이 종료되�
 문제를 해결하기 위해 Post 요청으로 처리하는 것도 고려했으나, Post 요청의 개념에서 너무 벗어나는 것 아닌가 라는 생각에 Get 요청에서 해결하는 방법을 찾았습니다.   
 이 문제는 변경 페이지에서 script 태그를 통해 URL 파라미터를 출력하지 않도록 하는 방법으로 해결할 수 있었습니다.
 
-#
+<br/>
 
 ## 관리자
 <img src="./src/main/webapp/resources/README_image/admin.jpg">
@@ -276,6 +304,8 @@ Redis에 저장된 인증번호의 삭제 시점은 만료 시간이 종료되�
 주문 목록에서는 모든 회원 및 비회원의 주문 내역을 확인할 수 있으며 관리자가 주문내역 확인 후 배송 처리 버튼을 누를 시 '배송중'으로 상태를 변경할 수 있도록 처리했습니다.   
 문의사항과 상품 문의는 관리자가 확인 후 바로 답변을 댓글 형태로 작성할 수 있도록 처리했으며, 회원 목록에서는 회원 정보와 주문내역을 확인 할 수 있도록 처리했습니다.   
 매출관리는 상품별, 기간별 매출을 확인할 수 있도록 구현했습니다.   
+
+<br/>
 
 ## 관리자 - 상품 관리
 
@@ -375,7 +405,7 @@ VO는 어디에 사용해야 할지 아직 감을 잡지 못해 사용하지 못
 매출 관련 데이터의 경우 사용자가 알지 않아도 되는 데이터이고 해당 프로젝트에서는 연, 월별 매출 데이터를 관리자에게 보여주기 때문에 실시간으로 처리해야 할 필요가 없다고 생각합니다.   
 그래서 이 부분에 대해 특정 시간에 처리하도록 batch를 통한 처리를 하는 것이 좋겠다는 생각이 들어 학습 후 바로 적용하려고 계획 중에 있습니다.
 
-#
+<br/>
 
 ---
 # History
