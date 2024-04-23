@@ -86,7 +86,6 @@ public class AdminServiceImpl implements AdminService{
                                             .firstThumbnail(imgProc(firstThumb))
                                             .build()
                                         );
-
         //상품 옵션 테이블 수정
         adminMapper.modifyProductOp(ProductOp.builder()
                                             .pOpNo(dto.getPOpNo())
@@ -95,7 +94,6 @@ public class AdminServiceImpl implements AdminService{
                                             .pStock(stock)
                                             .build()
                                     );
-
 
         //삭제이미지 DB 데이터 삭제 및 파일 삭제
         //firstThumbnail 파일 삭제
@@ -131,7 +129,6 @@ public class AdminServiceImpl implements AdminService{
 
     //이미지 파일 저장
     public String imgProc(MultipartFile image) {
-
         if (image == null)
             return null;
 
@@ -142,17 +139,15 @@ public class AdminServiceImpl implements AdminService{
                 .append(UUID.randomUUID().toString())
                 .append(originalName.substring(originalName.lastIndexOf(".")))
                 .toString();
-
         File saveFile = new File(FileProperties.FILE_PATH, saveName);
 
         try {
             image.transferTo(saveFile);
+            return saveName;
         } catch (IOException e) {
             log.error("image transfer Error : " + e.getMessage());
             throw new RuntimeException(e);
         }
-
-        return saveName;
     }
 
     //썸네일 파일 저장 및 데이터 리스트화
@@ -186,7 +181,7 @@ public class AdminServiceImpl implements AdminService{
         return infoImgList;
     }
 
-    //파일 삭제제
+    //파일 삭제
     public void deleteFiles(String images) {
         if (images == null)
             return;

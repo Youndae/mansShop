@@ -77,9 +77,6 @@
                         <select id="select_month"></select>월&nbsp;
                         <select id="select_day"></select>일
                     </div>
-
-                    <%--<input type="hidden" name="userBirth">--%>
-
                 </div>
                 <div>
                     <div>

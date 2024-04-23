@@ -29,12 +29,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
         log.warn("role names : " + roleNames);
 
         if(roleNames.contains("ROLE_ADMIN")){
-            response.sendRedirect("/admin/productList");
+            response.sendRedirect("/admin/product");
             return;
         }
 
         if(roleNames.contains("ROLE_MANAGER")){
-            response.sendRedirect("/managerPage/orderList");
+            response.sendRedirect("/manager/order");
             return;
         }
 

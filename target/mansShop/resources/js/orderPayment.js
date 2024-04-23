@@ -40,7 +40,7 @@ $(document).ready(function(){
                 success: function(data){
                     if(data == 1){
                         const oType = "H";
-                        location.href='orderComplete/'+oType;
+                        location.href='/order/'+oType;
                     }else{
                         alert("오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요.");
                     }
@@ -168,7 +168,7 @@ function order() {
                 success: function(data){
                     if(data == 1){
                         var oType = "C";
-                        location.href='orderComplete/'+oType;
+                        location.href='/order/'+oType;
                     }else{
                         alert("오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요.");
                     }

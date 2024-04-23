@@ -61,7 +61,7 @@ $(document).ready(function(){
 });
 
 function getUserInfo(userId, callback, error){
-    $.get("/admin/userInfo/" + userId + ".json", function(result){
+    $.get("/admin/user/" + userId + ".json", function(result){
         if(callback)
             callback(result);
     }).fail(function(xhr, status, er){

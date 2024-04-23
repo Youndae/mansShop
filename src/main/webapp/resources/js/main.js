@@ -15,7 +15,7 @@ $(document).ready(function(){
         if(keyword == 'OUTER' || keyword == 'TOP' || keyword == 'PANTS' || keyword == 'SHOES' || keyword == 'BAGS'){
             actionForm.attr('action', '/'+keyword);
         }else{
-            actionForm.attr('action', '/searchProduct');
+            actionForm.attr('action', '/search');
         }
 
         actionForm.find("input[name='pageNum']").val($(this).attr("href"));

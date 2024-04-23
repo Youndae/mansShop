@@ -17,7 +17,7 @@
     <div class="content_area">
         <div class="review_content content_data">
             <div class="reviewForm_area">
-                <form id="reviewModifyForm" method="post">
+                <form id="reviewModifyForm" action="/my-page/review/${rModify.RNum}" method="post">
                     <div class="review_content_productName">
                         <div>
                             <label><c:out value="${rModify.PName}"/></label>
@@ -28,7 +28,6 @@
                             <textarea name="reviewContent"><c:out value="${rModify.reviewContent}"/></textarea>
                         </div>
                     </div>
-                    <input type="hidden" name="rNum" value="<c:out value="${rModify.RNum}"/>">
                     <input type="hidden" name="_method" value="PATCH">
                     <sec:csrfInput/>
                 </form>

@@ -22,7 +22,7 @@
 
         <div class="salesTermList_content content_data">
             <div class="selectTerm">
-                <form id="pageActionForm" action="/admin/salesTermList" method="get">
+                <form id="pageActionForm" action="/admin/sales/term" method="get">
                     <label>연도별 : </label>
                     <select id="select_Term_Year">
                         <option value="default">연도 선택</option>

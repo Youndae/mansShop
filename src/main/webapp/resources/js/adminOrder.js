@@ -5,16 +5,17 @@ $(document).ready(function(){
 
     //productQnADetail
     $("#pQnAReplyForm_btn").on('click', function(){
-        $("#pQnAReplyForm").attr('action', '/admin/productQnAReply');
+        $("#pQnAReplyForm").attr('action', '/admin/product/qna/reply');
         $("#pQnAReplyForm").submit();
     })
 
     //adminQnA
-    const qno = {
+    const qno = $("#qno").val();
+    /*const qno = {
         qno : $("#qno").val(),
-    };
+    };*/
     (function(){
-        $.getJSON("/admin/getQnAReply", qno, function(arr){
+        $.getJSON("/admin/qna/reply/" + qno, function(arr){
             let str = "<ul>";
             $(arr).each(function(i, reply){
                 console.log("reply get");
@@ -30,6 +31,7 @@ $(document).ready(function(){
                         "</div>" +
                         "<div class=\"QnADetail_reply_content_content\">" +
                         "<p>" + reply.qrContent + "</p>" +
+                        "<button class=\"reply_del_btn\" onclick='reply_del(this)' value=\"" + reply.replyNo + "\">삭제</button>" +
                         "</div></li>";
             })
             $(".QnAReply").append(str);
@@ -38,9 +40,8 @@ $(document).ready(function(){
 
     $("#QnAComplete").on('click', function(){
         $.ajax({
-           url: '/admin/adminQnAComplete',
+           url: '/admin/qna/complete/' + qno,
             type: 'patch',
-            data: JSON.stringify(qno),
             contentType: 'application/json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
@@ -77,7 +78,7 @@ $(document).ready(function(){
         });
 
         (function(){
-            $.getJSON("/admin/orderInfoTable", {orderNo:orderNo}, function(arr){
+            $.getJSON("/admin/order-info-data/" + orderNo, function(arr){
                 str += getInfoTable(arr);
                 $(".order_detail_info_list").append(str);
                 $(".modal").show();
@@ -91,14 +92,11 @@ $(document).ready(function(){
     });
 
     $(".shipping_btn button").on('click', function(){
-        const orderNo = {
-            orderNo : $('span[name=orderNo]').text(),
-        }
+        const orderNo = $('span[name=orderNo]').text();
 
         $.ajax({
-            url: '/admin/shippingProcess',
+            url: '/admin/shipping/' + orderNo,
             type: 'patch',
-            data: JSON.stringify(orderNo),
             dataType: 'json',
             contentType: 'application/json',
             beforeSend: function (xhr) {
@@ -120,9 +118,8 @@ function reply_del(obj){
     const replyNo = obj.attributes['value'].value;
 
     $.ajax({
-        url: '/admin/QnAReplyDel',
+        url: '/admin/qna/reply/' + replyNo,
         type: 'delete',
-        data: {replyNo : replyNo},
         beforeSend: function (xhr) {
             xhr.setRequestHeader(header, token);
         },
@@ -142,7 +139,7 @@ $(function(){
         const form = $("#replyForm").serialize();
 
         $.ajax({
-            url: '/admin/QnAReply',
+            url: '/admin/qna/reply',
             type: 'post',
             data: form,
             beforeSend: function (xhr) {
@@ -165,7 +162,7 @@ $(function(){
 });
 
 function getInfo(orderNo, callback, error){
-    $.get("/admin/orderInfo/"+orderNo + ".json", function(result){
+    $.get("/admin/order/"+orderNo + ".json", function(result){
         if(callback)
             callback(result);
     }).fail(function(xhr, status, er){

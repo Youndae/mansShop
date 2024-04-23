@@ -39,7 +39,7 @@
             <div class="searchOverlap"></div>
         </div>
         <div class="pwForm">
-            <form id="pwForm" action="/member/pwReset" method="get">
+            <form id="pwForm" action="/member/reset-pw" method="get">
                 <input type="hidden" id="formId" name="userId" value="">
                 <input type="hidden" id="formCno" name="cno" value="">
                 <sec:csrfInput/>

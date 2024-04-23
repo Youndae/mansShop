@@ -23,17 +23,17 @@
                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 <li><button>로그아웃</button></li>
                             </form>
-                            <li><a href="/myPage/modifyCheck">마이페이지</a></li>
+                            <li><a href="/my-page/user">마이페이지</a></li>
                         </c:when>
                         <c:otherwise>
                             <li><a href="/member/login">로그인</a></li>
                         </c:otherwise>
                     </c:choose>
 
-                    <li><a href="/myPage/cart">장바구니</a></li>
-                    <li><a href="/myPage/memberOrderList">주문조회</a></li>
+                    <li><a href="/my-page/cart">장바구니</a></li>
+                    <li><a href="/my-page/order">주문조회</a></li>
                     <li>
-                        <form id="mainSearchForm" action="/searchProduct" method="get">
+                        <form id="mainSearchForm" action="/search" method="get">
                             <input type="text" id="search_keyword">
                             <div class="form_button">
                                 <button class="btn" type="button" >

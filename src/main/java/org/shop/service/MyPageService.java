@@ -16,7 +16,7 @@ public interface MyPageService {
 
     public List<MemberOrderListDTO> getOrderList(String regDate, Principal principal);
 
-    public String insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal);
+    public String insertReviewProc(ProductReviewInsertDTO dto, Principal principal);
 
     public String insertMyQnAProc(MyQnAInsertDTO dto, Principal principal);
 

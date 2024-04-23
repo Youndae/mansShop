@@ -30,7 +30,7 @@
                <c:forEach items="${rList}" var="list">
                    <tr>
                        <td>
-                           <a class="tbl_review_a" href="<c:url value="/myPage/memberReviewDetail/${list.RNum}"/>">
+                           <a class="tbl_review_a" href="<c:url value="/my-page/review/${list.RNum}"/>">
                                <div class="tbl_firstThumbnail">
                                    <img src="/display?image=${list.firstThumbnail}">
                                </div>
@@ -69,7 +69,7 @@
            </div>
    </div>
 
-        <form id="pageActionForm" action="/myPage/memberReviewList" method="get">
+        <form id="pageActionForm" action="/my-page/review" method="get">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>

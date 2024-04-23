@@ -41,7 +41,7 @@ public class MemberController {
 
     //로그인 페이지
     @GetMapping("/login")
-    public String login(String error, HttpServletRequest request, Principal principal){
+    public String login(HttpServletRequest request, Principal principal){
         String referer = request.getHeader("Referer");
         request.getSession().setAttribute("prevPage", referer);
 
@@ -57,20 +57,20 @@ public class MemberController {
     }
 
     //회원가입 중 아이디 중복 체크
-    @PostMapping("/checkUserId")
+    @PostMapping("/check-id")
     @ResponseBody
-    public String checkUserId(@RequestParam("UserId") String userId) throws Exception{
+    public String checkUserId(@RequestParam("uid") String userId) {
 
         return String.valueOf(memberMapper.idCheck(userId));
     }
 
     //아이디찾기
-    @GetMapping("/searchId")
+    @GetMapping("/search-id")
     public void searchId(){
 
     }
 
-    @PostMapping("/searchId")
+    @PostMapping("/search-id")
     @ResponseBody
     public String searchIdProc(@RequestParam("userName") String userName
                                 , @RequestParam(value = "userPhone", required = false) String userPhone
@@ -79,12 +79,12 @@ public class MemberController {
         return memberService.searchId(userName, userPhone, userEmail);
     }
 
-    @GetMapping("/searchPw")
+    @GetMapping("/search-pw")
     public void searchPw(){
 
     }
 
-    @PostMapping("/searchPw")
+    @PostMapping("/search-pw")
     @ResponseBody
     public String searchPwProc(@RequestParam("userId") String userId
                                 , @RequestParam("userName") String userName
@@ -94,7 +94,7 @@ public class MemberController {
     }
 
 
-    @PostMapping("/certifyPw")
+    @PostMapping("/certify-pw")
     @ResponseBody
     public String certifyPw(@RequestParam("userId") String userId
                             , @RequestParam("cno") int cno) {
@@ -102,7 +102,7 @@ public class MemberController {
         return memberService.checkCno(userId, cno);
     }
 
-    @GetMapping("/pwReset")
+    @GetMapping("/reset-pw")
     public String resetPassword(@RequestParam("userId") String userId,
                                 @RequestParam("cno") int cno, Model model){
         /*
@@ -124,7 +124,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/resetPw")
+    @PostMapping("/reset-pw")
     public String resetPw(@RequestParam("userId") String userId
                             , @RequestParam("cno") int cno
                             , @RequestParam("password") String password){

@@ -48,7 +48,7 @@
                         <td id="productNo"><c:out value="${list.pno}"/></td>
                         <td><c:out value="${list.PClassification}"/></td>
                         <td>
-                            <a href="<c:url value="/admin/productInfo/${list.POpNo}"/>"><c:out value="${list.PName}"/></a>
+                            <a href="<c:url value="/admin/product-info/${list.POpNo}"/>"><c:out value="${list.PName}"/></a>
                         </td>
                         <td><c:out value="${list.PPrice}"/></td>
                         <td><c:out value="${list.PSize}"/></td>
@@ -61,7 +61,7 @@
             <div class="productList_content_bottom">
                 <div class="search">
                     <div>
-                        <form id="searchActionForm" action="/admin/productList" method="get">
+                        <form id="searchActionForm" action="/admin/product" method="get">
                             <input type="text" name="keyword" value='<c:out value="${pageMaker.cri.keyword}"/>'/>
                             <input type="hidden" name="pageNum" value='<c:out value="${pageMaker.cri.pageNum}"/>'/>
                             <input type="hidden" name="amount" value='<c:out value="${pageMaker.cri.amount}"/>'/>
@@ -96,7 +96,7 @@
             </div>
     </div>
 
-        <form id="pageActionForm" action="/admin/productList" method="get">
+        <form id="pageActionForm" action="/admin/product" method="get">
             <input type="hidden" id="classification" name="classification" value="<c:out value="${pageMaker.cri.classification}"/>">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">

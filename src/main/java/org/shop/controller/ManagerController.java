@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.security.Principal;
 
 @Controller
-@RequestMapping("/managerPage")
+@RequestMapping("/manager/")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ROLE_MANAGER')")
 @Slf4j
@@ -34,7 +34,7 @@ public class ManagerController {
      */
 
     //주문목록. 매니저가 로그인하면 가장 첫 페이지
-    @GetMapping("/orderList")
+    @GetMapping("/order")
     public String managerMain(Model model, Criteria cri){
 
         model.addAttribute("order", adminMapper.orderList(cri));
@@ -47,7 +47,7 @@ public class ManagerController {
     }
 
     // 채팅상담. 채팅방을 찾아 상담할 방이 있는지 결과 전달
-    @GetMapping("/getChatRoom")
+    @GetMapping("/chat-room")
     @ResponseBody
     public String connectChatRoom(Model model, Principal principal){
         log.info("manager get chatRoom");
@@ -60,7 +60,7 @@ public class ManagerController {
     }
 
     //채팅 시작.
-    @GetMapping("/chatRoom/{chatRoomId}")
+    @GetMapping("/chat-room/{chatRoomId}")
     public String connectRoom(@PathVariable("chatRoomId") String chatRoomId, Model model) {
 
         log.info("manager start chat");
@@ -74,7 +74,7 @@ public class ManagerController {
     }
 
     //채팅 리스트(완료된 모든 채팅 상담의 리스트 출력)
-    @GetMapping("/chatList")
+    @GetMapping("/chat")
     public String chatList(Model model) {
         //채팅 리스트 조회
         model.addAttribute("chatList", null);
@@ -83,7 +83,7 @@ public class ManagerController {
     }
 
     //채팅 내역(리스트에서 채팅을 눌러 내용 확인)
-    @GetMapping("/chatDetail/{chatRoomId}")
+    @GetMapping("/chat/detail/{chatRoomId}")
     public String chatDetail(@PathVariable("chatRoomId") String chatRoomId, Model model){
         //채팅 내역
         model.addAttribute("chatContent", null);

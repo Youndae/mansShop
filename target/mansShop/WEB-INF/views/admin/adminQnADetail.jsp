@@ -49,9 +49,7 @@
                     <div class="QnAReply">
 
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>

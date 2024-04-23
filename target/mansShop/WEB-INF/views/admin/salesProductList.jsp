@@ -52,7 +52,7 @@
             <div class="salesProductList_content_bottom">
                 <div class="search">
                     <div>
-                        <form id="searchActionForm" action="/admin/salesProductList" method="get">
+                        <form id="searchActionForm" action="/admin/sales/product" method="get">
                             <select name="type">
                                 <option value="classification">상품분류</option>
                                 <option value="pName">상품명</option>
@@ -91,7 +91,7 @@
                     </ul>
                 </div>
             </div>
-            <form id="pageActionForm" action="/admin/salesProductList" method="get">
+            <form id="pageActionForm" action="/admin/sales/product" method="get">
                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
                 <input type="hidden" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>">

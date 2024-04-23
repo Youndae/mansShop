@@ -24,7 +24,7 @@ function validation(fileName) {
 }
 
 
-function addFirstPreview(input) {
+/*function addFirstPreview(input) {
     const file = input[0].files[0];
     const imgNum = 'f0';
 
@@ -86,6 +86,66 @@ function setPreviewForm(file, type, imgNum) {
         }
     };
     reader.readAsDataURL(file);
+}*/
+
+function addFirstPreview(input) {
+    const file = input[0].files[0];
+    const imgNum = 'f0';
+    const previewForm = $("#firstThumbPreview");
+
+    if (validation(file.name))
+        return;
+    else {
+        setPreviewForm(file, imgNum, previewForm);
+        firstThumbFile = file;
+    }
+}
+
+function addThumbPreview(input) {
+    const previewForm = $("#thumbPreview");
+    if (input[0].files.length <= 4) {
+        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
+            const file = input[0].files[fileIndex];
+            if (validation(file.name)) continue;
+            const imgNum = "t" + fileIndex;
+            setPreviewForm(file, imgNum, previewForm);
+            thumbFiles[fileIndex] = file;
+        }
+    } else {
+        alert("썸네일은 4장까지만 업로드 가능합니다.");
+    }
+}
+
+function addInfoPreview(input) {
+    const previewForm = $("#infoPreview");
+    if (input[0].files.length <= 10) {
+        for (let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++) {
+            const file = input[0].files[fileIndex];
+            if (validation(file.name)) continue;
+            const imgNum = "i" + fileIndex;
+            setPreviewForm(file, imgNum, previewForm);
+            infoFiles[fileIndex] = file;
+        }
+    } else {
+        alert("정보이미지 10장까지만 업로드 가능합니다.");
+    }
+}
+
+function setPreviewForm(file, imgNum, previewForm) {
+
+    let reader = new FileReader();
+    reader.onload = function (img) {
+        const appendStr = "<div class=\"preview-box\" value=\"" + imgNum + "\">" +
+            "<img class=\"thumbnail img_default\" src=\"" + img.target.result + "\"\/>" +
+            "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deletePreview(this)\">" +
+            "삭제" +
+            "</a>" +
+            "</div>";
+        
+        previewForm.append(appendStr);
+    };
+
+    reader.readAsDataURL(file);
 }
 
 function deletePreview(obj) {
@@ -128,7 +188,7 @@ function deleteOldPreview(obj) {
 $(document).ready(function () {
 
     $("#addProduct").on('click', function(){
-        location.href='/admin/addProduct';
+        location.href='/admin/product/new';
     })
 
     const classification = $("#classification").val();
@@ -139,8 +199,8 @@ $(document).ready(function () {
 
     const pno = $('input[name=pno]').val();
 
-    (function () {
-        $.getJSON("/admin/getFirstThumb", {pno: pno}, function (arr) {
+    /*(function () {
+        $.getJSON("/admin/first-thumb", {pno: pno}, function (arr) {
             const str = img("of", arr);
 
             $("#firstThumbPreview").append(str);
@@ -148,7 +208,7 @@ $(document).ready(function () {
     })();
 
     (function () {
-        $.getJSON("/admin/getThumbnail", {pno: pno}, function (arr) {
+        $.getJSON("/admin/thumbnail", {pno: pno}, function (arr) {
             const str = img("ot", arr);
 
             $("#thumbPreview").append(str);
@@ -156,7 +216,7 @@ $(document).ready(function () {
     })();
 
     (function () {
-        $.getJSON("/admin/getInfoImage", {pno: pno}, function (arr) {
+        $.getJSON("/admin/info-image", {pno: pno}, function (arr) {
             const str = img("oi", arr);
 
             $("#infoPreview").append(str);
@@ -176,6 +236,46 @@ $(document).ready(function () {
             } else if (type == "oi") {
                 str += "<img class=\"infoImg\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.pimg + "\"\/>";
             }
+            str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deleteOldPreview(this)\">";
+            str += "삭제" + "</a>";
+            str += "</div>";
+            num++;
+        });
+
+        return str;
+    }*/
+
+    (function () {
+        $.getJSON("/admin/first-thumb", {pno: pno}, function (arr) {
+            const str = img("of", 'firstThumb img_default', arr);
+
+            $("#firstThumbPreview").append(str);
+        })
+    })();
+
+    (function () {
+        $.getJSON("/admin/thumbnail", {pno: pno}, function (arr) {
+            const str = img("ot", 'thumb img_default', arr);
+
+            $("#thumbPreview").append(str);
+        })
+    })();
+
+    (function () {
+        $.getJSON("/admin/info-image", {pno: pno}, function (arr) {
+            const str = img("oi", 'infoImg', arr);
+
+            $("#infoPreview").append(str);
+        })
+    })();
+
+    function img(type, className, arr) {
+        let num = 1;
+        let str = "";
+        $(arr).each(function (i, attach) {
+            const imgNum = type + num;
+            str += "<div class=\"preview-box\" value=\"" + imgNum + "\">";
+            str += "<img class=\"" + className + "\" id=\"" + imgNum + "\" src=\"/display?image=" + attach.imageName + "\"\/>";
             str += "<a href=\"#\" value=\"" + imgNum + "\" onclick=\"deleteOldPreview(this)\">";
             str += "삭제" + "</a>";
             str += "</div>";
@@ -209,36 +309,27 @@ $(document).ready(function () {
         } else if (Object.keys(infoFiles).length == 0 && ($("#oi1").attr("src") == null)) {
             $("#checkInfo").text("상품정보사진을 선택해주세요");
         } else {
-            if(firstThumbFile != null){
+            if(firstThumbFile != null)
                 formData.append('firstThumbFile', firstThumbFile);
-            }
 
-            for (let index = 0; index < Object.keys(thumbFiles).length; index++) {
-                console.log("Thumb index : " + index);
+            for (let index = 0; index < Object.keys(thumbFiles).length; index++)
                 formData.append('thumbFiles', thumbFiles[index]);
-            }
 
-            for (let index = 0; index < Object.keys(infoFiles).length; index++) {
-                console.log("info index : " + index);
+            for (let index = 0; index < Object.keys(infoFiles).length; index++)
                 formData.append('infoFiles', infoFiles[index]);
-            }
 
-            if(deleteFirstThumbFile != null){
+            if(deleteFirstThumbFile != null)
                 formData.append('deleteFirstThumbFile', deleteFirstThumbFile);
-            }
 
-            for (let index = 0; index < Object.keys(deleteThumbFiles).length; index++) {
-                console.log("delete Thumb index : " + index);
+            for (let index = 0; index < Object.keys(deleteThumbFiles).length; index++)
                 formData.append('deleteThumbFiles', deleteThumbFiles[index]);
-            }
 
-            for (let index = 0; index < Object.keys(deleteInfoFiles).length; index++) {
-                console.log("delete info index : " + index);
+            for (let index = 0; index < Object.keys(deleteInfoFiles).length; index++)
                 formData.append('deleteInfoFiles', deleteInfoFiles[index]);
-            }
+
 
             $.ajax({
-                url: '/admin/modifyProduct',
+                url: '/admin/product/',
                 enctype: 'multipart/form-data',
                 contentType: false,
                 processData: false,
@@ -250,7 +341,7 @@ $(document).ready(function () {
                 },
                 success: function (result) {
                     if(result == 1)
-                        location.href = "/admin/productList";
+                        location.href = "/admin/product";
                     else
                         alert("오류가 발생했습니다.");
                 },
@@ -361,7 +452,7 @@ $(document).ready(function () {
             }
 
             $.ajax({
-                url: '/admin/addProduct',
+                url: '/admin/product',
                 enctype: 'multipart/form-data',
                 contentType: false,
                 processData: false,
@@ -373,7 +464,7 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     if(data == 1){
-                        location.href = "/admin/productList";
+                        location.href = "/admin/product";
                     }else{
                         alert('오류 발생');
                     }
@@ -416,14 +507,11 @@ $(document).ready(function () {
     })
 
     $("#closedProductOp").on('click', function () {
-        const pOpNo = {
-            pOpNo: $("input[name=pOpNo]").val()
-        };
+        const pOpNo = $("input[name=pOpNo]").val();
 
         $.ajax({
-            url: '/admin/closedProductOp',
-            type: 'post',
-            data: pOpNo,
+            url: '/admin/product-option/close/' + pOpNo,
+            type: 'patch',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
@@ -434,14 +522,11 @@ $(document).ready(function () {
     });
 
     $("#openProductOp").on('click', function () {
-        const pOpNo = {
-            pOpNo: $("input[name=pOpNo]").val()
-        };
+        const pOpNo = $("input[name=pOpNo]").val();
 
         $.ajax({
-            url: '/admin/openProductOp',
-            type: 'post',
-            data: pOpNo,
+            url: '/admin/product-option/open/' + pOpNo,
+            type: 'patch',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
@@ -452,14 +537,12 @@ $(document).ready(function () {
     });
 
     $("#closedProduct").on('click', function () {
-        const pno = {
-            pno: $("input[name=pno]").val()
-        };
+        const pno = $("input[name=pno]").val();
+
 
         $.ajax({
-            url: '/admin/closedProduct',
-            type: 'post',
-            data: pno,
+            url: '/admin/product/close/' + pno,
+            type: 'patch',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
@@ -470,14 +553,11 @@ $(document).ready(function () {
     });
 
     $("#openProduct").on('click', function () {
-        const pno = {
-            pno: $("input[name=pno]").val()
-        };
+        const pno = $("input[name=pno]").val();
 
         $.ajax({
-            url: '/admin/openProduct',
-            type: 'post',
-            data: pno,
+            url: '/admin/product/open/' + pno,
+            type: 'patch',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },

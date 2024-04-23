@@ -32,7 +32,7 @@
                                 <c:when test="${QnAList.PQnAIndent == 0}">
                                         <tr class="tbl_tr_m_10">
                                             <td>
-                                            <a href="<c:url value="/admin/productQnADetail/${QnAList.PQnANo}"/>">
+                                            <a href="<c:url value="/admin/product/qna/detail/${QnAList.PQnANo}"/>">
                                                 <c:out value="${QnAList.PName}"/>
                                             </a>
                                             </td>
@@ -53,7 +53,7 @@
                                 <c:when test="${QnAList.PQnAIndent == 1}">
                                         <tr class="pQnA_Reply tbl_tr_m_10">
                                             <td>
-                                                <a href="<c:url value="/admin/productQnADetail/${QnAList.PQnANo}"/>">
+                                                <a href="<c:url value="/admin/product/qna/detail/${QnAList.PQnANo}"/>">
                                                     <c:out value="${QnAList.PName}"/>
                                                 </a>
                                             </td>
@@ -93,7 +93,7 @@
                     </ul>
                 </div>
             </div>
-            <form id="pageActionForm" action="/admin/productQnAList" method="get">
+            <form id="pageActionForm" action="/admin/product/qna" method="get">
                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
             </form>

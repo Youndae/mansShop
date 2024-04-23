@@ -41,7 +41,7 @@
                 <div class="userList_content_bottom list-bottom-search">
                     <div class="search">
                         <div>
-                            <form id="searchActionForm" action="/admin/userList" method="get">
+                            <form id="searchActionForm" action="/admin/user" method="get">
                                 <input type="text" name="keyword" value="<c:out value="${pageMaker.cri.keyword}"/>"/>
                                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>"/>
                                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>"/>
@@ -74,7 +74,7 @@
                         </ul>
                     </div>
                 </div>
-                <form id="pageActionForm" action="/admin/userList" method="get">
+                <form id="pageActionForm" action="/admin/user" method="get">
                     <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                     <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
                 </form>

@@ -24,14 +24,16 @@ public class OrderController {
     private final OrderService orderService;
 
     //주문 페이지
-    @PostMapping("/orderPayment")
-    public void orderPayment(@RequestParam HashMap<String, Object> commandMap, Model model){
+    @PostMapping("/")
+    public String orderPayment(@RequestParam HashMap<String, Object> commandMap, Model model){
         model.addAttribute("oList", orderService.orderProduct(commandMap));
         model.addAttribute("orderType", commandMap.get("oType").toString());
+
+        return "order/orderPayment";
     }
 
     //결제 완료 페이지
-    @GetMapping("/orderComplete/{oType}")
+    @GetMapping("/{oType}")
     public String orderComplete(@PathVariable("oType") String oType, Model model){
         model.addAttribute("type", oType);
 

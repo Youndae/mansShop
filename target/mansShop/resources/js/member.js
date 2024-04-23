@@ -40,7 +40,7 @@ $(document).ready(function(){
                             }
 
             $.ajax({
-                url: '/member/searchId',
+                url: '/member/search-id',
                 method : 'post',
                 data: formData,
                 beforeSend : function(xhr){
@@ -82,7 +82,7 @@ $(document).ready(function(){
             }
 
             $.ajax({
-                url: '/member/searchPw',
+                url: '/member/search-pw',
                 method: 'post',
                 data: formData,
                 beforeSend: function(xhr){
@@ -188,26 +188,25 @@ $(document).ready(function(){
 
     $(function(){
         $("#IdCheck").click(function(){
-            const UserId ={
-                UserId : $("#userId").val(),
+            const uid ={
+                uid : $("#userId").val(),
             };
 
-            if(UserId.UserId == ""){
+            if(uid.uid == ""){
                 $("#idOverlap").text("아이디를 입력하세요");
-            }else if(UserId.UserId != "" && idPattern.test(UserId.UserId) == false){
+            }else if(uid.uid != "" && idPattern.test(uid.uid) == false){
                 $("#idOverlap").text("영문자와 숫자를 사용한 5~15 자리만 가능합니다.");
 
             }else{
                 $.ajax({
-                    url: "/member/checkUserId",
+                    url: "/member/check-id",
                     type: "post",
-                    data: UserId,
+                    data: uid,
                     dataType: "json",
                     beforeSend : function(xhr){
                         xhr.setRequestHeader(header, token);
                     },
                     success : function(data){
-                        console.log("data : " + data);
                         if(data == 1){
                             $("#idOverlap").text("사용중인 아이디입니다.");
                             $("#idStat").val("0");
@@ -281,48 +280,50 @@ $(function(){
         formObj.append(str);
 
         if($("#userId").val() == ""){
-            console.log("id null");
             $("#idOverlap").text("아이디를 입력하세요");
             $("#userId").focus();
-        }else if($("#idStat").val() == ""){
-            console.log("id stat null");
+        }
+        else if($("#idStat").val() == ""){
             $("#idOverlap").text("아이디 중복체크를 해주세요");
             $("#userId").focus();
-        }else if($("#idStat").val() == "0"){
-            console.log("id stat 0");
+        }
+        else if($("#idStat").val() == "0"){
             $("#userId").focus();
-        }else if($("#userPw").val() == ""){
-            console.log("pw null");
+        }
+        else if($("#userPw").val() == ""){
             $("#pwOverlap").text("비밀번호를 입력하세요");
             $("#userPw").focus();
-        }else if($("#checkUserPw").val() == ""){
-            console.log("checkPw null");
+        }
+        else if($("#checkUserPw").val() == ""){
             $("#pwCheckOverlap").text("비밀번호를 다시 입력하세요");
             $("#checkUserPw").focus();
-        }else if($("#pwStat").val() != "1"){
-            console.log("pwOverlap not null");
+        }
+        else if($("#pwStat").val() != "1"){
             $("#userPw").focus();
-        }else if($("#userName").val() == ""){
-            console.log("Name Null");
+        }
+        else if($("#userName").val() == ""){
             $("#nameOverlap").text("이름을 입력하세요");
             $("#userName").focus();
-        }else if($("#userEmail").val() == "") {
-            console.log("Email null || overlap not null");
+        }
+        else if($("#userEmail").val() == "") {
             $("#emailOverlap").text("이메일을 입력하세요");
             $("#userEmail").focus();
-        }else if($("#mailStat").val() != "1"){
+        }
+        else if($("#mailStat").val() != "1"){
             $("#userEmail").focus();
-        }else if($("#userPhone").val() == "") {
-            console.log("Phone null || overlap not null");
+        }
+        else if($("#userPhone").val() == "") {
             $("#phoneOverlap").text("연락처를 입력하세요");
             $("#userPhone").focus();
-        }else if($("#phoneStat").val() != "1"){
+        }
+        else if($("#phoneStat").val() != "1"){
             $("#userPhone").focus();
-        }else{
-            alert("가입 고고");
+        }
+        else{
+            formObj.submit();
         }
 
-        formObj.submit();
+
     });
 
     $(".loginBtn").on("click", function(e){
@@ -337,12 +338,12 @@ $(function(){
 
     $(".searchId").on('click', function(e){
         e.preventDefault();
-        location.href = '/member/searchId';
+        location.href = '/member/search-id';
     })
 
     $(".searchPw").on('click', function(e){
         e.preventDefault();
-        location.href = '/member/searchPw';
+        location.href = '/member/search-pw';
     })
 
     $(".resetPwBtn").on('click', function(e){
@@ -350,13 +351,6 @@ $(function(){
         $("#resetPwForm").submit();
     })
 });
-
-/*$(function(){
-    $("#certifi-btn").click(function(){
-        console.log("certify btn click");
-        console.log("certify No is " + $('input[name="certifi-input"]').val());
-    })
-})*/
 
 $(document).on('click', "#certifi-btn", function(){
     const uid = $('#userId').val();
@@ -373,7 +367,7 @@ $(document).on('click', "#certifi-btn", function(){
                         };
 
         $.ajax({
-            url: '/member/certifyPw',
+            url: '/member/certify-pw',
             method: 'post',
             data: formData,
             beforeSend: function(xhr){
@@ -415,7 +409,7 @@ function loginFormBtn(){
 }
 
 function searchPwBtn(){
-    location.href= '/member/searchPw';
+    location.href= '/member/search-pw';
 }
 
 function getSearchString(value){

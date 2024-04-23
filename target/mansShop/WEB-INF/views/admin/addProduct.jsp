@@ -96,11 +96,9 @@
                         <div id="infoPreview"></div>
                         <div class="overlap" id="checkInfo"></div>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 </body>

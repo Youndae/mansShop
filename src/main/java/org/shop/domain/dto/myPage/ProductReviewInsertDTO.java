@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductReviewInsertDTO {
 
+    private String orderNo;
+
     private String pno;
 
     private String reviewContent;

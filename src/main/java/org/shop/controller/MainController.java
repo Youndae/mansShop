@@ -37,7 +37,7 @@ public class MainController {
 
     //메인페이지. BEST 상품 출력
     @GetMapping("/")
-    public String main(Model model, Criteria cri){
+    public String main(Model model){
         model.addAttribute("productClassification", "BEST");
         model.addAttribute("pList", mainMapper.mainBest());
 
@@ -69,7 +69,7 @@ public class MainController {
     }
 
     //검색 상품 리스트
-    @GetMapping("/searchProduct")
+    @GetMapping("/search")
     public String searchProduct(Model model, Criteria cri){
         //상품 검색
         model.addAttribute("pList", mainMapper.searchProduct(cri));
@@ -98,7 +98,7 @@ public class MainController {
     }
 
     //비회원 주문 목록 페이지
-    @GetMapping("/nonOrderList")
+    @GetMapping("/non/order")
     public String nonOrderList(NonProductOrderDTO dto, Model model){
 
         model.addAttribute("oList", dto);
@@ -107,7 +107,7 @@ public class MainController {
     }
 
     //비회원 주문 목록 데이터 리스트
-    @GetMapping("/getNonOrderList")
+    @GetMapping("/non/order/data")
     @ResponseBody
     public ResponseEntity<List<MemberOrderListDTO>> getNonOrderList(String recipient, String orderPhone){
 
@@ -115,8 +115,8 @@ public class MainController {
     }
 
     //오류 페이지
-    @GetMapping("/accessError")
-    public String accessDenied(Authentication auth, Model model){
+    @GetMapping("/error")
+    public String accessDenied(Model model){
         model.addAttribute("msg", "Access Denied");
 
         return "/accessError";

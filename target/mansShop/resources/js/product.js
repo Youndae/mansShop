@@ -15,20 +15,18 @@ $(document).ready(function () {
 
     const pno = $("#pno").val();
     (function () {
-        $.getJSON("/product/getProductThumb", {pno: pno}, function (arr) {
+        $.getJSON("/product/thumb", {pno: pno}, function (arr) {
             let str = "";
             let num = 2;
             $(arr).each(function (i, attach) {
                 const thumbId = "thumb" + num;
-                str += "<img id=\"" + thumbId + "\" src=\"/display?image=" + attach.pthumbnail + "\" onclick=\"firstThumb(this)\">";
+                str += "<img id=\"" + thumbId + "\" src=\"/display?image=" + attach.imageName + "\" onclick=\"firstThumb(this)\">";
             })
             $(".thumb").append(str);
         });
 
-        $.getJSON("/product/getProductOp", {pno: pno}, function (arr) {
+        $.getJSON("/product/option", {pno: pno}, function (arr) {
             let str = "<option value=\"default\">------</option>";
-
-
 
             $(arr).each(function (i, op) {
                 let optionStr = '';
@@ -50,32 +48,14 @@ $(document).ready(function () {
                     optionStr = defaultOption;
 
                 str += optionStr;
-
-                /*if(op.pcolor == null){
-                    if(op.psize != null){
-                        str += "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
-                                    "사이즈 : " + op.psize + "</option>";
-                    }else{
-                        str += "<option value=\"" + op.popNo + "\">" +
-                                 "</option>";
-                    }
-                }else if(op.psize == null){
-                    if(op.pcolor != null){
-                        str += "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
-                                 "컬러 : " + op.pcolor + "</option>";
-                    }
-                }else{
-                    str += "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
-                                "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
-                }*/
             })
             $("#option_select_box").append(str);
         });
 
-        $.getJSON("/product/getProductInfo", {pno: pno}, function (arr) {
+        $.getJSON("/product/info-image", {pno: pno}, function (arr) {
             let str = "<div class=\"productInfo_img\">";
             $(arr).each(function (i, info) {
-                str += "<div class=\"infoImg\"><img class=\"infoImg\" src=\"/display?image=" + info.pimg + "\"></div>";
+                str += "<div class=\"infoImg\"><img class=\"infoImg\" src=\"/display?image=" + info.imageName + "\"></div>";
             })
             str += "</div>";
 
@@ -221,7 +201,7 @@ $(document).ready(function () {
             $("#QnAContentOverlap").text("문의 내용을 입력하세요");
         } else {
             $.ajax({
-                url: "/product/QnAInsert",
+                url: "/product/qna",
                 type: "post",
                 data: content,
                 beforeSend: function (xhr) {
@@ -247,9 +227,8 @@ $(document).ready(function () {
         let pno = $("#pno").val();
 
         $.ajax({
-            url: "/product/likeProduct",
+            url: "/product/like/" + pno,
             type: 'post',
-            data: {pno: pno},
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
@@ -268,14 +247,11 @@ $(document).ready(function () {
     })
 
     $("#deLike").on('click', function () {
-        const pno = {
-            pno : $("#pno").val(),
-        }
+        const pno = $("#pno").val();
 
         $.ajax({
-            url: "/product/deLikeProduct",
+            url: "/product/like/" + pno,
             type: 'delete',
-            data: JSON.stringify(pno),
             contentType: 'application/json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
@@ -307,7 +283,7 @@ function getProductQnAList(param, callback, error) {
     const pno = param.pno;
     const page = param.page || 1;
 
-    $.getJSON("/product/productQnAPages/" + pno + "/" + page + ".json", function (data) {
+    $.getJSON("/product/qna/" + pno + "/" + page, function (data) {
         if (callback){
             callback(data.productQnACount, data.productQnAList);
         }
@@ -321,7 +297,7 @@ function getReviewList(param, callback, error) {
     const pno = param.pno;
     const page = param.page || 1;
 
-    $.getJSON("/product/reviewPages/" + pno + "/" + page + ".json", function (data) {
+    $.getJSON("/product/review/" + pno + "/" + page, function (data) {
         if (callback)
             callback(data.reviewCount, data.reviewList);
     }).fail(function (xhr, status, err) {
@@ -524,7 +500,7 @@ $(function () {
 
                 $.ajaxSettings.traditional = true;
                 $.ajax({
-                    url: '/product/addCart',
+                    url: '/product/cart',
                     type: 'post',
                     data: {pOpNo: noArr, pCount: countArr, pPrice: priceArr},
                     dataType: 'json',
@@ -565,7 +541,7 @@ $(function () {
             $("input[name=cPrice]").val(priceArr);
             $("input[name=pno]").val(pnoArr);
 
-            $("#order_form").attr("action", "/order/orderPayment");
+            $("#order_form").attr("action", "/order");
             $("#order_form").submit();
         })
     })

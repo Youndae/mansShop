@@ -23,11 +23,11 @@ public interface AdminMapper {
 
     public ProductInfoDTO productInfo(String pOpNo);
 
-    public List<ProductFirstThumbnailDTO> getFirstThumb(String pno);
+    public List<ProductImageDTO> getFirstThumb(String pno);
 
-    public List<ProductThumbnailDTO> getThumbnail(String pno);
+    public List<ProductImageDTO> getThumbnail(String pno);
 
-    public List<ProductInfoImageDTO> getInfoImg(String pno);
+    public List<ProductImageDTO> getInfoImg(String pno);
 
     public void modifyProduct(Product product);
 

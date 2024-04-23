@@ -70,7 +70,7 @@ public class MyPageServiceImpl implements MyPageService{
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String insertReviewProc(ProductReviewInsertDTO dto, String orderNo, Principal principal) {
+    public String insertReviewProc(ProductReviewInsertDTO dto, Principal principal) {
         ProductReview productReview = ProductReview.builder()
                                                     .pno(dto.getPno())
                                                     .userId(principal.getName())
@@ -78,7 +78,7 @@ public class MyPageServiceImpl implements MyPageService{
                                                     .build();
 
         myPageMapper.insertProductReview(productReview);
-        myPageMapper.reviewStatUp(productReview.getPno(), orderNo);
+        myPageMapper.reviewStatUp(productReview.getPno(), dto.getOrderNo());
 
         return ResultProperties.SUCCESS;
     }

@@ -1,6 +1,9 @@
 $(document).ready(function(){
 
-    const side_li = "<ul class=\"sales_category\"><li><a href=\"/admin/salesProductList\">상품별매출</a></li><li><a href=\"/admin/salesTermList\">기간별매출</a></li></ul>"
+    const side_li = "<ul class=\"sales_category\">" +
+                        "<li><a href=\"/admin/sales/product\">상품별매출</a></li>" +
+                        "<li><a href=\"/admin/sales/term\">기간별매출</a></li>" +
+                    "</ul>"
     const actionForm = $("#pageActionForm");
 
     $(".side_nav ul").append(side_li);
@@ -25,7 +28,7 @@ $(document).ready(function(){
         actionForm.submit();
     })
 
-    $.getJSON("/admin/salesTermSelect", function(arr){
+    $.getJSON("/admin/sales/term/year", function(arr){
 
         let str = "";
         let optionYear = "";

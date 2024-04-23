@@ -18,7 +18,7 @@ $(document).ready(function(){
         }else if($("#phoneStat").val() != "1"){
             $("#userPhone").focus();
         }else{
-            $("#userInfo").attr('action', '/myPage/modifyInfo');
+            $("#userInfo").attr('action', '/my-page/user/info');
             $("#userInfo").submit();
         }
     })
@@ -43,9 +43,8 @@ $(document).ready(function(){
         }
     })
 
-    //memberQnAList
     $("#insertMemberQnA").on('click', function(){
-        location.href='/myPage/insertMemberQnA';
+        location.href='/my-page/qna/insert';
     })
 })
 
@@ -55,7 +54,7 @@ $(function(){
     $("#insertMyQnA").on('click', function(){
         const form = $("#myQnA_InsertForm");
 
-        form.attr("action", "/myPage/insertMemberQnA");
+        form.attr("action", "/my-page/qna/insert");
         form.submit();
     });
 
@@ -63,7 +62,7 @@ $(function(){
     $("#modifyReview").on('click',function(){
         const rNum = $(this).val();
 
-        location.href='/myPage/memberReviewModify/' + rNum;
+        location.href='/my-page/review/modify/' + rNum;
     });
 
     $("#deleteReview").on('click',function(){
@@ -72,14 +71,14 @@ $(function(){
 
         if(result){
             $.ajax({
-                url: '/myPage/memberReviewDelete/' + rNum,
+                url: '/my-page/review/' + rNum,
                 type: 'delete',
                 beforeSend: function(xhr){
                     xhr.setRequestHeader(header, token);
                 },
                 success: function(data){
                     if(data == 1){
-                        location.href = '/myPage/memberReviewList';
+                        location.href = '/my-page/review';
                     }else{
                         alert("오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요.");
                     }
@@ -92,7 +91,6 @@ $(function(){
     $("#reviewModifyProc").on('click', function(){
         const form = $("#reviewModifyForm");
 
-        form.attr("action", "/myPage/memberReviewModify");
         form.submit();
     });
 
@@ -103,7 +101,7 @@ $(function(){
                         };
 
         $.ajax({
-            url: '/myPage/modifyCheck',
+            url: '/my-page/user',
             type: 'post',
             data: userPw,
             async: false,
@@ -112,7 +110,7 @@ $(function(){
             },
             success: function(data){
                 if(data == 1)
-                    location.href='/myPage/modifyInfo';
+                    location.href='/my-page/user/info';
                 else
                     $(".pwOverlap").text("비밀번호가 일치하지 않습니다.");
             }
@@ -122,7 +120,7 @@ $(function(){
     //chat
     $("#startChat").on('click', function() {
         $.ajax({
-            url: '/myPage/chatRoom',
+            url: '/my-page/chatRoom',
             type: 'post',
             beforeSend: function(xhr) {
                 xhr.setRequestHeader(header, token);
@@ -133,7 +131,7 @@ $(function(){
                 else if(data == 'duplication')
                     alert('마무리 되지 않은 채팅이 있습니다');
                 else {
-                    window.open('/myPage/chatRoom/' + data
+                    window.open('/my-page/chat/' + data
                         , '채팅 문의'
                         , 'width=600px,height=700px,scrollbars=yes'
                     );

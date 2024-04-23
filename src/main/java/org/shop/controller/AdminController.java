@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RequestMapping("/admin/")
 @Controller
@@ -32,9 +31,9 @@ public class AdminController {
     private final AdminService adminService;
 
     //상품 목록
-    @GetMapping("/productList")
+    @GetMapping("/product")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void productList(Model model, Criteria cri) {
+    public String productList(Model model, Criteria cri) {
         if(cri.getKeyword() == "")
             cri.setKeyword(null);
 
@@ -44,17 +43,20 @@ public class AdminController {
         model.addAttribute("pList", adminMapper.productList(cri));
         int total = adminMapper.getProductTotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/productList";
     }
 
     //상품 추가 페이지
-    @GetMapping("/addProduct")
+    @GetMapping("/product/new")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void addProduct(){
+    public String addProduct(){
 
+        return "admin/addProduct";
     }
 
     //상품 추가 처리
-    @PostMapping("/addProduct")
+    @PostMapping("/product")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
     public String insertProduct(ProductInsertDTO dto,
@@ -70,7 +72,7 @@ public class AdminController {
     }
 
     //상품 수정 처리
-    @PatchMapping("/modifyProduct")
+    @PatchMapping("/product")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
     public String modifyProductInfo(ProductModifyDTO dto,
@@ -89,34 +91,34 @@ public class AdminController {
     }
 
     //대표 썸네일 데이터
-    @GetMapping("/getFirstThumb")
+    @GetMapping("/first-thumb")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<ProductFirstThumbnailDTO>> getFirstThumb(String pno){
+    public ResponseEntity<List<ProductImageDTO>> getFirstThumb(String pno){
 
         return new ResponseEntity<>(adminMapper.getFirstThumb(pno), HttpStatus.OK);
     }
 
     //대표 썸네일을 제외한 나머지 썸네일 데이터 리스트
-    @GetMapping("/getThumbnail")
+    @GetMapping("/thumbnail")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<ProductThumbnailDTO>> getThumbnail(String pno){
+    public ResponseEntity<List<ProductImageDTO>> getThumbnail(String pno){
 
         return new ResponseEntity<>(adminMapper.getThumbnail(pno), HttpStatus.OK);
     }
 
     //상품 정보 이미지 데이터 리스트
-    @GetMapping("/getInfoImage")
+    @GetMapping("/info-image")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<ProductInfoImageDTO>> getInfoImg(String pno){
+    public ResponseEntity<List<ProductImageDTO>> getInfoImg(String pno){
 
         return new ResponseEntity<>(adminMapper.getInfoImg(pno), HttpStatus.OK);
     }
 
     //상품 상세 정보 페이지(수정 및 옵션 추가 기능이 존재)
-    @GetMapping("/productInfo/{pOpNo}")
+    @GetMapping("/product-info/{pOpNo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String productInfo(@PathVariable("pOpNo") String pOpNo, Model model){
 
@@ -126,7 +128,7 @@ public class AdminController {
     }
 
     //상품 옵션 추가 처리
-    @PostMapping("/addProductOp")
+    @PostMapping("/product-option")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String addProductOp(ProductOpInsertDTO dto) {
         adminService.addProductOp(dto);
@@ -135,54 +137,56 @@ public class AdminController {
     }
 
     //상품 옵션(1개) 비공개 처리
-    @PostMapping("/closedProductOp")
+    @PatchMapping("/product-option/close/{pOpNo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public void closedProductOp(String pOpNo){
+    public void closedProductOp(@PathVariable String pOpNo){
 
         adminMapper.closedProductOp(pOpNo);
     }
 
     //상품 옵션(1개) 공개 처리
-    @PostMapping("/openProductOp")
+    @PatchMapping("/product-option/open/{pOpNo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public void openProductOp(String pOpNo){
+    public void openProductOp(@PathVariable String pOpNo){
 
         adminMapper.openProductOp(pOpNo);
     }
 
     //상품 비공개 처리
-    @PostMapping("/closedProduct")
+    @PatchMapping("/product/close/{pno}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public void closedProduct(String pno){
+    public void closedProduct(@PathVariable String pno){
 
         adminMapper.closedProduct(pno);
     }
 
     //상품 공개 처리
-    @PostMapping("/openProduct")
+    @PatchMapping("/product/open/{pno}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public void openProduct(String pno){
+    public void openProduct(@PathVariable String pno){
 
         adminMapper.openProduct(pno);
     }
 
     //주문 목록 페이지
-    @GetMapping("/orderList")
+    @GetMapping("/order")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void orderList(Model model, Criteria cri){
+    public String orderList(Model model, Criteria cri){
 
 
         model.addAttribute("order", adminMapper.orderList(cri));
         int total = adminMapper.getOrderTotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/orderList";
     }
 
     //주문 상세 정보 데이터
-    @GetMapping("/orderInfo/{orderNo}")
+    @GetMapping("/order/{orderNo}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<AdminProductOrderDTO> orderInfo(@PathVariable("orderNo") String orderNo){
 
@@ -190,38 +194,38 @@ public class AdminController {
     }
 
     //주문 정보 데이터 리스트
-    @GetMapping("/orderInfoTable")
+    @GetMapping("/order/{orderNo}/data")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<AdminOrderInfoTableDTO>> orderInfoTable(String orderNo){
+    public ResponseEntity<List<AdminOrderInfoTableDTO>> orderInfoTable(@PathVariable String orderNo){
 
         return new ResponseEntity<>(adminMapper.orderInfoTable(orderNo), HttpStatus.OK);
     }
 
     //주문 상품 배송 처리(관리자의 확인 처리)
-    @PatchMapping("/shippingProcess")
+    @PatchMapping("/shipping/{orderNo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public String shippingProcess(@RequestBody Map<String, String> orderNoMap){
-
-        String orderNo = orderNoMap.get("orderNo");
+    public String shippingProcess(@PathVariable String orderNo){
         adminMapper.shippingProcessing(orderNo);
 
         return String.valueOf(adminMapper.checkOrderStat(orderNo));
     }
 
     //사용자 문의 리스트 페이지
-    @GetMapping("/adminQnAList")
+    @GetMapping("/qna")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void adminQnAList(Model model, Criteria cri){
+    public String adminQnAList(Model model, Criteria cri){
 
         model.addAttribute("list", adminMapper.adminQnAList(cri));
         int total = adminMapper.getAdminQnATotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/adminQnAList";
     }
 
     //사용자 문의 상세 페이지
-    @GetMapping("/adminQnADetail/{qno}")
+    @GetMapping("/qna/detail/{qno}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String adminQnADetail(@PathVariable("qno") int qno, Model model){
 
@@ -231,27 +235,26 @@ public class AdminController {
     }
 
     //사용자 문의 답변 완료 처리
-    @PatchMapping("/adminQnAComplete")
+    @PatchMapping("/qna/complete/{qno}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public String adminQnAComplete(@RequestBody Map<String, Integer> qnoMap){
-        int qno = qnoMap.get("qno");
+    public String adminQnAComplete(@PathVariable int qno){
         adminMapper.adminQnAComplete(qno);
 
         return String.valueOf(adminMapper.adminQnACheck(qno));
     }
 
     //사용자 문의 상세 페이지의 댓글(관리자의 답변) 데이터 리스트
-    @GetMapping("/getQnAReply")
+    @GetMapping("/qna/reply/{qno}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<MyQnAReplyGetDTO>> getQnAReply(int qno){
+    public ResponseEntity<List<MyQnAReplyGetDTO>> getQnAReply(@PathVariable int qno){
 
         return new ResponseEntity<>(adminMapper.adminQnAReplyList(qno), HttpStatus.OK);
     }
 
     //사용자 문의 상세 페이지의 댓글(관리자의 답변) 처리
-    @PostMapping("/QnAReply")
+    @PostMapping("/qna/reply")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
     public String qnAReply(MyQnAReplyDTO dto, Principal principal){
@@ -260,16 +263,16 @@ public class AdminController {
     }
 
     //사용자 문의 상세 페이지의 댓글(관리자의 답변) 삭제 처리
-    @DeleteMapping("/QnAReplyDel")
+    @DeleteMapping("/qna/reply/{replyNo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseBody
-    public String qnAReplyDel(int replyNo){
+    public String qnAReplyDel(@PathVariable int replyNo){
 
         return adminService.qnaReplyDelete(replyNo);
     }
 
     //사용자(회원) 데이터
-    @GetMapping("/userInfo/{userId}")
+    @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<MemberInfoDTO> userInfo(@PathVariable("userId") String userId){
 
@@ -277,9 +280,9 @@ public class AdminController {
     }
 
     //사용자(회원) 목록
-    @GetMapping("/userList")
+    @GetMapping("/user")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void userList(Model model, Criteria cri){
+    public String userList(Model model, Criteria cri){
         List<MemberListDTO> dto = adminMapper.userList(cri);
 
         log.info("dto : " + dto);
@@ -287,28 +290,34 @@ public class AdminController {
         model.addAttribute("uList", dto);
         int total = adminMapper.getUserTotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/userList";
     }
 
     //상품별 매출 페이지
-    @GetMapping("/salesProductList")
+    @GetMapping("/sales/product")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void salesProductList(Model model, Criteria cri){
+    public String salesProductList(Model model, Criteria cri){
         model.addAttribute("spList", adminMapper.salesProductList(cri));
         int total = adminMapper.getSalesProductTotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/salesProductList";
     }
 
     //기간별 매출 페이지
-    @GetMapping("/salesTermList")
+    @GetMapping("/sales/term")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void salesTermList(Model model, Criteria cri){
+    public String salesTermList(Model model, Criteria cri){
         model.addAttribute("stList", adminMapper.salesTermList(cri));
         int total = adminMapper.getSalesTermTotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/salesTermList";
     }
 
     //기간별 매출 페이지의 존재하는 연도 데이터 리스트
-    @GetMapping("/salesTermSelect")
+    @GetMapping("/sales/term/year")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Sales>> salesTermSelect(){
 
@@ -316,16 +325,18 @@ public class AdminController {
     }
 
     //상품 문의 목록 페이지
-    @GetMapping("/productQnAList")
+    @GetMapping("/product/qna")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    public void productQnAList(Model model, Criteria cri){
+    public String productQnAList(Model model, Criteria cri){
         model.addAttribute("list", adminMapper.productQnAList(cri));
         int total = adminMapper.getProductQnATotal(cri);
         model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+        return "admin/productQnAList";
     }
 
     //상품 문의 상세 페이지
-    @GetMapping("/productQnADetail/{pQnANo}")
+    @GetMapping("/product/qna/detail/{pQnANo}")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     public String productQnADetail(@PathVariable("pQnANo") long pQnANo, Model model){
         model.addAttribute("detail", adminMapper.productQnADetail(pQnANo));
@@ -334,7 +345,7 @@ public class AdminController {
     }
 
     //상품 문의 답글 작성 처리
-    @PostMapping("/productQnAReply")
+    @PostMapping("/product/qna/reply")
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     public String replyProductQnA(ProductQnAReplyDTO dto, Principal principal){
         adminService.productQnAReplyProc(dto, principal);

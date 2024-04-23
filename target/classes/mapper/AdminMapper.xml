@@ -128,19 +128,19 @@
             op.pOpNo = #{pOpNo}
     </select>
 
-    <select id="getFirstThumb" resultType="org.shop.domain.dto.admin.ProductFirstThumbnailDTO">
+    <select id="getFirstThumb" resultType="org.shop.domain.dto.admin.ProductImageDTO">
         SELECT firstThumbnail
         FROM product
         WHERE pno=#{pno}
     </select>
 
-    <select id="getThumbnail" resultType="org.shop.domain.dto.admin.ProductThumbnailDTO">
+    <select id="getThumbnail" resultType="org.shop.domain.dto.admin.ProductImageDTO">
         SELECT pThumbnail
         FROM productThumbnail
         where pno=#{pno}
     </select>
 
-    <select id="getInfoImg" resultType="org.shop.domain.dto.admin.ProductInfoImageDTO">
+    <select id="getInfoImg" resultType="org.shop.domain.dto.admin.ProductImageDTO">
         SELECT pImg
         FROM productImg
         WHERE pno=#{pno}
@@ -349,7 +349,7 @@
         )
     </insert>
 
-    <delete id="QnAReplyDelete">
+    <delete id="qnAReplyDelete">
         DELETE FROM myQnaReply
         WHERE replyNo=#{replyNo}
     </delete>

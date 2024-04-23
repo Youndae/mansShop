@@ -38,7 +38,7 @@
                                 </c:when>
                             </c:choose>
                             <td>
-                                <a href="<c:url value="/admin/adminQnADetail/${QnAList.qno}"/>"><c:out value="${QnAList.QTitle}"/></a>
+                                <a href="<c:url value="/admin/qna/detail/${QnAList.qno}"/>"><c:out value="${QnAList.QTitle}"/></a>
                             </td>
                             <td><c:out value="${QnAList.userId}"/></td>
                             <td><c:out value="${QnAList.QRegDate}"/></td>
@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <form id="pageActionForm" action="/admin/adminQnAList" method="get">
+            <form id="pageActionForm" action="/admin/qna" method="get">
                 <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
                 <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
             </form>

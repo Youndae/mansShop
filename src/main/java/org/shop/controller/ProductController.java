@@ -2,8 +2,7 @@ package org.shop.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.dto.admin.ProductInfoImageDTO;
-import org.shop.domain.dto.admin.ProductThumbnailDTO;
+import org.shop.domain.dto.admin.ProductImageDTO;
 import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.dto.product.*;
 import org.shop.mapper.AdminMapper;
@@ -48,15 +47,15 @@ public class ProductController {
     }
 
     //상품 썸네일(대표 썸네일이 아닌) 리스트
-    @GetMapping("/getProductThumb")
+    @GetMapping("/thumb")
     @ResponseBody
-    public ResponseEntity<List<ProductThumbnailDTO>> getThumb(String pno){
+    public ResponseEntity<List<ProductImageDTO>> getThumb(String pno){
 
         return new ResponseEntity<>(adminMapper.getThumbnail(pno), HttpStatus.OK);
     }
 
     //상품 옵션 리스트(selectBox 데이터)
-    @GetMapping("/getProductOp")
+    @GetMapping("/option")
     @ResponseBody
     public ResponseEntity<List<ProductOpDTO>> getProductOp(String pno){
 
@@ -64,15 +63,15 @@ public class ProductController {
     }
 
     //상품 정보 이미지 리스트
-    @GetMapping("/getProductInfo")
+    @GetMapping("/info-image")
     @ResponseBody
-    public ResponseEntity<List<ProductInfoImageDTO>> getProductInfo(String pno){
+    public ResponseEntity<List<ProductImageDTO>> getProductInfo(String pno){
 
         return new ResponseEntity<>(adminMapper.getInfoImg(pno), HttpStatus.OK);
     }
 
     //상품문의 데이터 리스트
-    @GetMapping(value = "/productQnAPages/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @GetMapping(value = "/qna/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseEntity<ProductQnADTO> getProductQnA(@PathVariable("page") int page, @PathVariable("pno") String pno){
         Criteria cri = new Criteria(page);
 
@@ -80,7 +79,7 @@ public class ProductController {
     }
 
     //상품 리뷰 데이터 리스트
-    @GetMapping(value = "/reviewPages/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @GetMapping(value = "/review/{pno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseEntity<ProductReviewDTO> getProductReview(@PathVariable("page") int page, @PathVariable("pno") String pno){
         Criteria cri = new Criteria(page);
 
@@ -88,7 +87,7 @@ public class ProductController {
     }
 
     //장바구니 추가 처리
-    @PostMapping("/addCart")
+    @PostMapping("/cart")
     @ResponseBody
     public String addCart(@RequestParam("pOpNo") List<String> pOpNo
             , @RequestParam("pCount") List<String> pCount
@@ -101,7 +100,7 @@ public class ProductController {
     }
 
     //상품 문의 작성 처리
-    @PostMapping("/QnAInsert")
+    @PostMapping("/qna")
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public String qnAInsert(ProductQnAInsertDTO dto, Principal principal){
@@ -110,22 +109,21 @@ public class ProductController {
     }
 
     //상품 찜 목록에 추가
-    @PostMapping("/likeProduct")
+    @PostMapping("/like/{pno}")
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String likeProduct(@RequestParam("pno") String pno, Principal principal){
-        //찜목록에 추가
+    public String likeProduct(@PathVariable String pno, Principal principal){
 
         return productService.likeProduct(pno, principal);
     }
 
     //상품 찜 목록에서 삭제
-    @DeleteMapping("/deLikeProduct")
+    @DeleteMapping("/like/{pno}")
     @ResponseBody
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String deLikeProduct(@RequestBody Map<String, String> pno, Principal principal){
+    public String deLikeProduct(@PathVariable String pno, Principal principal){
 
-        return productService.deLikeProduct(pno.get("pno"), principal);
+        return productService.deLikeProduct(pno, principal);
     }
 
 

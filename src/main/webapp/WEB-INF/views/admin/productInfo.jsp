@@ -28,7 +28,7 @@
 
             <div class="addProduct_content">
                 <div class="addProduct_form">
-                    <form id="modifyProductForm" method="post" action="/admin/addProductOp">
+                    <form id="modifyProductForm" method="post" action="/admin/product-option">
                         <div class="label_t4">
                             <label>상품 분류</label>
                             <select name="pClassification">

@@ -77,4 +77,6 @@
 .QnADetail_reply_content_content{
     display: flex;
     margin-left: 20%;
+    justify-content: space-around;
+    align-items: center;
 }

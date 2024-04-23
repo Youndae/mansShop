@@ -56,7 +56,7 @@
                   </c:when>
                 </c:choose>
                 <td>
-                  <a href="<c:url value="/myPage/chatDetail/${list.qno}"/>"><c:out value="${list.CreatedAt}"/> 문의 내역</a>
+                  <a href="<c:url value="/my-page/chat/detail/${list.qno}"/>"><c:out value="${list.CreatedAt}"/> 문의 내역</a>
                 </td>
               </tr>
             </c:forEach>
@@ -89,7 +89,7 @@
       </c:otherwise>
     </c:choose>
   </div>
-  <form id="pageActionForm" action="/myPage/memberQnAList" method="get">
+  <form id="pageActionForm" action="/my-page/qna" method="get">
     <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
     <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
   </form>

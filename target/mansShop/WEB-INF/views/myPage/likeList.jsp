@@ -60,7 +60,7 @@
         </div>
 
 
-        <form id="pageActionForm" action="/myPage/likeList" method="get">
+        <form id="pageActionForm" action="/my-page/like" method="get">
             <input type="hidden" name="pageNum" value="<c:out value="${pageMaker.cri.pageNum}"/>">
             <input type="hidden" name="amount" value="<c:out value="${pageMaker.cri.amount}"/>">
         </form>

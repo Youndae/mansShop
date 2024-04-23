@@ -21,7 +21,7 @@
             <h1>비밀번호 변경</h1>
         </div>
         <div class="reset_pw_form">
-            <form action="/member/resetPw" id="resetPwForm" method="post">
+            <form action="/member/reset-pw" id="resetPwForm" method="post">
                 <div class="form-group">
                     <input class="form-control" placeholder="비밀번호" name="password" type="password" autofocus>
                 </div>
