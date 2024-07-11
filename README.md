@@ -8,6 +8,9 @@
 * 현재 서비스 중인 쇼핑몰을 참고해 최대한 기능을 구현
 * 실제 서비스되어도 될 정도의 수준까지 계속해서 개선하는 것이 목표
 
+## Spring Boot 버전 github
+* https://github.com/Youndae/mansshop_boot
+
 <br/>
 
 ## 사용기술
