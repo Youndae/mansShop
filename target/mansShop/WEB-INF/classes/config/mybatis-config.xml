@@ -7,9 +7,7 @@
     </settings>
 
     <typeAliases>
-        <package name="com.board.project" />
+        <package name="org.shop.domain" />
     </typeAliases>
 
 </configuration>
-
-

@@ -1,0 +1,28 @@
+.paging {
+    width: 100%;
+    height: 100px;
+    font-size: x-large;
+}
+
+.paging ul {
+    list-style: none;
+    display: ruby-text;
+}
+
+.paging ul li {
+    cursor: pointer;
+}
+
+.paging .active {
+    font-weight: bold;
+}
+
+.paging ul li a {
+    text-decoration: none;
+    color: black;
+}
+
+.order-paging, .like-paging {
+    text-align: center;
+    align-content: center;
+}

@@ -1,168 +1,161 @@
 package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.dto.product.ProductQnADTO;
-import org.shop.domain.dto.product.ProductQnAInsertDTO;
-import org.shop.domain.dto.product.ProductReviewDTO;
-import org.shop.domain.entity.CartDetail;
-import org.shop.domain.entity.Cart;
-import org.shop.domain.entity.LikeProduct;
-import org.shop.domain.entity.ProductQnA;
-import org.shop.mapper.ProductMapper;
+import org.shop.domain.dto.paging.PageDTO;
+import org.shop.domain.dto.paging.PagingResponseDTO;
+import org.shop.domain.dto.product.business.ProductOptionDTO;
+import org.shop.domain.dto.product.business.ProductQnAListDTO;
+import org.shop.domain.dto.product.business.ProductQnAReplyListDTO;
+import org.shop.domain.dto.product.business.ProductReviewListDTO;
+import org.shop.domain.dto.product.in.ProductQnARequestDTO;
+import org.shop.domain.dto.product.out.ProductDetailDTO;
+import org.shop.domain.entity.*;
+import org.shop.domain.enumeration.PageAmount;
+import org.shop.domain.enumeration.Result;
+import org.shop.exception.customException.CustomNotFoundException;
+import org.shop.exception.enumeration.ErrorCode;
+import org.shop.mapper.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Log4j
+@Slf4j
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
 
     private final ProductMapper productMapper;
 
-    private final CookieService cookieService;
+    private final ProductLikeMapper productLikeMapper;
+
+    private final ProductOptionMapper productOptionMapper;
+
+    private final ProductThumbnailMapper productThumbnailMapper;
+
+    private final ProductInfoImageMapper productInfoImageMapper;
+
+    private final ProductReviewMapper productReviewMapper;
+
+    private final ProductQnAMapper productQnAMapper;
+
+    private final ProductQnAReplyMapper productQnAReplyMapper;
+
 
     @Override
-    public ProductQnADTO getProductQnA(Criteria cri, String pno) {
-        return new ProductQnADTO(
-                productMapper.getProductQnATotal(pno),
-                productMapper.getProductQnA(cri, pno)
-        );
+    public ProductDetailDTO productDetail(String productId, Principal principal) {
+        boolean likeStat = false;
+        if(principal != null)
+            likeStat = productLikeMapper.countByUserIdAndProductId(principal.getName(), productId);
+
+        Product product = productMapper.findById(productId);
+
+        if(product == null)
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getMessage());
+
+        List<ProductOptionDTO> optionDTOs = productOptionMapper.findAllDetailByProductId(productId);
+        List<String> productThumbnailList = productThumbnailMapper.findAllByProductId(productId);
+        List<String> productInfoImageList = productInfoImageMapper.findAllByProductId(productId);
+        PagingResponseDTO<ProductReviewListDTO> review = getDetailReview(productId, 1);
+        PagingResponseDTO<ProductQnAListDTO> productQnA = getDetailProductQnA(productId, 1);
+
+        return ProductDetailDTO.builder()
+                                .product(product)
+                                .likeStat(likeStat)
+                                .options(optionDTOs)
+                                .thumbnails(productThumbnailList)
+                                .infoImages(productInfoImageList)
+                                .reviews(review)
+                                .qnAs(productQnA)
+                                .build();
     }
 
     @Override
-    public ProductReviewDTO getProductReview(Criteria cri, String pno) {
-        return new ProductReviewDTO(
-                productMapper.getProductReviewTotal(pno),
-                productMapper.getProductReview(cri, pno));
+    public PagingResponseDTO<ProductReviewListDTO> getDetailReview(String productId, int page) {
+        Criteria cri = new Criteria(page, PageAmount.PRODUCT_REVIEW_AND_QNA_AMOUNT.getAmount());
+        List<ProductReviewListDTO> reviewList = productReviewMapper.findAllDetailByProductId(productId, cri);
+        int totalElements = productReviewMapper.countByProductId(productId);
+
+        return new PagingResponseDTO<>(reviewList, new PageDTO<>(cri, totalElements));
     }
 
-
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String addCart(List<String> pOpNo
-                    , List<String> pCount
-                    , List<String> pPrice
-                    , Principal principal
-                    , HttpServletRequest request
-                    , HttpServletResponse response) {
-        CartDetail cartDetail;
-        Cart cart = cookieService.checkCookie(request, principal, response, true);
-        String cartNo = productMapper.checkCartNo(cart);
-        cart.setCartNo(cartNo);
-        List<CartDetail> addCartDetailList = new ArrayList<>();
+    public PagingResponseDTO<ProductQnAListDTO> getDetailProductQnA(String productId, int page) {
+        Criteria cri = new Criteria(page, PageAmount.PRODUCT_REVIEW_AND_QNA_AMOUNT.getAmount());
+        List<ProductQnA> qnaList = productQnAMapper.findAllDetailByProductId(productId, cri);
+        int totalElements = productQnAMapper.countByProductId(productId);
+        List<ProductQnAListDTO> content = new ArrayList<>();
 
-        //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
-        //userCartPOpNoList에 해당 데이터의 pOpNo 리스트를 조회해 담아주고
-        //추가할 상품의 pOpNo와 비교해 수량 증감 || 상품 추가 여부를 판단한다.
-        if(cartNo != null){
-            List<CartDetail> updateCartDetailList = new ArrayList<>();
-            List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
+        if(totalElements > 0){
+            List<Long> qnaIds = qnaList.stream().map(ProductQnA::getId).collect(Collectors.toList());
+            List<ProductQnAReply> qnaReplyList = productQnAReplyMapper.findAllByQnAIds(qnaIds);
+            int replyIdx = 0;
 
-            for(int i = 0; i < pOpNo.size(); i++) {
-                cartDetail = buildCartDetail(cartNo, pOpNo.get(i), pCount.get(i), pPrice.get(i));
+            for(int i = 0; i < qnaList.size(); i++) {
+                List<ProductQnAReplyListDTO> replyList = new ArrayList<>();
+                ProductQnA qnaEntity = qnaList.get(i);
 
-                //detail에 같은 옵션 상품이 존재한다면
-                if(userCartPOpNoList.contains(pOpNo.get(i)))
-                    updateCartDetailList.add(cartDetail);
-                else //detail에 같은 옵션 상품이 존재하지 않는다면 detail 테이블에 데이터 추가.
-                    addCartDetailList.add(cartDetail);
+                for(int j = replyIdx; j < qnaReplyList.size(); j++) {
+                    if(qnaEntity.getId() == qnaReplyList.get(j).getQnaId())
+                        replyList.add(new ProductQnAReplyListDTO(qnaReplyList.get(j)));
+                    else{
+                        replyIdx = j;
+                        break;
+                    }
+                }
+                content.add(new ProductQnAListDTO(qnaEntity, replyList));
             }
-
-            if(updateCartDetailList.size() != 0)
-                productMapper.updateCartDetail(updateCartDetailList);
-
-            if(addCartDetailList.size() != 0)
-                productMapper.addCartDetail(addCartDetailList);
-            //cart 테이블 데이터의 updatedAt(수정일자) 수정.
-            productMapper.updateCart(cart);
-        }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
-            //cart insert
-            productMapper.addCart(cart);
-
-            for(int i = 0; i < pOpNo.size(); i++) {
-                cartDetail = buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i));
-                addCartDetailList.add(cartDetail);
-            }
-            //detail insert
-            productMapper.addCartDetail(addCartDetailList);
         }
-        return ResultProperties.SUCCESS;
+
+        return new PagingResponseDTO<>(content, new PageDTO<>(cri, totalElements));
     }
 
-    public CartDetail buildCartDetail(String cartNo, String pOpNo, String pCount, String pPrice){
-        return CartDetail.builder()
-                .cartNo(cartNo)
-                .cdNo(
-                        new SimpleDateFormat("yyyyMMddHHmmss")
-                                        .format(System.currentTimeMillis()
-                                ) + pOpNo + pCount
-                )
-                .pOpNo(pOpNo)
-                .cCount(Integer.parseInt(pCount))
-                .cPrice(Long.parseLong(pPrice))
-                .build();
+    @Override
+    public String insertQnA(ProductQnARequestDTO dto) {
+
+        try{
+            productQnAMapper.saveQnA(dto);
+        }catch (Exception e){
+            return Result.FAIL.getResultKey();
+        }
+
+        return Result.SUCCESS.getResultKey();
     }
 
     @Override
     public String likeProduct(String pno, Principal principal) {
         try{
             String uid = principal.getName();
-            productMapper.likeProduct(LikeProduct.builder()
-                    .pno(pno)
-                    .likeNo(uid + pno)
+            productLikeMapper.likeProduct(ProductLike.builder()
+                    .productId(pno)
                     .userId(uid)
                     .build()
             );
 
-            return ResultProperties.SUCCESS;
+            return Result.SUCCESS.getResultKey();
         }catch (Exception e) {
             log.error("likeProduct Exception : " + e.getMessage());
-            return ResultProperties.ERROR;
+            return Result.ERROR.getResultKey();
         }
     }
 
     @Override
     public String deLikeProduct(String pno, Principal principal){
         try{
-            productMapper.deLikeProduct(LikeProduct.builder()
-                    .pno(pno)
+            productLikeMapper.deLikeProduct(ProductLike.builder()
+                    .productId(pno)
                     .userId(principal.getName())
                     .build()
             );
 
-            return ResultProperties.SUCCESS;
+            return Result.SUCCESS.getResultKey();
         }catch (Exception e ){
             log.error("deLikeProduct Exception  : " + e.getMessage());
-            return ResultProperties.ERROR;
+            return Result.ERROR.getResultKey();
         }
-    }
-
-    @Override
-    public String qnAInsertProc(ProductQnAInsertDTO dto, Principal principal) {
-        try{
-            productMapper.insertPQnA(ProductQnA.builder()
-                    .pno(dto.getPno())
-                    .userId(principal.getName())
-                    .pQnAContent(dto.getPQnAContent())
-                    .build()
-            );
-
-            return ResultProperties.SUCCESS;
-        }catch (Exception e) {
-            log.error("QnAInsertProc Exception : " + e.getMessage());
-            return ResultProperties.ERROR;
-        }
-
-
     }
 }

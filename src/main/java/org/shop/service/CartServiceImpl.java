@@ -2,9 +2,17 @@ package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.domain.ResultProperties;
+import org.shop.domain.dto.cart.business.OptionAndCountListDTO;
+import org.shop.domain.dto.cart.business.CartMemberDTO;
+import org.shop.domain.dto.cart.out.CartDetailDTO;
+import org.shop.domain.dto.cart.out.CartDetailResponseDTO;
 import org.shop.domain.entity.Cart;
 import org.shop.domain.entity.CartDetail;
+import org.shop.domain.enumeration.Result;
+import org.shop.exception.customException.CustomAccessDeniedException;
+import org.shop.exception.enumeration.ErrorCode;
+import org.shop.mapper.CartDetailMapper;
+import org.shop.mapper.CartMapper;
 import org.shop.mapper.MyPageMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,54 +20,104 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CartServiceImpl implements CartService{
 
-    private final CookieService cookieService;
-
     private final MyPageMapper myPageMapper;
 
+    private final CartMapper cartMapper;
+
+    private final CartDetailMapper cartDetailMapper;
+
     @Override
-    public String deleteCartCheck(List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        Cart cart = cookieService.checkCookie(request, principal, response, false);
+    @Transactional(rollbackFor = Exception.class)
+    public String addCart(OptionAndCountListDTO optionAndCountListDTO, CartMemberDTO cartMemberDTO) {
+        Long cartId = cartMapper.findCartIdByUserIdOrCookieId(cartMemberDTO);
 
-        if(myPageMapper.cartCount(cart) == cdNoList.size()){ //전체 삭제라면
-            //cart테이블에서 해당 아이디의 데이터 삭제
-            myPageMapper.deleteCart(cart);
+        if(cartId == null) {
+            Cart cart = cartMemberDTO.toEntity();
+            cartMapper.saveCart(cart);
+            cartId = cart.getId();
+        }else
+            cartMapper.updateCartUpdatedAt(cartId);
 
-            //비회원이 전체 삭제를 한 경우에는 쿠키를 삭제한다.
-            if(cart.getUserId() == null)
-                cookieService.deleteCookie(request, response);
+        Map<String, Object> params = new HashMap<>();
 
-        }else{
-            myPageMapper.deleteCartDetail(cdNoList);
-        }
+        params.put("cartId", cartId);
+        params.put("optionIds", optionAndCountListDTO.getOptionNoList());
+        params.put("cartCounts", optionAndCountListDTO.getCountList());
 
-        return ResultProperties.SUCCESS;
+        cartDetailMapper.saveCartDetailList(params);
+
+        return Result.SUCCESS.getResultKey();
     }
 
     @Override
-    public String cartCount(String cdNo, String cPrice, String countType) {
+    public CartDetailResponseDTO getCartDetail(CartMemberDTO cartMemberDTO) {
+        Long cartId = cartMapper.findCartIdByUserIdOrCookieId(cartMemberDTO);
 
-        try{
-            CartDetail cartDetail = CartDetail.builder()
-                    .cdNo(cdNo)
-                    .cPrice(Long.parseLong(cPrice))
-                    .build();
+        if(cartId == null)
+            return null;
 
-            if(countType.equals("up"))
-                myPageMapper.cartUp(cartDetail);
-            else if(countType.equals("down"))
-                myPageMapper.cartDown(cartDetail);
+        List<CartDetailDTO> contents = cartDetailMapper.findAllDetailById(cartId);
+        int totalPrice = contents.stream().mapToInt(CartDetailDTO::getTotalPrice).sum();
 
-            return ResultProperties.SUCCESS;
-        }catch (Exception e){
-            log.error("cartCount Exception : " + e.getMessage());
-            return ResultProperties.ERROR;
-        }
+        return new CartDetailResponseDTO(contents, totalPrice);
     }
+
+    @Override
+    public String deleteSelectCartDetail(List<Long> deleteCartDetailIds, CartMemberDTO cartMemberDTO) {
+        Long cartId = checkCartUser(cartMemberDTO);
+
+        List<CartDetail> detailList = cartDetailMapper.findAllById(cartId);
+
+        if(detailList.size() == deleteCartDetailIds.size())
+            cartMapper.deleteById(cartId);
+        else
+            cartDetailMapper.deleteByIds(deleteCartDetailIds);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String deleteCart(CartMemberDTO cartMemberDTO) {
+        Long cartId = checkCartUser(cartMemberDTO);
+        cartMapper.deleteById(cartId);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String patchCartUp(Long cartDetailId, CartMemberDTO cartMemberDTO) {
+        checkCartUser(cartMemberDTO);
+
+        cartDetailMapper.patchCartDetailCount(cartDetailId, 1);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String patchCartDown(Long cartDetailId, CartMemberDTO cartMemberDTO) {
+        checkCartUser(cartMemberDTO);
+
+        cartDetailMapper.patchCartDetailCount(cartDetailId, -1);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    private Long checkCartUser(CartMemberDTO cartMemberDTO) {
+        Long cartId = cartMapper.findCartIdByUserIdOrCookieId(cartMemberDTO);
+
+        if(cartId == null)
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        return cartId;
+    }
+
 }

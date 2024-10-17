@@ -1,167 +1,333 @@
 package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.myPage.*;
+import lombok.extern.slf4j.Slf4j;
+import org.shop.domain.dto.myPage.qna.business.MyPageMemberQnADetailDTO;
+import org.shop.domain.dto.myPage.qna.business.MyPageProductQnADetailDTO;
+import org.shop.domain.dto.myPage.qna.business.QnAReplyListDTO;
+import org.shop.domain.dto.myPage.in.MemberCheckRequestDTO;
+import org.shop.domain.dto.myPage.in.MemberInfoRequestDTO;
+import org.shop.domain.dto.myPage.qna.in.MemberQnARequestDTO;
+import org.shop.domain.dto.myPage.qna.in.QnAReplyRequestDTO;
+import org.shop.domain.dto.myPage.out.*;
+import org.shop.domain.dto.myPage.qna.out.*;
+import org.shop.domain.dto.paging.Criteria;
 import org.shop.domain.entity.*;
-import org.shop.mapper.ChatMapper;
-import org.shop.mapper.MyPageMapper;
-import org.springframework.security.access.AccessDeniedException;
+import org.shop.domain.enumeration.Result;
+import org.shop.exception.customException.CustomAccessDeniedException;
+import org.shop.exception.customException.CustomNotFoundException;
+import org.shop.exception.enumeration.ErrorCode;
+import org.shop.mapper.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Log4j
+@Slf4j
 @RequiredArgsConstructor
 public class MyPageServiceImpl implements MyPageService{
 
     private final MyPageMapper myPageMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    private final CookieService cookieService;
+    private final MemberMapper memberMapper;
 
-    private final ChatMapper chatMapper;
+    private final ProductQnAMapper productQnAMapper;
+
+    private final ProductQnAReplyMapper productQnAReplyMapper;
+
+    private final MemberQnAMapper memberQnAMapper;
+
+    private final MemberQnAReplyMapper memberQnAReplyMapper;
+
+    private final QnAClassificationMapper qnAClassificationMapper;
+
+    private final ProductReviewMapper productReviewMapper;
+
+    private final BCryptPasswordEncoder encoder;
+
+    private final ProductLikeMapper productLikeMapper;
+
+    private final ProductOrderDetailMapper productOrderDetailMapper;
+
 
     @Override
-    public String modifyCheckProc(String userPw, Principal principal) {
-        String checkPw = myPageMapper.modifyCheck(principal.getName());
+    public List<LikeListDTO> getLikeList(Criteria cri, String userId) {
 
-        if(passwordEncoder.matches(userPw, checkPw))
-            return ResultProperties.SUCCESS;
-
-        return ResultProperties.ERROR;
+        return myPageMapper.getLikeList(userId, cri);
     }
 
     @Override
-    public void modifyInfo(MemberModifyDTO dto, Principal principal) {
+    public int getLikeTotalElements(String userId) {
 
-        if(!dto.getUserId().equals(principal.getName()))
-            throw new AccessDeniedException("userId not equals principal");
-
-        myPageMapper.modifyInfo(Member.builder()
-                                    .userId(dto.getUserId())
-                                    .userName(dto.getUserName())
-                                    .userPhone(dto.getUserPhone())
-                                    .userEmail(dto.getUserEmail())
-                                    .build()
-                            );
+        return myPageMapper.getLikeTotalElements(userId);
     }
 
     @Override
-    public List<MemberOrderListDTO> getOrderList(String regDate, Principal principal) {
-
-        try{
-            SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
-            Date date = fm.parse(regDate);
-            return myPageMapper.memberOrderList(principal.getName(), date);
-        }catch (ParseException e){
-            e.printStackTrace();
-            return null;
-        }
+    public List<MyPageProductQnAListDTO> getProductQnAList(String userId, Criteria cri) {
+        return myPageMapper.getProductQnAList(userId, cri);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String insertReviewProc(ProductReviewInsertDTO dto, Principal principal) {
-        ProductReview productReview = ProductReview.builder()
-                                                    .pno(dto.getPno())
-                                                    .userId(principal.getName())
-                                                    .reviewContent(dto.getReviewContent())
-                                                    .build();
-
-        myPageMapper.insertProductReview(productReview);
-        myPageMapper.reviewStatUp(productReview.getPno(), dto.getOrderNo());
-
-        return ResultProperties.SUCCESS;
+    public int getProductQnATotalElements(String userId) {
+        return myPageMapper.getProductQnATotalElements(userId);
     }
 
     @Override
-    public String insertMyQnAProc(MyQnAInsertDTO dto, Principal principal) {
-
-        myPageMapper.insertMemberQnA(MyQnA.builder()
-                                        .userId(principal.getName())
-                                        .qTitle(dto.getQTitle())
-                                        .qContent(dto.getQContent())
-                                        .build()
-                                );
-
-        return ResultProperties.SUCCESS;
+    public List<MyPageMemberQnAListDTO> getMemberQnAList(String userId, Criteria cri) {
+        return myPageMapper.getMemberQnAList(userId, cri);
     }
 
     @Override
-    public String memberReviewModify(ProductReviewModifyDTO dto) {
-
-        myPageMapper.memberReviewModify(ProductReview.builder()
-                                        .rNum(dto.getRNum())
-                                        .reviewContent(dto.getReviewContent())
-                                        .build());
-
-        return ResultProperties.SUCCESS;
+    public int getMemberQnATotalElements(String userId) {
+        return myPageMapper.getMemberQnATotalElements(userId);
     }
 
+    @Override
+    public List<MyPageReviewListDTO> getReviewList(String userId, Criteria cri) {
+        return myPageMapper.getReviewList(userId, cri);
+    }
 
     @Override
-    public String deleteReview(long rNum) {
+    public int getReviewTotalElements(String userId) {
+        return myPageMapper.getReviewTotalElements(userId);
+    }
+
+    @Override
+    public MyPageMemberInfoDTO getMemberInfo(String userId) {
+        Member member = memberMapper.getInfo(userId);
+        String[] splitMail = member.getUserEmail().split("@");
+
+        return new MyPageMemberInfoDTO(member, splitMail);
+    }
+
+    @Override
+    public MyPageReviewDetailDTO getReviewDetail(long reviewId, String userId) {
+        return myPageMapper.getReviewDetail(reviewId, userId);
+    }
+
+    @Override
+    public MyPageProductQnADetailResponseDTO getProductQnADetail(long qnaId, String userId) {
+        MyPageProductQnADetailDTO dto = productQnAMapper.findDetailByQnAIdAndUserId(qnaId, userId);
+
+        if(dto == null)
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getMessage());
+
+        List<QnAReplyListDTO> replyList = productQnAReplyMapper.findAllByQnAId(qnaId);
+
+        return new MyPageProductQnADetailResponseDTO(dto, replyList);
+    }
+
+    @Override
+    public MyPageMemberQnADetailResponseDTO getMemberQnADetail(long qnaId, String userId) {
+
+        MyPageMemberQnADetailDTO dto = memberQnAMapper.findDetailByIdAndUserId(qnaId, userId);
+
+        if(dto == null)
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getMessage());
+
+        List<QnAReplyListDTO> replyList = memberQnAReplyMapper.findAllByQnAId(qnaId);
+
+        return new MyPageMemberQnADetailResponseDTO(dto, replyList);
+    }
+
+    @Override
+    public String patchMemberQnAReply(QnAReplyRequestDTO dto, String userId) {
+
+        MemberQnAReply entity = memberQnAReplyMapper.findById(dto.getId());
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        entity.setReplyContent(dto.getContent());
+
+        memberQnAReplyMapper.patchContent(entity);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String postMemberQnAReply(QnAReplyRequestDTO dto, String userId) {
+        MemberQnA entity = memberQnAMapper.findById(dto.getId());
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        memberQnAReplyMapper.insertReply(dto.toMemberQnAReplyEntity(userId));
+        memberQnAMapper.patchStatus(dto.getId());
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public List<MyPageQnAClassificationDTO> getQnAClassification() {
+        List<QnAClassification> entity = qnAClassificationMapper.findAll();
+
+        return entity.stream()
+                    .map(QnAClassification::fromDTO)
+                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public MemberQnAPatchResponseDTO getMemberQnAPatchData(long qnaId, String userId) {
+        MemberQnA entity = memberQnAMapper.findById(qnaId);
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        return new MemberQnAPatchResponseDTO(entity);
+    }
+
+    @Override
+    public Long postMemberQnA(MemberQnARequestDTO dto, String userId) {
+        MemberQnA entity = dto.toEntity(userId);
+        memberQnAMapper.saveEntity(entity);
+
+        return entity.getId();
+    }
+
+    @Override
+    public Long patchMemberQnA(long qnaId, MemberQnARequestDTO dto, String userId) {
+        MemberQnA entity = memberQnAMapper.findById(qnaId);
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        memberQnAMapper.patchQnA(qnaId, dto);
+
+        return qnaId;
+    }
+
+    @Override
+    public String deleteMemberQnA(long qnaId, String userId) {
+        MemberQnA entity = memberQnAMapper.findById(qnaId);
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        memberQnAMapper.deleteById(qnaId);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String deleteProductQnA(long qnaId, String userId) {
+        ProductQnA entity = productQnAMapper.findById(qnaId);
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        productQnAMapper.deleteById(qnaId);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public MyPageReviewPatchDTO getPatchReviewData(long reviewId, String userId) {
+        MyPageReviewPatchDTO dto = productReviewMapper.findPatchDataByReviewIdAndUserId(reviewId, userId);
+
+        if(dto == null)
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getMessage());
+
+        return dto;
+    }
+
+    @Override
+    public MyPageReviewPostDTO getPostReviewData(long orderDetailId, String userId) {
+        MyPageReviewPostDTO dto = productOrderDetailMapper.findPostReviewDetailData(orderDetailId, userId);
+
+        if(dto == null)
+            throw new CustomNotFoundException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getMessage());
+
+        return dto;
+    }
+
+    @Override
+    public String postReview(long orderDetailId, String content, String userId) {
+        ProductOrderDetail orderDetail = productOrderDetailMapper.findById(orderDetailId);
+        ProductReview entity = ProductReview.builder()
+                                            .productId(orderDetail.getProductId())
+                                            .productOptionId(orderDetail.getProductOptionId())
+                                            .userId(userId)
+                                            .reviewContent(content)
+                                            .build();
+        productReviewMapper.saveReview(entity);
+        productOrderDetailMapper.patchReviewStatus(orderDetailId);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String patchReview(QnAReplyRequestDTO dto, String userId) {
+        ProductReview entity = productReviewMapper.findById(dto.getId());
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        productReviewMapper.patchReview(dto);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String deleteReview(long reviewId, String userId) {
+        ProductReview entity = productReviewMapper.findById(reviewId);
+
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        productReviewMapper.deleteById(reviewId);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    @Override
+    public String checkMember(MemberCheckRequestDTO dto, String userId) {
+        if(!dto.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        Member entity = memberMapper.findById(dto.getUserId());
+
+        if(encoder.matches(dto.getUserPw(), entity.getUserPw()))
+            return Result.SUCCESS.getResultKey();
+        else
+            return Result.FAIL.getResultKey();
+    }
+
+    @Override
+    public String checkNickname(String nickname, String userId) {
+        Member member = memberMapper.findByNickname(nickname);
+
+        if(member == null || member.getUserId().equals(userId))
+            return Result.OK.getResultKey();
+        else
+            return Result.DUPLICATE.getResultKey();
+    }
+
+    @Override
+    public String patchMemberInfo(MemberInfoRequestDTO dto, String userId) {
         try {
-            myPageMapper.deleteReview(rNum);
-            return ResultProperties.SUCCESS;
+            Member entity = dto.toEntity(userId);
+            memberMapper.patchMember(entity);
         }catch (Exception e) {
-            log.error("deleteReview Exception : " + e.getMessage());
-            return ResultProperties.ERROR;
+            log.error("MyPageServiceImpl.patchMemberInfo error");
+            e.printStackTrace();
+            return Result.FAIL.getResultKey();
         }
+
+        return Result.SUCCESS.getResultKey();
     }
 
     @Override
-    public String createChatRoom(Principal principal) {
+    public String deleteLike(long likeId, String userId) {
+        ProductLike entity = productLikeMapper.findById(likeId);
 
-        /** 방번호 생성. 기능 완료 후 수정 */
-        StringBuffer sb = new StringBuffer();
+        if(!entity.getUserId().equals(userId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
 
-        String uid = principal.getName();
-        //상담이 마무리되지 않은 방이 있다면(chatStatus == 0)
-        String duplicationRoomId = chatMapper.duplicationCheck(uid);
-        if(duplicationRoomId != null)
-            return duplicationRoomId;
+        productLikeMapper.deleteById(likeId);
 
-        String chatRoomId = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
-                            .append(uid)
-                            .toString();
-
-
-
-        chatMapper.createChatRoom(ChatRoom.builder()
-                                        .chatRoomId(chatRoomId)
-                                        .userId(uid)
-                                        .build()
-                                );
-
-        return chatRoomId;
-    }
-
-    @Override
-    public String findByUserRoomId(String chatRoomId, Principal principal) {
-        /**
-         * 현재는 해당 방을 생성한 사용자가 맞는지만 체크.
-         *
-         * 추후 이전 채팅 내역까지 출력하도록 할 때 기능 추가.
-         */
-
-        ChatRoom chatRoom = ChatRoom.builder()
-                .chatRoomId(chatRoomId)
-                .userId(principal.getName())
-                .build();
-
-        if(chatMapper.checkUser(chatRoom) == 0)
-            throw new AccessDeniedException("Access Denied");
-
-        return chatRoomId;
+        return Result.SUCCESS.getResultKey();
     }
 }

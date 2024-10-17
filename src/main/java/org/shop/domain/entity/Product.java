@@ -4,44 +4,38 @@ import lombok.*;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Product {
 
-    private String pno;
+    private String id;
 
-    private String pClassification;
+    private String classificationId;
 
-    private String pName;
+    private String productName;
 
-    private Long pPrice;
+    private int productPrice;
 
-    private Date pRegDate;
+    private String thumbnail;
 
-    private String firstThumbnail;
+    private long productSales;
 
-    private String pClosed;
+    private int productDiscount;
 
-    private Long pSales;
+    private boolean isOpen;
 
-    public Product(String pno, String pClassification, String pName, Long pPrice, Date pRegDate, String firstThumbnail, String pClosed, Long pSales) {
-        StringBuffer sb = new StringBuffer();
+    private LocalDate createdAt;
 
-        this.pno = pno != null ? pno : sb.append(pClassification)
-                                            .append(
-                                                    new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
-                                            ).toString();
-        this.pClassification = pClassification;
-        this.pName = pName;
-        this.pPrice = pPrice;
-        this.pRegDate = pRegDate;
-        this.firstThumbnail = firstThumbnail;
-        this.pClosed = pClosed;
-        this.pSales = pSales;
+    private LocalDate updatedAt;
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

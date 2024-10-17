@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductReviewReplyMapper">
+
+    <select id="findDetailByReviewId" resultType="AdminReviewReplyDTO">
+        SELECT id as detailId
+            , replyContent as content
+            , updatedAt as updatedAt
+        FROM productReviewReply
+        WHERE reviewId = #{id}
+    </select>
+
+    <insert id="saveReply">
+        INSERT INTO productReviewReply (userId, reviewId, replyContent)
+        VALUES(#{userId}, #{id}, #{content})
+    </insert>
+</mapper>

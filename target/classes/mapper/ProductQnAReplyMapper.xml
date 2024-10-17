@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductQnAReplyMapper">
+
+    <select id="findAllByQnAIds" resultType="ProductQnAReply">
+        SELECT *
+        FROM productQnAReply
+        where qnaId IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+              #{item}
+            </foreach>
+        ORDER BY qnaId DESC, createdAt
+    </select>
+
+    <select id="findAllByQnAId" resultType="QnAReplyListDTO">
+        SELECT id as replyId
+             , CASE
+                   WHEN m.nickname is null
+                       THEN m.userId
+                   ELSE m.nickname
+            END as writer
+            , replyContent as content
+            , updatedAt as updatedAt
+        FROM productQnAReply q
+        INNER JOIN member m
+            on q.userId = m.userId
+        WHERE qnaId = #{qnaId}
+    </select>
+
+    <insert id="insertReply" parameterType="ProductQnAReply">
+        INSERT INTO productQnAReply (
+             userId
+             , qnaId
+             , replyContent
+        )
+        VALUES(
+              #{userId}
+            , #{qnaId}
+            , #{replyContent}
+        )
+    </insert>
+
+    <update id="patchReply" parameterType="QnAReplyRequestDTO">
+        UPDATE productQnAReply
+        SET replyContent = #{content}
+        WHERE id = #{id}
+    </update>
+</mapper>

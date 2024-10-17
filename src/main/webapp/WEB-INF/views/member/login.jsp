@@ -9,14 +9,16 @@
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="/js/member.js"></script>
 <link rel="stylesheet" href="/css/member.css">
+<link rel="stylesheet" href="/css/default.css">
 <body>
-<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
-    <div class="content login_content">
-        <div class="login_header">
+<div class="container">
+    <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+    <div class="content login-content">
+        <div class="login-header">
             <h1>로그인</h1>
         </div>
-        <div class="login_form">
-            <form action="/login" id="loginForm" method="post">
+        <div class="login-form">
+            <form class="login-form" action="/login" id="loginForm" method="post">
                     <div class="form-group">
                         <input class="form-control" placeholder="아이디" name="username" type="text" autofocus>
                     </div>
@@ -24,16 +26,16 @@
                         <input class="form-control" placeholder="비밀번호" name="password" type="password">
                     </div>
                 <div class="login-form-btn-area">
-                    <div class="loginBtn-area">
-                        <button class="loginBtn">Login</button>
+                    <div class="login-btn">
+                        <button class="login-btn default-btn">Login</button>
                     </div>
-                    <div class="else-btn-area">
-                        <button class="joinBtn">회원가입</button>
-                        <button class="searchId">아이디 찾기</button>
-                        <button class="searchPw">비밀번호 찾기</button>
+                    <div class="join-search-area">
+                        <button class="join-btn default-btn">회원가입</button>
+                        <button class="search-id-btn default-btn">아이디 찾기</button>
+                        <button class="search-pw-btn default-btn">비밀번호 찾기</button>
                     </div>
                 </div>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <sec:csrfInput/>
             </form>
         </div>
     </div>

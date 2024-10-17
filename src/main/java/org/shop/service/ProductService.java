@@ -1,33 +1,24 @@
 package org.shop.service;
 
-import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.dto.product.ProductQnADTO;
-import org.shop.domain.dto.product.ProductQnAInsertDTO;
-import org.shop.domain.dto.product.ProductReviewDTO;
-import org.shop.domain.entity.Cart;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.shop.domain.dto.paging.PagingResponseDTO;
+import org.shop.domain.dto.product.business.ProductQnAListDTO;
+import org.shop.domain.dto.product.business.ProductReviewListDTO;
+import org.shop.domain.dto.product.in.ProductQnARequestDTO;
+import org.shop.domain.dto.product.out.ProductDetailDTO;
 import java.security.Principal;
-import java.util.List;
 
 public interface ProductService {
 
-    public ProductReviewDTO getProductReview(Criteria cri, String pno);
+    ProductDetailDTO productDetail(String productId, Principal principal);
 
-    public ProductQnADTO getProductQnA(Criteria cri, String pno);
+    PagingResponseDTO<ProductReviewListDTO> getDetailReview(String productId, int page);
 
-    public String addCart(List<String> pOpNo
-                        , List<String> pCount
-                        , List<String> pPrice
-                        , Principal principal
-                        , HttpServletRequest request
-                        , HttpServletResponse response);
+    PagingResponseDTO<ProductQnAListDTO> getDetailProductQnA(String productId, int page);
 
+    String insertQnA(ProductQnARequestDTO dto);
 
-    public String likeProduct(String pno, Principal principal);
+    String likeProduct(String pno, Principal principal);
 
-    public String deLikeProduct(String pno, Principal principal);
+    String deLikeProduct(String pno, Principal principal);
 
-    public String qnAInsertProc(ProductQnAInsertDTO dto, Principal principal);
 }

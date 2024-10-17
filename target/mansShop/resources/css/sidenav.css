@@ -1,24 +1,47 @@
-.side_nav{
-    width: 400px;
+.side-nav {
+    width: 190px;
+    margin: 5% 0 0 20%;
+    position: fixed;
 }
 
-.side_nav ul{
-    width: 300px;
+.side-nav-ul {
+    width: 190px;
 }
 
-.side_nav li{
+.fs-l{
+    font-size: large;
+}
+
+.side-nav li {
     list-style: none;
     font-weight: bold;
+    margin: 40px;
 }
 
-.side_nav_ul li{
-    margin: 40px;
+.side-nav-ul li, .side-nav-category-ul > li {
     font-size: x-large;
 }
 
-.sales_category li{
-    width: 150px;
-    margin: 20px 0 0 70px;
+.side-nav-ul li a, .side-nav-category-ul li a {
+    text-decoration: none;
+    color: black;
+}
+
+.side-nav-category-ul {
+    width: 130px;
+}
+
+.qna-nav-ul li, .admin-side-nav-category-ul li {
     font-size: large;
+    margin-left: 15px;
+    margin-top: 20px;
+}
+
+.side-nav-category-ul li {
+    width: 120px;
+}
+
+.admin-side-nav-category-ul {
+    width: 190px;
 }
 

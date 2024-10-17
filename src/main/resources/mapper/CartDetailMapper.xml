@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.CartDetailMapper">
+
+    <insert id="saveCartDetailList" parameterType="map">
+        {CALL insert_cart_details(
+                #{cartId, jdbcType=NUMERIC},
+                #{optionIds, jdbcType=ARRAY, jdbcTypeName="SYS.ODCINUMBERLIST", typeHandler=org.shop.mapper.typeHandler.CustomLongArrayTypeHandler},
+                #{cartCounts, jdbcType=ARRAY, jdbcTypeName="SYS.ODCINUMBERLIST", typeHandler=org.shop.mapper.typeHandler.CustomIntegerArrayTypeHandler}
+        )}
+    </insert>
+
+    <select id="findAllDetailById" resultType="CartDetailDTO">
+        SELECT cd.id as cartDetailId
+                , p.id as productId
+                , op.id as optionId
+                , p.productName as productName
+                , p.thumbnail as thumbnail
+                , op.productSize as pSize
+                , op.productColor as pColor
+                , cd.cartCount as count
+                , p.productPrice as price
+                , p.productDiscount as discount
+        FROM cartDetail cd
+        INNER JOIN productOption op
+        ON cd.productoptionId = op.id
+        INNER JOIN product p
+        ON op.productId = p.id
+        WHERE cd.cartId = #{cartId}
+    </select>
+
+    <select id="findAllById" resultType="CartDetail">
+        SELECT *
+        FROM cartDetail
+        WHERE cartId = #{cartid}
+    </select>
+
+    <delete id="deleteByIds" parameterType="Long">
+        DELETE
+        FROM cartDetail
+        <where>
+            <foreach collection="list" item="item" open="" close="" separator="OR">
+                (id = #{item})
+            </foreach>
+        </where>
+    </delete>
+
+    <update id="patchCartDetailCount">
+        UPDATE cartDetail
+        SET cartCount = cartCount + #{countValue}
+        WHERE id = #{cartDetailId}
+    </update>
+
+    <select id="findCartIdByCartIdAndDetailId" resultType="Long">
+        SELECT cartId
+        FROM cartDetail
+        WHERE id = #{detailId}
+    </select>
+
+    <select id="findOrderProductByOptionIds" resultType="OrderProductDTO">
+        SELECT p.id as productId
+            , p.productName as productName
+            , op.id as productOptionId
+            , op.productSize as pSize
+            , op.productColor as pColor
+            , c.cartCount as count
+            , p.productPrice as price
+            , p.productDiscount as discount
+        FROM cartDetail c
+        INNER JOIN productOption op
+        ON c.productOptionId = op.id
+        INNER JOIN product p
+        ON op.productId = p.id
+        <where>
+            <foreach collection="list" item="item" open="" close="" separator="OR">
+                (c.id = #{item})
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findAllDetailByUserIdOrCookieId" resultType="OrderCartDetailDTO">
+        SELECT c.id as cartId
+            , cd.id as detailId
+            , cd.productOptionId as optionId
+        FROM cart c
+        INNER JOIN cartDetail cd
+        on c.id = cd.cartId
+        <include refid="findCartIdCondition"/>
+    </select>
+
+    <sql id="findCartIdCondition">
+        <trim prefix="WHERE ">
+            <if test="dto.userId != null"> userId = #{dto.userId}</if>
+            <if test="dto.cookieId != null"> cookieId = #{dto.cookieId}</if>
+        </trim>
+    </sql>
+</mapper>

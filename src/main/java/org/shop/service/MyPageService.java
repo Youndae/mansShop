@@ -1,30 +1,72 @@
 package org.shop.service;
 
-import org.shop.domain.dto.myPage.*;
-import org.shop.domain.entity.Cart;
+import org.shop.domain.dto.myPage.in.MemberCheckRequestDTO;
+import org.shop.domain.dto.myPage.in.MemberInfoRequestDTO;
+import org.shop.domain.dto.myPage.qna.in.MemberQnARequestDTO;
+import org.shop.domain.dto.myPage.qna.in.QnAReplyRequestDTO;
+import org.shop.domain.dto.myPage.out.*;
+import org.shop.domain.dto.myPage.qna.out.*;
+import org.shop.domain.dto.paging.Criteria;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
 import java.util.List;
 
 public interface MyPageService {
 
-    public String modifyCheckProc(String userPw, Principal principal);
+    List<LikeListDTO> getLikeList(Criteria cri, String userId);
 
-    public void modifyInfo(MemberModifyDTO dto, Principal principal);
+    int getLikeTotalElements(String userId);
 
-    public List<MemberOrderListDTO> getOrderList(String regDate, Principal principal);
+    List<MyPageProductQnAListDTO> getProductQnAList(String userId, Criteria cri);
 
-    public String insertReviewProc(ProductReviewInsertDTO dto, Principal principal);
+    int getProductQnATotalElements(String userId);
 
-    public String insertMyQnAProc(MyQnAInsertDTO dto, Principal principal);
+    List<MyPageMemberQnAListDTO> getMemberQnAList(String userId, Criteria cri);
 
-    String memberReviewModify(ProductReviewModifyDTO dto);
+    int getMemberQnATotalElements(String userId);
 
-    String deleteReview(long rNum);
+    List<MyPageReviewListDTO> getReviewList(String userId, Criteria cri);
 
-    public String createChatRoom(Principal principal);
+    int getReviewTotalElements(String userId);
 
-    public String findByUserRoomId(String chatRoomId, Principal principal);
+    MyPageMemberInfoDTO getMemberInfo(String userId);
+
+    MyPageReviewDetailDTO getReviewDetail(long reviewId, String userId);
+
+    String patchMemberInfo(MemberInfoRequestDTO dto, String userId);
+
+    MyPageProductQnADetailResponseDTO getProductQnADetail(long qnaId, String userId);
+
+    MyPageMemberQnADetailResponseDTO getMemberQnADetail(long qnaId, String userId);
+
+    String patchMemberQnAReply(QnAReplyRequestDTO dto, String userId);
+
+    String postMemberQnAReply(QnAReplyRequestDTO dto, String userId);
+
+    List<MyPageQnAClassificationDTO> getQnAClassification();
+
+    MemberQnAPatchResponseDTO getMemberQnAPatchData(long qnaId, String userId);
+
+    Long postMemberQnA(MemberQnARequestDTO dto, String userId);
+
+    Long patchMemberQnA(long qnaId, MemberQnARequestDTO dto, String userId);
+
+    String deleteMemberQnA(long qnaId, String userId);
+
+    String deleteProductQnA(long qnaId, String userId);
+
+    MyPageReviewPatchDTO getPatchReviewData(long reviewId, String userId);
+
+    String patchReview(QnAReplyRequestDTO dto, String userId);
+
+    String deleteReview(long reviewId, String userId);
+
+    String checkMember(MemberCheckRequestDTO dto, String userId);
+
+    String checkNickname(String nickname, String userId);
+
+    String deleteLike(long likeId, String userId);
+
+    MyPageReviewPostDTO getPostReviewData(long orderDetailId, String userId);
+
+    String postReview(long orderDetailId, String content, String userId);
 }

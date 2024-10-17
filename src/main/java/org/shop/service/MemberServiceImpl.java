@@ -3,12 +3,17 @@ package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.member.JoinDTO;
-import org.shop.domain.dto.member.SearchIdDTO;
+import org.shop.domain.dto.member.in.MemberJoinDTO;
+import org.shop.domain.dto.member.in.MemberResetPwDTO;
+import org.shop.domain.dto.member.in.MemberSearchIdDTO;
+import org.shop.domain.dto.member.in.MemberSearchPwDTO;
+import org.shop.domain.entity.Auth;
 import org.shop.domain.entity.Member;
+import org.shop.domain.enumeration.Result;
+import org.shop.domain.enumeration.Role;
+import org.shop.mapper.AuthMapper;
 import org.shop.mapper.MemberMapper;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -26,102 +31,76 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberMapper memberMapper;
 
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthMapper authMapper;
 
     private final JavaMailSender javaMailSender;
 
-    private final RedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
+
+    @Override
+    public String checkJoinUserId(String userId) {
+        int countValue = memberMapper.countByUserId(userId);
+
+        return countValue == 0 ? Result.OK.getResultKey() : Result.DUPLICATE.getResultKey();
+    }
+
+    @Override
+    public String checkJoinNickname(String nickname) {
+        int countValue = memberMapper.countByNickname(nickname);
+
+        return countValue == 0 ? Result.OK.getResultKey() : Result.DUPLICATE.getResultKey();
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void join(JoinDTO dto) {
-
-        Member member = Member.builder()
-                .userId(dto.getUserId())
-                .userPw(dto.getUserPw())
-                .userName(dto.getUserName())
-                .userEmail(dto.getUserEmail())
-                .userBirth(dto.getUserBirth())
-                .userPhone(dto.getUserPhone())
-                .joinRegDate(dto.getJoinRegDate())
-                .build();
-
+    public String join(MemberJoinDTO dto) {
+        Member member = new Member(dto);
         memberMapper.join(member);
-        memberMapper.joinAuth(member.getUserId());
+        authMapper.saveAuth(Auth.builder()
+                                .userId(member.getUserId())
+                                .auth(Role.MEMBER.getKey())
+                                .build())
+        ;
+
+        return Result.SUCCESS.getResultKey();
     }
 
     @Override
-    public String searchId(String userName, String userPhone, String userEmail) {
-        if(userName == null ||
-                (userPhone.equals("") && userEmail.equals("")))
-            return null;
+    public String searchId(MemberSearchIdDTO searchIdDTO) {
+        if(searchIdDTO.getUserName() == null ||
+                (searchIdDTO.getUserPhone() == null && searchIdDTO.getUserEmail() == null))
+            return Result.FAIL.getResultKey();
 
-        return memberMapper.searchId(Member.builder()
-                                            .userName(userName)
-                                            .userPhone(userPhone)
-                                            .userEmail(userEmail)
-                                            .build()
-                                    );
+        String userId = memberMapper.searchId(searchIdDTO.toEntity());
+
+        return userId == null ? Result.NOTFOUND.getResultKey() : userId;
     }
 
     @Override
-    public String searchPw(String userId, String userName, String userEmail) {
-        if(userId == null || userName == null)
+    public String searchPw(MemberSearchPwDTO searchPwDTO) {
+        if(searchPwDTO.getUserId() == null || searchPwDTO.getUserName() == null)
             return null;
 
-        int checkResult = memberMapper.checkUser(Member.builder()
-                                                        .userId(userId)
-                                                        .userName(userName)
-                                                        .userEmail(userEmail)
-                                                        .build()
-                                                );
+        int checkResult = memberMapper.checkUser(searchPwDTO.toEntity());
 
         if(checkResult == 0)
-            return ResultProperties.FAIL;
+            return Result.FAIL.getResultKey();
 
         Random ran = new Random();
         int certificationNo = ran.nextInt(899999) + 100001;
 
         try{
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-            stringValueOperations.set(userId, String.valueOf(certificationNo), 6L, TimeUnit.MINUTES);
+            stringValueOperations.set(searchPwDTO.getUserId(), String.valueOf(certificationNo), 6L, TimeUnit.MINUTES);
 
-            MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
+            MimeMessage mailForm = createEmailForm(searchPwDTO.getUserEmail(), certificationNo);
             javaMailSender.send(mailForm);
 
-            return ResultProperties.SUCCESS;
+            return Result.SUCCESS.getResultKey();
         }catch (Exception e){
             e.printStackTrace();
-            return ResultProperties.ERROR;
+            return Result.ERROR.getResultKey();
         }
-
-        /* searchPw
-       기존 DB에서 cno를 관리하던 코드
-
-       Certify certify = Certify.builder()
-                .cno(certificationNo)
-                .userId(userId)
-                .userName(userName)
-                .userEmail(userEmail)
-                .build();
-
-        int insertResult = certifyMapper.addCertify(certify);
-
-        if(insertResult == 1) {
-            // 메일 전송
-            try{
-                MimeMessage mailForm = createEmailForm(userEmail, certificationNo);
-
-                javaMailSender.send(mailForm);
-            }catch (Exception e){
-                e.printStackTrace();
-                return "error";
-            }
-
-            return "success";
-        }else
-            return "error";*/
-
     }
 
     public MimeMessage createEmailForm(String userEmail, int certificationNo) throws MessagingException {
@@ -151,77 +130,39 @@ public class MemberServiceImpl implements MemberService{
         return message;
     }
 
-    /*
-    checkCno로 통합
     @Override
-    public SearchIdDTO checkResetUser(SearchIdDTO dto) {
-
-//        int result = certifyMapper.checkCertify(dto);
-
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        String result = stringValueOperations.get(dto.getUserId());
-
-        if(result != null && dto.getCno() == Integer.parseInt(result))
-            return dto;
-
-        return null;
-    }*/
-
-    @Override
-    public String checkCno(String userId, int cno) {
+    public String checkCno(MemberResetPwDTO resetPwDTO) {
         String result = null;
 
         try{
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-            result = stringValueOperations.get(userId);
+            result = stringValueOperations.get(resetPwDTO.getUserId());
         }catch(Exception e){
             log.error(e.getMessage());
-            return ResultProperties.ERROR;
+            return Result.ERROR.getResultKey();
         }
 
-        if(result != null && cno == Integer.parseInt(result))
-            return ResultProperties.SUCCESS;
+        if(result != null && resetPwDTO.getCno() == Integer.parseInt(result))
+            return Result.SUCCESS.getResultKey();
 
-        return ResultProperties.FAIL;
+        return Result.FAIL.getResultKey();
     }
 
     @Override
-    public String resetPw(String userId, int cno, String password) {
+    public String resetPw(MemberResetPwDTO resetPwDTO) {
 
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        String certificationValue = stringValueOperations.get(userId);
-        redisTemplate.delete(userId);
+        String certificationValue = stringValueOperations.get(resetPwDTO.getUserId());
+        redisTemplate.delete(resetPwDTO.getUserId());
 
-        if(certificationValue == null || Integer.parseInt(certificationValue) != cno)
-            return ResultProperties.ERROR;
+        if(certificationValue == null || Integer.parseInt(certificationValue) != resetPwDTO.getCno())
+            return Result.ERROR.getResultKey();
 
-        int modifyResult = memberMapper.modifyPw(Member.builder()
-                                                        .userId(userId)
-                                                        .userPw(password)
-                                                        .build()
-                                                );
+        int modifyResult = memberMapper.modifyPw(new Member(resetPwDTO));
 
         if(modifyResult == 0)
-            return ResultProperties.ERROR;
+            return Result.ERROR.getResultKey();
 
-        return ResultProperties.SUCCESS;
-
-        /* resetPw
-        기존 DB에서 cno를 관리하던 코드
-
-        int checkResult = certifyMapper.checkCertify(SearchIdDTO.builder()
-                .userId(userId)
-                .cno(cno)
-                .build());
-
-        if(checkResult == 0) {
-            certifyMapper.deleteCertify(cno);
-            return 0;
-        }
-
-        int certifyResult = certifyMapper.deleteCertify(cno);
-
-        if(certifyResult == 0)
-            return 0;*/
+        return Result.SUCCESS.getResultKey();
     }
 }

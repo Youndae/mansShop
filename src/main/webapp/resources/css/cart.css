@@ -1,53 +1,127 @@
-.cart_List table{
-    font-size: large;
-    margin: 25px 0 25px 0;
-    width: 900px;
+.cart-content {
+    width: 1000px;
 }
 
-.cart_content_footer{
-    float: right;
+.content-data {
+    margin-top: 10%;
 }
 
-.cart_content_btn button{
-    width: 100px;
-    height: 25px;
-}
-
-button.productCount {
-    background-color: white;
-    border: 1px solid lightgray;
-}
-
-button.productCount img{
-    width: 10px;
-}
-
-.count_body{
-    display: flex;
-    padding-left: 15px;
-}
-
-.count_body .count_btn{
-    display: grid;
-}
-
-.count_head{
-    width: 40px;
-}
-
-.price_head{
+.cart-thumbnail {
     width: 120px;
 }
 
-.pName_body, .pOption_body {
+.cart-input {
+    width: 100px;
     text-align: center;
+    height: 30px;
 }
 
-.price_body{
-    text-align: right;
+.cart-input-content {
+    display: flex;
+    margin-top: 30px;
+    align-items: center;
 }
 
-.total_price{
+.cart-info {
+    margin-left: 45px;
+    width: 100%
+}
+.cart-input-content .count-up-down {
+    display: grid;
+    margin: 0 10px 0 10px;
+}
+
+.cart-data-content {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.cart-data-header {
     font-weight: bold;
-    padding-left: 30px;
+    font-size: x-large;
+}
+
+.cart-data-header .product-name {
+    margin-left: 10px;
+}
+
+.cart-data-header input {
+    width: 20px;
+    height: 20px;
+}
+
+.cart-data-header img {
+    float: right;
+    width: 30px;
+    cursor: pointer;
+}
+
+.cart-data {
+    margin-top: 40px;
+    border: 1px solid lightgrey;
+    padding: 10px;
+    width: 100%;
+}
+
+.cart-remove-btn button {
+    background: white;
+    border: 1px solid lightgrey;
+    width: 60px;
+    height: 35px;
+    margin-left: 20px;
+}
+
+.cart-count {
+    display: grid;
+    margin: 0 10px 4px 10px;
+}
+
+.cart-count img {
+    width: 13px;
+    border: 1px solid lightgrey;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.cart {
+    display: grid;
+    justify-content: center;
+}
+
+.cart-order-btn-content button {
+    background: white;
+    border: 1px solid lightgrey;
+    width: 100px;
+    height: 40px;
+    margin-left: 20px;
+    float: right;
+    cursor: pointer;
+}
+
+.cart-price {
+    float: right;
+    font-size: large;
+    font-weight: 600;
+    padding-right: 10px;
+    margin-top: 10px;
+}
+
+.cart-option-price-discount {
+    font-size: medium;
+    color: grey;
+}
+
+
+
+.cart-info span {
+    font-size: large;
+}
+
+.cart-total-price {
+    margin-top: 5%;
+    float: right;
+    font-size: x-large;
+    font-weight: bold;
+    width: 17%;
 }

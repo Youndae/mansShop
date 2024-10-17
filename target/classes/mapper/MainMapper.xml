@@ -3,81 +3,84 @@
 
 <mapper namespace="org.shop.mapper.MainMapper">
 
-    <select id="mainBest" resultType="org.shop.domain.entity.Product">
-            SELECT *
-                    FROM(
-                        SELECT *
-                        FROM product
-                        ORDER BY pSales DESC
-                    )
-            WHERE rownum
-                BETWEEN 1 AND 12
+    <sql id="bestAndNew">
+        <trim prefix="">
+            <if test="type.equals('BEST')">, p.productSales ORDER BY p.productSales DESC</if>
+            <if test="type.equals('NEW')">, p.createdAt ORDER BY p.createdAt DESC</if>
+        </trim>
+    </sql>
+
+    <select id="findMainBestAndNew" resultType="MainListDTO">
+        SELECT p.id as productId
+                , p.productName
+                , p.thumbnail
+                , p.productPrice as price
+                , p.productDiscount as discount
+                , sum(op.stock) as stock
+        FROM product p
+        inner join productOption op
+        on p.id = op.productId
+        GROUP BY p.id
+               , p.productName
+               , p.thumbnail
+               , p.productPrice
+               , p.productDiscount
+        <include refid="bestAndNew"/>
+        OFFSET 0 ROWS FETCH NEXT 12 ROWS ONLY
     </select>
 
-    <select id="mainNew" resultType="org.shop.domain.entity.Product">
-            SELECT *
-                    FROM(
-                        SELECT *
-                        FROM product
-                        ORDER BY pRegDate DESC
-                    )
-            WHERE rownum
-                BETWEEN 1 AND 12
+    <select id="findClassificationList" resultType="MainListDTO">
+        SELECT p.id as productId
+            , p.productName
+            , p.thumbnail
+            , p.productPrice as price
+            , p.productDiscount as discount
+            , sum(op.stock) as stock
+        FROM product p
+        inner join productOption op
+        on p.id = op.productId
+        where p.CLASSIFICATIONID = #{cri.classification}
+        GROUP BY p.id
+            , p.productName
+            , p.thumbnail
+            , p.productPrice
+            , p.productDiscount
+            , p.createdAt
+        ORDER BY p.createdAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
-    <select id="mainClassification" resultType="org.shop.domain.entity.Product">
-            SELECT *
-                    FROM(
-                        SELECT
-                            rownum rn
-                            , p.*
-                        FROM(
-                            SELECT *
-                            FROM product
-                            WHERE pClassification = #{keyword}
-                            ORDER BY pRegDate DESC
-                        )p
-                    )
-            WHERE rn
-                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
-    </select>
-
-    <select id="getProductTotal" resultType="int">
-        SELECT count(*)
+    <select id="findClassificationElementsCount" resultType="int">
+        SELECT distinct(count(id))
         FROM product
-        WHERE pClassification=#{keyword}
+        WHERE classificationId = #{cri.classification}
     </select>
 
-    <select id="searchProduct" resultType="org.shop.domain.entity.Product">
-            SELECT *
-                    FROM(
-                        SELECT rownum rn
-                            , p.*
-                        FROM(
-                            SELECT *
-                            FROM product
-                            WHERE pName LIKE '%'||#{keyword}||'%'
-                            ORDER BY pRegDate DESC
-                        )p
-                    )
-            WHERE rn
-                BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
+    <select id="findSearchProduct" resultType="MainListDTO">
+         SELECT p.id as productId
+              , p.productName
+              , p.thumbnail
+              , p.productPrice as price
+              , p.productDiscount as discount
+              , sum(op.stock) as stock
+         FROM product p
+         inner join productOption op
+         on p.id = op.productId
+         where p.productName LIKE '%'||#{cri.keyword}||'%'
+         GROUP BY p.id
+                , p.productName
+                , p.thumbnail
+                , p.productPrice
+                , p.productDiscount
+                , p.createdAt
+         ORDER BY p.createdAt DESC
+         OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
-    <select id="getSearchProduct" resultType="int">
-        SELECT count(*)
+    <select id="findSearchProductCount" resultType="int">
+        SELECT distinct(count(id))
         FROM product
-        WHERE pName LIKE '%'||#{keyword}||'%'
-    </select>
-
-    <select id="getNonOrderList" resultType="org.shop.domain.dto.myPage.MemberOrderListDTO">
-        SELECT v.*
-        FROM productOrder o
-            INNER JOIN memberOrderList_view v
-            ON o.orderNo = v.orderNo
-        WHERE v.userId='Anonymous'
-            AND o.recipient=#{recipient}
-            AND o.orderPhone=#{orderPhone}
+        WHERE productName LIKE '%'||#{cri.keyword}||'%'
     </select>
 
 </mapper>

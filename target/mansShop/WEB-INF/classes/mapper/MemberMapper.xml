@@ -3,70 +3,158 @@
 
 <mapper namespace="org.shop.mapper.MemberMapper">
 
-    <select id="idCheck" resultType="int">
-        SELECT count(*)
+    <select id="findById" resultType="Member">
+        SELECT *
         FROM member
         WHERE userId = #{userId}
     </select>
 
-    <insert id="join">
+    <select id="getInfo" resultType="Member">
+        SELECT nickname
+             , phone
+             , userEmail
+        FROM member
+        WHERE userId = #{userId}
+    </select>
+
+    <update id="patchMember">
+        UPDATE  member
+        SET nickname = #{entity.nickname}
+            , phone = #{entity.phone}
+            , userEmail = #{entity.userEmail}
+        WHERE userId = #{entity.userId}
+    </update>
+
+    <select id="findByNickname" resultType="Member">
+        SELECT *
+        FROM member
+        WHERE nickname = #{nickname}
+    </select>
+
+    <select id="findAllByAdminMemberList" resultType="AdminMemberResponseDTO">
+        SELECT userId
+        , userName as name
+        , CASE
+            WHEN nickName is null
+                THEN '없음'
+            ELSE nickName
+        END as nickname
+        , createdAt as createdAt
+        FROM member
+        <include refid="findAllAdminMemberCondition"/>
+        ORDER BY createdAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByAdminMemberList" resultType="int">
+        SELECT distinct(count(userId))
+        FROM member
+        <include refid="findAllAdminMemberCondition"/>
+    </select>
+
+    <sql id="findAllAdminMemberCondition">
+        <trim prefix="WHERE ">
+            <if test="cri.searchType == 'userId'">
+                userId LIKE '%' || #{cri.keyword} || '%'
+            </if>
+            <if test="cri.searchType == 'userName'">
+                userName LIKE '%' || #{cri.keyword} || '%'
+            </if>
+            <if test="cri.searchType == 'nickname'">
+                nickname LIKE '%' || #{cri.keyword} || '%'
+            </if>
+        </trim>
+    </sql>
+
+    <update id="patchPoint" parameterType="AdminMemberPointRequestDTO">
+        UPDATE member
+        SET memberPoint = #{point}
+        WHERE userId = #{userId}
+    </update>
+
+    <select id="countByUserId" resultType="int">
+        SELECT count(userId)
+        FROM member
+        WHERE userId = #{id}
+    </select>
+
+    <select id="countByNickname" resultType="int" parameterType="String">
+        SELECT count(userId)
+        FROM member
+        WHERE nickname = #{nickname}
+    </select>
+
+    <insert id="join" parameterType="Member">
         INSERT INTO member(
-            userId
-            , userPw
-            , userName
-            , userEmail
-            , userBirth
-            , userPhone
-            , joinRegDate
+               userId
+               , userPw
+               , userName
+               , nickname
+               , userEmail
+               , provider
+               , phone
+               , birth
         )
-        VALUES(
-            #{userId}
-            , #{userPw}
-            , #{userName}
-            , #{userEmail}
-            , #{userBirth}
-            , #{userPhone}
-            , sysdate
-        )
+        VALUES (
+               #{userId}
+               , #{userPw}
+               , #{userName}
+               , #{nickname}
+               , #{userEmail}
+               , #{provider}
+               , #{phone}
+               , #{birth}
+               )
     </insert>
-
-    <insert id="joinAuth">
-        INSERT INTO memberAuth(
-            userId
-            , auth
-        )
-        VALUES(
-            #{userId}
-            , 'ROLE_MEMBER'
-        )
-    </insert>
-
 
     <select id="searchId" resultType="String">
         SELECT userId
         FROM member
-        WHERE userName = #{userName}
-        <include refid="searchId"></include>
+        WHERE userName = #{entity.userName}
+        <include refid="searchId"/>
     </select>
+
     <sql id="searchId">
         <trim prefix="AND ">
-            <if test="userPhone != null">userPhone = #{userPhone}</if>
-            <if test="userEmail != null">userEmail = #{userEmail}</if>
+            <if test="entity.phone != null">phone = #{entity.phone}</if>
+            <if test="entity.userEmail != null">userEmail = #{entity.userEmail}</if>
         </trim>
     </sql>
-    
-    
-    <select id="checkUser" resultType="int">
+
+    <select id="checkUser" resultType="int" parameterType="Member">
         SELECT count(*)
         FROM member
         WHERE userId = #{userId}
-        AND userName = #{userName}
-        AND userEmail = #{userEmail}
+          AND userName = #{userName}
+          AND userEmail = #{userEmail}
     </select>
 
-    <update id="modifyPw" parameterType="org.shop.domain.entity.Member">
+    <update id="modifyPw" parameterType="Member">
         UPDATE member SET
-        userPw = #{userPw}
+            userPw = #{userPw}
         WHERE userId = #{userId}
     </update>
+
+    <resultMap id="memberMap" type="MemberDTO">
+        <id property="userId" column="userId"/>
+        <result property="userId" column="userId"/>
+        <result property="userPw" column="userPw"/>
+        <collection property="authList" resultMap="authMap"/>
+    </resultMap>
+
+    <resultMap id="authMap" type="MemberAuthDTO">
+        <result property="userId" column="userId"/>
+        <result property="auth" column="auth"/>
+    </resultMap>
+
+    <select id="getUserInfo" resultMap="memberMap">
+        SELECT m.userId
+             , userPw
+             , auth
+        FROM member m
+                 LEFT OUTER JOIN auth a
+                                 ON m.userId = a.userId
+        WHERE m.userId = #{userId}
+    </select>
+
 </mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductQnAMapper">
+
+    <select id="findAllDetailByProductId" resultType="ProductQnA">
+        SELECT q.id
+           , q.productId
+           , CASE
+                 WHEN m.nickname is null THEN m.userName
+                 ELSE m.nickname
+          END as userId
+           , q.qnaContent
+           , q.createdAt
+           , q.status
+        FROM productQnA q
+               INNER JOIN member m
+                          ON q.userId = m.userId
+        WHERE q.productId = #{productId}
+        ORDER BY q.createdAt DESC, q.id DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByProductId" resultType="int">
+        SELECT count(id)
+        FROM productQnA
+        WHERE productId = #{productId}
+    </select>
+
+    <insert id="saveQnA" parameterType="ProductQnARequestDTO">
+        INSERT INTO productQnA(
+               productId
+               , userId
+               , qnaContent
+       )
+        VALUES(
+               #{productId}
+               , #{userId}
+               , #{content}
+       )
+    </insert>
+
+    <select id="findDetailByQnAIdAndUserId" resultType="MyPageProductQnADetailDTO">
+        SELECT q.id as qnaId
+             , p.id as productId
+            , p.productName as productName
+             , CASE
+                   WHEN m.nickname is null
+                       THEN m.userId
+                   ELSE m.nickname
+            END as writer
+            , q.qnaContent as content
+            , q.createdAt as createdAt
+            , q.status as status
+        FROM productQnA q
+        INNER JOIN product p
+            ON q.productId = p.id
+        INNER JOIN member m
+            ON q.userId = m.userId
+        WHERE q.id = #{qnaId} AND q.userId = #{userId}
+    </select>
+
+    <select id="findById" resultType="ProductQnA">
+        SELECT *
+        FROM productQnA
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM productQnA WHERE id = #{id}
+    </delete>
+
+    <select id="findAllByAdminQnAList" resultType="AdminQnAListResponseDTO">
+        SELECT q.id as qnaId
+            , p.classificationId as classification
+            , p.productName as title
+            , CASE
+                WHEN m.nickname is null
+                    THEN m.userId
+                ELSE m.nickname
+            END as writer
+            , q.createdAt as createdAt
+            , q.status as status
+        FROM productQnA q
+        INNER JOIN product p
+            ON q.productId = p.id
+        INNER JOIN member m
+            ON q.userId = m.userId
+        <include refid="searchAdminQnACondition"/>
+        ORDER BY q.id DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByAdminQnAList" resultType="int">
+        SELECT distinct(count(q.id))
+        FROM productQnA q
+        INNER JOIN member m
+            ON q.userId = m.userId
+        <include refid="searchAdminQnACondition"/>
+    </select>
+
+    <sql id="searchAdminQnACondition">
+        <trim prefix="WHERE ">
+            <if test="type == 'new'">
+                q.status = 0
+                <if test="cri.keyword != null">
+                    AND (q.userId LIKE '%' || #{cri.keyword} || '%'
+                        OR m.nickname LIKE '%' || #{cri.keyword} || '%')
+                </if>
+            </if>
+            <if test="type == 'all'">
+                <if test="cri.keyword != null">
+                    q.userId LIKE '%' || #{cri.keyword} || '%'
+                    OR m.nickname LIKE '%' || #{cri.keyword} || '%'
+                </if>
+            </if>
+        </trim>
+    </sql>
+
+    <select id="findDetailById" resultType="MyPageProductQnADetailDTO">
+        SELECT q.id as qnaId
+             , p.id as productId
+             , p.productName as productName
+             , CASE
+                   WHEN m.nickname is null
+                       THEN m.userId
+                   ELSE m.nickname
+            END as writer
+             , q.qnaContent as content
+             , q.createdAt as createdAt
+             , q.status as status
+        FROM productQnA q
+         INNER JOIN product p
+                    ON q.productId = p.id
+         INNER JOIN member m
+                    ON q.userId = m.userId
+        WHERE q.id = #{qnaId}
+    </select>
+
+    <update id="patchStatusToTrue">
+        UPDATE productQnA
+        SET status = 1
+        WHERE id = #{id}
+    </update>
+
+</mapper>

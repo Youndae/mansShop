@@ -1,19 +1,23 @@
 package org.shop.service;
 
-import org.shop.domain.dto.member.JoinDTO;
-import org.shop.domain.dto.member.SearchIdDTO;
+import org.shop.domain.dto.member.in.MemberJoinDTO;
+import org.shop.domain.dto.member.in.MemberResetPwDTO;
+import org.shop.domain.dto.member.in.MemberSearchIdDTO;
+import org.shop.domain.dto.member.in.MemberSearchPwDTO;
 
 public interface MemberService {
 
-    public void join(JoinDTO dto);
+    String join(MemberJoinDTO dto);
 
-    public String searchId(String userName, String userPhone, String userEmail);
+    String searchId(MemberSearchIdDTO searchIdDTO);
 
-    public String searchPw(String userId, String userName, String userEmail);
+    String searchPw(MemberSearchPwDTO searchPwDTO);
 
-//    public SearchIdDTO checkResetUser(SearchIdDTO dto);
+    String resetPw(MemberResetPwDTO resetPwDTO);
 
-    public String resetPw(String userId, int cno, String password);
+    String checkCno(MemberResetPwDTO resetPwDTO);
 
-    public String checkCno(String userId, int cno);
+    String checkJoinUserId(String userId);
+
+    String checkJoinNickname(String nickname);
 }

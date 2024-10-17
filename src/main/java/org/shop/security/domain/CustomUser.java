@@ -2,8 +2,7 @@ package org.shop.security.domain;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.dto.member.MemberDTO;
-import org.shop.domain.entity.Member;
+import org.shop.domain.dto.member.business.MemberDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -23,8 +22,13 @@ public class CustomUser extends User {
 
     public CustomUser(MemberDTO dto){
 
-        super(dto.getUserId(), dto.getUserPw(), dto.getAuthList().stream()
-        .map(auth -> new SimpleGrantedAuthority(auth.getAuth())).collect(Collectors.toList()));
+        super(dto.getUserId()
+            , dto.getUserPw()
+            , dto.getAuthList().stream()
+                .map(auth ->
+                        new SimpleGrantedAuthority(auth.getAuth())
+                )
+                .collect(Collectors.toList()));
 
         log.info("Custom User");
         log.info("info : " + dto.getUserId() + "AuthList" + dto.getAuthList());

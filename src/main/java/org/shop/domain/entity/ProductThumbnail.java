@@ -9,23 +9,17 @@ import java.util.UUID;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-@Builder
 public class ProductThumbnail {
 
-    private String thumbNo;
+    private long id;
 
-    private String pno;
+    private String productId;
 
-    private String pThumbnail;
+    private String imageName;
 
-    public ProductThumbnail(String thumbNo, String pno, String pThumbnail) {
-        StringBuffer sb = new StringBuffer();
-        this.thumbNo = thumbNo != null ? thumbNo : sb.append("s_")
-                                                    .append(pno + "_")
-                                                    .append(new SimpleDateFormat("yyyyMMddHHmmss")
-                                                            .format(System.currentTimeMillis()))
-                                                    .append(UUID.randomUUID()).toString();
-        this.pno = pno;
-        this.pThumbnail = pThumbnail;
+    public ProductThumbnail(String productId, String imageName) {
+        this.productId = productId;
+        this.imageName = imageName;
     }
+
 }

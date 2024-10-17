@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductOrderDetailMapper">
+
+    <insert id="saveOrderDetails" parameterType="map">
+        {CALL insert_order_details(
+            #{orderId, jdbcType=NUMERIC},
+            #{orderDetails, jdbcType=ARRAY, jdbcTypeName="ORDER_DETAIL_OBJ_LIST", typeHandler=org.shop.mapper.typeHandler.ProductOrderDetailTypeHandler}
+        )}
+    </insert>
+
+
+    <select id="findByDetailList" parameterType="java.util.List" resultType="org.shop.domain.dto.order.business.OrderDetailDTO">
+        SELECT o.id as orderId
+                , p.id as productId
+                , op.id as optionId
+                , od.id as detailId
+                , p.productName
+                , op.productSize as pSize
+                , op.productColor as color
+                , od.orderDetailCount as detailCount
+                , od.orderDetailPrice as detailPrice
+                , od.orderReviewStatus as reviewStatus
+                , p.thumbnail
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+        ON od.orderId = o.id
+        INNER JOIN productOption op
+        ON od.productOptionId = op.id
+        INNER JOIN product p
+        ON od.productId = p.id
+        WHERE od.orderId IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        ORDER BY od.productId ASC
+    </select>
+
+    <select id="findAllByOrderId" resultType="AdminOrderDetailListDTO">
+        SELECT p.classificationId as classification
+            , p.productName as productName
+            , op.productSize as productSize
+            , op.productColor as productColor
+            , od.orderDetailCount as count
+            , od.orderDetailPrice as price
+            , od.orderReviewStatus as reviewStatus
+        FROM productOrderDetail od
+        INNER JOIN product p
+            ON od.productId = p.id
+        INNER JOIN productOption op
+            ON od.productOptionId = op.id
+        WHERE od.orderId = #{id}
+    </select>
+
+    <select id="findPeriodClassification" resultType="AdminPeriodClassificationDTO">
+        SELECT p.classificationId as classification
+            , sum(orderDetailPrice) as sales
+            , sum(orderDetailCount) as salesQuantity
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+            ON od.orderId = o.id
+        INNER JOIN product p
+            ON od.productId = p.id
+        WHERE EXTRACT(YEAR FROM o.createdAt) = #{dto.year}
+            AND EXTRACT(MONTH FROM o.createdAt) = #{dto.month}
+            <if test="dto.day != null">
+                AND EXTRACT(DAY FROM o.createdAt) = #{dto.day}
+            </if>
+        GROUP BY p.classificationId
+    </select>
+
+    <select id="findPeriodClassificationSales" resultType="AdminClassificationSalesDTO">
+        SELECT sum(od.orderDetailPrice) as sales
+            , sum(od.orderDetailCount) as salesQuantity
+            , count(o.id) as orderQuantity
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+            ON od.orderId = o.id
+        WHERE od.productId LIKE #{classification} || '%'
+            AND EXTRACT(YEAR FROM o.createdAt) = #{term.year}
+            AND EXTRACT(MONTH FROM o.createdAt) = #{term.month}
+    </select>
+
+    <select id="findPeriodClassificationProductSales" resultType="AdminClassificationSalesListDTO">
+        SELECT p.productName as productName
+        , op.productSize as productSize
+        , op.productColor as productColor
+        , sum(od.orderDetailPrice) as productSales
+        , sum(od.orderDetailCount) as productQuantity
+        FROM productOrderDetail od
+        INNER JOIN product p
+            ON od.productId = p.id
+        INNER JOIN productOption op
+            ON od.productOptionId = op.id
+        INNER JOIN productOrder o
+            ON od.orderId = o.id
+        WHERE od.productId LIKE #{classification} || '%'
+          AND EXTRACT(YEAR FROM o.createdAt) = #{term.year}
+          AND EXTRACT(MONTH FROM o.createdAt) = #{term.month}
+        GROUP BY p.productName, op.productSize, op.productColor
+        ORDER BY productQuantity DESC
+    </select>
+
+    <select id="findAllByOrderIds" parameterType="java.util.List" resultType="AdminSalesOrderDetailDTO">
+        SELECT o.id as orderId
+            , p.productName as productName
+            , op.productSize as productSize
+            , op.productColor as productColor
+            , od.orderDetailCount as count
+            , od.orderDetailPrice as price
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+        ON od.orderId = o.id
+        INNER JOIN productOption op
+        ON od.productOptionId = op.id
+        INNER JOIN product p
+        ON od.productId = p.id
+        WHERE od.orderId IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY od.orderId DESC
+    </select>
+
+    <select id="getProductPeriodSales" resultType="AdminSalesDTO">
+        SELECT sum(od.orderDetailPrice) as sales
+            , sum(od.orderDetailCount) as salesQuantity
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+            ON od.orderId = o.id
+        WHERE EXTRACT(YEAR FROM createdAt) = #{year}
+            AND od.productId = #{id}
+    </select>
+
+    <select id="getProductOptionSales" resultType="AdminProductSalesOptionDTO">
+        SELECT op.id as optionId
+        , op.productSize as productSize
+        , op.productColor as productColor
+        , sum(od.orderDetailPrice) as optionSales
+        , sum(od.orderDetailCount) as optionSalesQuantity
+        FROM productOption op
+        LEFT JOIN productOrderDetail od
+        ON op.id = od.productoptionId
+        INNER JOIN productOrder o
+        ON od.orderId = o.id
+        WHERE od.productId = #{id}
+        <include refid="productOptionSalesCondition"/>
+        GROUP BY op.id, op.productSize, op.productColor
+        ORDER BY op.id
+    </select>
+
+    <sql id="productOptionSalesCondition">
+        <trim prefix="AND ">
+            <if test="thisYear != null">
+                EXTRACT(YEAR FROM o.createdAt) = #{thisYear}
+            </if>
+        </trim>
+    </sql>
+
+    <select id="findPostReviewDetailData" resultType="MyPageReviewPostDTO">
+        SELECT od.id as orderDetailId
+            , p.productName as productName
+            , op.productSize as productSize
+            , op.productColor as productColor
+        FROM productOrderDetail od
+        INNER JOIN productOrder o
+            ON od.orderId = o.id
+        INNER JOIN product p
+            ON od.productId = p.id
+        INNER JOIN productOption op
+            ON od.productOptionId = op.id
+        WHERE od.id = #{id} AND o.userId = #{userId}
+    </select>
+
+    <select id="findById" resultType="ProductOrderDetail">
+        SELECT *
+        FROM productOrderDetail
+        WHERE id = #{id}
+    </select>
+
+    <update id="patchReviewStatus">
+        UPDATE productOrderDetail
+        SET orderReviewStatus = 1
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductOrderMapper">
+
+    <insert id="saveOrder" parameterType="ProductOrder">
+        INSERT INTO productOrder(
+                 userId
+                 , recipient
+                 , orderPhone
+                 , orderAddress
+                 , orderMemo
+                 , orderTotalPrice
+                 , deliveryFee
+                 , paymentType
+                 , status
+                 , productCount
+        )
+        VALUES (
+               #{userId}
+               , #{recipient}
+               , #{orderPhone}
+               , #{orderAddress}
+               , #{orderMemo}
+               , #{orderTotalPrice}
+               , #{deliveryFee}
+               , #{paymentType}
+               , #{status}
+               , #{productCount}
+       )
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT MAX(id) FROM productOrder WHERE userId = #{userId}
+        </selectKey>
+    </insert>
+
+    <select id="findOrderList" resultType="org.shop.domain.entity.ProductOrder">
+        SELECT *
+        FROM productOrder
+        WHERE
+            <include refid="orderListSearchCondition"/>
+          AND createdAt > #{orderDTO.term}
+        ORDER BY id DESC
+        OFFSET #{orderDTO.offset} ROWS FETCH NEXT #{orderDTO.amount} ROWS ONLY
+    </select>
+
+    <select id="findOrderListCount" resultType="int">
+        SELECT count(id)
+        FROM productOrder
+        WHERE
+            <include refid="orderListSearchCondition"/>
+          AND createdAt > #{orderDTO.term}
+    </select>
+
+    <sql id="orderListSearchCondition">
+        <trim prefix="">
+            <if test="dto.userId != null">
+                userId = #{dto.userId}
+            </if>
+            <if test="dto.userId == null">
+                recipient = #{dto.recipient}
+                AND orderPhone = #{dto.orderPhone}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="adminOrderListSearchCondition">
+        <trim prefix="AND ">
+            <if test="cri.keyword != null">
+                <if test="cri.searchType == 'recipient'">
+                    recipient LIKE '%' || #{cri.keyword} || '%'
+                </if>
+                <if test="cri.searchType == 'userId'">
+                    userId LIKE '%' || #{cri.keyword} || '%'
+                </if>
+            </if>
+        </trim>
+    </sql>
+
+    <select id="findAllNewOrderList" resultType="AdminOrderResponseDTO">
+        SELECT id as id
+            , recipient as recipient
+            , CASE
+                WHEN userId = 'Anonymous'
+                    THEN '비회원'
+                ELSE userId
+            END as userId
+            , orderPhone as phone
+            , createdAt as createdAt
+            , status as status
+        FROM productOrder
+        WHERE createdAt <![CDATA[<]]> TRUNC(SYSDATE) + NUMTODSINTERVAL(16, 'HOUR')
+          AND status = '주문 확인중'
+        <include refid="adminOrderListSearchCondition"/>
+        ORDER BY createdAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+
+    <select id="countByNewOrderList" resultType="int">
+        SELECT distinct(count(id))
+        FROM productOrder
+        WHERE createdAt <![CDATA[<]]> TRUNC(SYSDATE) + NUMTODSINTERVAL(16, 'HOUR')
+          AND status = '주문 확인중'
+        <include refid="adminOrderListSearchCondition"/>
+    </select>
+
+    <select id="findAll" resultType="AdminOrderResponseDTO">
+        SELECT id as id
+            , recipient as recipient
+            , CASE
+                WHEN userId = 'Anonymous'
+                    THEN '비회원'
+                ELSE userId
+            END as userId
+            , orderPhone as phone
+            , createdAt as createdAt
+            , status as status
+        FROM productOrder
+        WHERE id > 0
+        <include refid="adminOrderListSearchCondition"/>
+        ORDER BY createdAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByAllList" resultType="int">
+        SELECT distinct(count(id))
+        FROM productOrder
+        WHERE id > 0
+        <include refid="adminOrderListSearchCondition"/>
+    </select>
+
+    <select id="findById" resultType="ProductOrder">
+        SELECT *
+        FROM productOrder
+        WHERE id = #{id}
+    </select>
+
+    <update id="patchOrderStatus">
+        UPDATE productOrder
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="findPeriodList" parameterType="int" resultType="AdminPeriodSalesListDTO">
+        SELECT EXTRACT(MONTH FROM createdAt) as month
+                , sum(orderTotalPrice) as sales
+                , sum(productCount) as salesQuantity
+                , count(id) as orderQuantity
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{term}
+        GROUP BY EXTRACT(MONTH FROM createdAt)
+        ORDER BY month
+    </select>
+
+    <select id="findPeriodStatistics" resultType="AdminPeriodSalesStatisticsDTO" parameterType="AdminSalesTermDTO">
+        SELECT sum(orderTotalPrice) as sales
+        , sum(productCount) as salesQuantity
+        , count(id) as orderQuantity
+        , sum(deliveryFee) as deliveryFee
+        , sum(
+            CASE
+                WHEN paymentType = 'cash'
+                    THEN orderTotalPrice
+                ELSE 0
+            END
+            ) as cashTotalPrice
+        , sum(
+                CASE
+                    WHEN paymentType = 'card'
+                        THEN orderTotalPrice
+                    ELSE 0
+                    END
+            ) as cardTotalPrice
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{year} AND EXTRACT(MONTH FROM createdAt) = #{month}
+    </select>
+
+    <select id="findPeriodBestProduct" resultType="AdminBestSalesProductDTO" parameterType="AdminSalesTermDTO">
+        SELECT (
+                SELECT productName FROM product WHERE id = od.productId
+            ) as productName
+            , sum(od.orderDetailCount) as salesQuantity
+            , sum(orderDetailPrice) as sales
+        FROM productOrder o
+        INNER JOIN productOrderDetail od
+            ON o.id = od.orderId
+        WHERE EXTRACT(YEAR FROM o.createdAt) = #{year} AND EXTRACT(MONTH FROM o.createdAt) = #{month}
+        GROUP BY od.productId
+        ORDER BY salesQuantity DESC
+        OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY
+    </select>
+
+    <select id="findPeriodDailyList" resultType="AdminPeriodSalesListDTO" parameterType="AdminSalesTermDTO">
+        SELECT EXTRACT(DAY FROM createdAt) as month
+            , sum(orderTotalPrice) as sales
+            , sum(productCount) as salesQuantity
+            , count(id) as orderQuantity
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{year} AND EXTRACT(MONTH FROM createdAt) = #{month}
+        GROUP BY createdAt
+        ORDER BY month
+    </select>
+
+    <select id="findDailySales" resultType="AdminClassificationSalesDTO" parameterType="AdminSalesTermDTO">
+        SELECT sum(orderTotalPrice) as sales
+            , sum(productCount) as salesQuantity
+            , count(id) as orderQuantity
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{year}
+            AND EXTRACT(MONTH FROM createdAt) = #{month}
+            AND EXTRACT(DAY FROM createdAt) = #{day}
+    </select>
+
+    <select id="findAllByDayToPagination" resultType="ProductOrder">
+        SELECT *
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{term.year}
+          AND EXTRACT(MONTH FROM createdAt) = #{term.month}
+          AND EXTRACT(DAY FROM createdAt) = #{term.day}
+        ORDER BY createdAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countBySalesOrderList" resultType="int">
+        SELECT distinct(count(id))
+        FROM productOrder
+        WHERE EXTRACT(YEAR FROM createdAt) = #{term.year}
+          AND EXTRACT(MONTH FROM createdAt) = #{term.month}
+          AND EXTRACT(DAY FROM createdAt) = #{term.day}
+    </select>
+
+    <select id="getProductSales" resultType="AdminProductSalesDTO">
+        SELECT p.productName as productName
+            , sum(od.orderDetailPrice) as totalSales
+            , p.productSales as totalSalesQuantity
+        FROM product p
+        INNER JOIN productOrderDetail od
+        ON p.id = od.productId
+        WHERE p.id = #{id}
+        GROUP BY p.productName, p.productSales
+    </select>
+
+    <select id="getProductMonthPeriodSales" resultType="AdminPeriodSalesListDTO">
+        SELECT EXTRACT(MONTH FROM o.createdAt) as month
+            , sum(od.orderDetailPrice) as sales
+            , sum(od.orderDetailCount) as salesQuantity
+            , count(o.id) as orderQuantity
+        FROM productOrder o
+        INNER JOIN productOrderDetail od
+        ON o.id = od.orderId
+        WHERE EXTRACT(YEAR FROM o.createdAt) = #{year}
+            AND od.productId = #{id}
+        GROUP BY o.createdAt
+    </select>
+
+</mapper>

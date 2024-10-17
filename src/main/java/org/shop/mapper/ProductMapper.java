@@ -1,45 +1,51 @@
 package org.shop.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.shop.domain.dto.admin.product.business.AdminProductStockInfoDTO;
+import org.shop.domain.dto.admin.product.in.AdminPatchDiscountDTO;
+import org.shop.domain.dto.admin.product.out.AdminDiscountProductDTO;
+import org.shop.domain.dto.admin.product.out.AdminDiscountResponseDTO;
+import org.shop.domain.dto.admin.product.out.AdminProductListDTO;
+import org.shop.domain.dto.admin.sales.out.AdminProductSalesListDTO;
+import org.shop.domain.dto.cart.business.OptionAndCountListDTO;
+import org.shop.domain.dto.order.business.OrderProductPatchDTO;
+import org.shop.domain.dto.order.out.OrderProductDTO;
 import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.dto.product.ProductDetailDTO;
-import org.shop.domain.dto.product.ProductOpDTO;
+import org.shop.domain.dto.paging.PageCriteria;
 import org.shop.domain.entity.*;
 
 import java.util.List;
 
+
 public interface ProductMapper {
 
-    public ProductDetailDTO productDetail(String pno);
+    Product findById(@Param("productId") String productId);
 
-    public List<ProductOpDTO> getProductOp(String pno);
+    List<OrderProductDTO> findOrderProductByOptionIds(@Param("dto")OptionAndCountListDTO dto);
 
-    public List<ProductReview> getProductReview(@Param("cri") Criteria cri, @Param("pno") String pno);
+    void patchProductToOrder(List<OrderProductPatchDTO<String>> productPatchList);
 
-    public int getProductReviewTotal(String pno);
+    List<AdminProductListDTO> findAllByAdminProduct(@Param("cri") Criteria cri);
 
-    public List<ProductQnA> getProductQnA(@Param("cri") Criteria cri, @Param("pno")String pno);
+    int countByAdminProductTotalElements(@Param("cri") Criteria cri);
 
-    public int getProductQnATotal(String pno);
+    void patchProduct(@Param("entity") Product product);
 
-    public int getLikeProductStat(@Param("pno") String pno, @Param("userId") String userId);
+    void saveProduct(Product productEntity);
 
-    public void addCart(Cart cart);
+    List<AdminProductStockInfoDTO> findAllOrderByStock(@Param("cri") PageCriteria cri);
 
-    public void updateCart(Cart cart);
+    List<AdminDiscountResponseDTO> findAllByDiscountList(@Param("cri") PageCriteria cri);
 
-    public String checkCartNo(Cart cart);
+    int countByDiscountList(@Param("cri") PageCriteria cri);
 
-    public void updateCartDetail(List<CartDetail> updateCartDetailList);
+    List<AdminDiscountProductDTO> findAllByClassificationId(@Param("category") String classificationId);
 
-    public void addCartDetail(List<CartDetail> addCartDetailList);
+    void patchDiscountProduct(AdminPatchDiscountDTO discountDTO);
 
-    public List<String> checkDetailOption(String cartNo);
+    List<AdminProductSalesListDTO> getProductSalesList(@Param("cri") PageCriteria cri);
 
-    public void insertPQnA(ProductQnA productQna);
+    int getProductSalesListTotalElements(@Param("cri") PageCriteria cri);
 
-    public void likeProduct(LikeProduct likeProduct);
-
-    public void deLikeProduct(LikeProduct likeProduct);
 
 }

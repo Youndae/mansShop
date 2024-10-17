@@ -7,20 +7,18 @@ import lombok.extern.log4j.Log4j;
 @Getter
 @ToString
 @Log4j
-public class PageDTO {
+public class PageDTO<T extends Criteria> {
 
     private int startPage;
     private int endPage;
     private boolean prev, next;
 
     private int total;
-    private Criteria cri;
+    private T cri;
 
-    public PageDTO(Criteria cri, int total){
+    public PageDTO(T cri, int total){
         this.cri = cri;
         this.total = total;
-
-        log.info("pageNum : " + cri.getPageNum() + " amount : " + cri.getAmount() + " keyword : " + cri.getKeyword());
 
         this.endPage =  (int) (Math.ceil(cri.getPageNum() / 10.0) * 10);
 

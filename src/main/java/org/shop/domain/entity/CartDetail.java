@@ -10,14 +10,12 @@ import lombok.*;
 @Builder
 public class CartDetail {
 
-    private String cdNo;
+    private long id;
 
-    private String cartNo;
+    private long productOptionId;
 
-    private String pOpNo;
+    private long cartId;
 
-    private int cCount;
-
-    private Long cPrice;
+    private int cartCount;
 
 }

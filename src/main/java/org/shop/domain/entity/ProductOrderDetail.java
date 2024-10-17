@@ -1,6 +1,9 @@
 package org.shop.domain.entity;
 
 import lombok.*;
+import org.shop.domain.dto.order.out.OrderProductDTO;
+
+import java.util.List;
 
 @Getter
 @ToString
@@ -10,15 +13,25 @@ import lombok.*;
 @Builder
 public class ProductOrderDetail {
 
-    private String odNo;
+    private long id;
 
-    private String orderNo;
+    private long productOptionId;
 
-    private String pOpNo;
+    private String productId;
 
-    private int orderCount;
+    private long orderId;
 
-    private int odPrice;
+    private int orderDetailCount;
 
-    private String pno;
+    private int orderDetailPrice;
+
+    private boolean orderReviewStatus;
+
+    public ProductOrderDetail (OrderProductDTO dto, long orderId) {
+        this.productOptionId = dto.getProductOptionId();
+        this.productId = dto.getProductId();
+        this.orderId = orderId;
+        this.orderDetailCount = dto.getCount();
+        this.orderDetailPrice = dto.getProductTotalPrice();
+    }
 }

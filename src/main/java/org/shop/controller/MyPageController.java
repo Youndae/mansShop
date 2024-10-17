@@ -1,278 +1,221 @@
 package org.shop.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.myPage.*;
+import lombok.extern.slf4j.Slf4j;
+import org.shop.domain.dto.myPage.out.*;
+import org.shop.domain.dto.myPage.qna.out.*;
+import org.shop.domain.dto.order.OrderListRequestDTO;
+import org.shop.domain.dto.order.in.ProductOrderListDTO;
+import org.shop.domain.dto.order.out.OrderListDTO;
 import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.dto.paging.PageDTO;
-import org.shop.domain.entity.Cart;
-import org.shop.mapper.MyPageMapper;
-import org.shop.service.CartService;
-import org.shop.service.CookieService;
-import org.shop.service.MyPageService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.shop.domain.dto.paging.PagingResponseDTO;
+import org.shop.domain.enumeration.MailSuffix;
+import org.shop.domain.enumeration.PageAmount;
+import org.shop.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
 
-@RequestMapping("/my-page/")
+@RequestMapping("/my-page")
 @Controller
-@Log4j
+@Slf4j
 @RequiredArgsConstructor
 public class MyPageController {
 
     private final MyPageService myPageService;
 
-    private final MyPageMapper myPageMapper;
+    private final OrderService orderService;
+
+    private final ResponseMappingService responseMappingService;
+
+    private final PrincipalService principalService;
 
     private final CookieService cookieService;
 
-    private final CartService cartService;
-
-    //회원 정보 수정 페이지 접근 전 비밀번호 체크 페이지
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void modifyCheck(){
-
-    }
-
-    //회원 정보 수정 페이지 접근 전 비밀번호 체크 처리.
-    @PostMapping("/user")
-    @ResponseBody
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String modifyCheckProc(@RequestParam("userPw") String userPw, Principal principal){
-
-        return myPageService.modifyCheckProc(userPw, principal);
-    }
-
-    //회원 정보 수정 페이지
-    @GetMapping("/user/info")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void getModifyInfo(Model model, Principal principal){
-        model.addAttribute("info", myPageMapper.getModifyInfo(principal.getName()));
-    }
-
-    //회원 정보 수정 처리
-    @PatchMapping("/user/info")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String modifyInfo(MemberModifyDTO dto, Principal principal){
-
-        myPageService.modifyInfo(dto, principal);
-
-        return "redirect:/myPage/modifyInfo";
-    }
-
-    //회원 주문 내역 페이지
     @GetMapping("/order")
-    public String memberOrderList(Principal principal){
-
-        if(principal == null){
-            return "/main/orderInfoCheck";
-        }else{
-            return "/myPage/memberOrderList";
-        }
-
-    }
-
-    //회원 주문 내역 리스트 데이터
-    @GetMapping("/order/data")
-    @ResponseBody
-    public ResponseEntity<List<MemberOrderListDTO>> getOrderList(String regDate, Principal principal) {
-
-        return new ResponseEntity<>(myPageService.getOrderList(regDate, principal), HttpStatus.OK);
-    }
-
-    //회원 리뷰 내역 페이지
-    @GetMapping("/review")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void memberReviewList(Model model, Principal principal, Criteria cri){
-        cri.setKeyword(principal.getName());
-        model.addAttribute("rList", myPageMapper.memberReviewList(cri));
-        int total = myPageMapper.getReviewTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+    public String memberOrderList(@RequestParam(name = "term", required = false, defaultValue = "3") String term
+            , @RequestParam(name = "page", required = false, defaultValue = "1") int page
+            , Principal principal
+            , Model model){
+        OrderListRequestDTO orderDTO = new OrderListRequestDTO(term, page);
+        ProductOrderListDTO dto = new ProductOrderListDTO(principal.getName());
+        PagingResponseDTO<OrderListDTO> result = orderService.getMemberOrderList(dto, orderDTO);
+
+        model.addAttribute("list", result);
+
+        return "/main/nonOrderList";
     }
 
-    //회원 리뷰 상세 페이지
-    @GetMapping("/review/{rNum}")
+    @GetMapping("/review/post/{orderDetailId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String memberReviewDetail(Model model, @PathVariable long rNum){
-        model.addAttribute("rDetail", myPageMapper.memberReviewDetail(rNum));
+    public String postReview(@PathVariable("orderDetailId") long orderDetailId
+                            , Principal principal
+                            , Model model) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+        MyPageReviewPostDTO dto = myPageService.getPostReviewData(orderDetailId, userId);
 
-        return "/myPage/memberReviewDetail";
+        model.addAttribute("detail", dto);
+
+        return "myPage/insertReview";
     }
 
-    //회원 리뷰 수정 페이지
-    @GetMapping("/review/modify/{rNum}")
+    // 관심상품
+    @GetMapping("/like")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String memberReviewModify(Model model, @PathVariable long rNum){
-        model.addAttribute("rModify", myPageMapper.memberReviewDetail(rNum));
+    public String likeList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                            , Principal principal
+                            , Model model) {
 
-        return "/myPage/memberReviewModify";
+        Criteria cri = new Criteria(page, PageAmount.LIKE_PRODUCT_AMOUNT.getAmount());
+        String userId = principalService.getUserIdToPrincipal(principal);
+        List<LikeListDTO> content = myPageService.getLikeList(cri, userId);
+        int totalElements = myPageService.getLikeTotalElements(userId);
+        PagingResponseDTO<LikeListDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+
+        model.addAttribute("likeList", result);
+
+        return "/myPage/likeList";
     }
 
-    //회원 리뷰 수정 처리
-    @PatchMapping("/review/{rNum}")
+    @GetMapping("/qna/product")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String memberReviewModifyProc(@PathVariable long rNum, String reviewContent){
+    public String productQnAList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , Principal principal
+                                , Model model) {
+        Criteria cri = new Criteria(page, PageAmount.DEFAULT_AMOUNT.getAmount());
+        String userId = principalService.getUserIdToPrincipal(principal);
+        List<MyPageProductQnAListDTO> content = myPageService.getProductQnAList(userId, cri);
+        int totalElements = myPageService.getProductQnATotalElements(userId);
+        PagingResponseDTO<MyPageProductQnAListDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        ProductReviewModifyDTO dto = ProductReviewModifyDTO.builder()
-                                        .rNum(rNum)
-                                        .reviewContent(reviewContent)
-                                        .build();
+        model.addAttribute("qna", result);
 
-        myPageService.memberReviewModify(dto);
-
-        return "redirect:/myPage/memberReviewDetail/"+ rNum;
+        return "/myPage/productQnAList";
     }
 
-    //회원 리뷰 삭제 처리
-    @DeleteMapping("/review/{rNum}")
-    @ResponseBody
+    @GetMapping("/qna/product/{qnaId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String memberReviewDelete(@PathVariable long rNum){
+    public String productQnADetail(@PathVariable("qnaId") long qnaId
+                                    , Principal principal
+                                    , Model model) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+        MyPageProductQnADetailResponseDTO result = myPageService.getProductQnADetail(qnaId, userId);
 
-        return myPageService.deleteReview(rNum);
+        model.addAttribute("detail", result);
+
+        return "/myPage/productQnADetail";
+    }
+    @GetMapping("/qna/member/insert")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public String insertMemberQnA(Model model) {
+        List<MyPageQnAClassificationDTO> dto = myPageService.getQnAClassification();
+
+        model.addAttribute("classification", dto);
+
+        return "/myPage/insertMemberQnA";
     }
 
-    //리뷰 작성 페이지
-    @GetMapping("/review/{pno}/{orderNo}")
+    @GetMapping("/qna/member/patch/{qnaId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String getInsertReview(Model model
-                                , @PathVariable String pno
-                                , @PathVariable String orderNo){
+    public String patchMemberQnA(@PathVariable("qnaId") long qnaId
+                                , Principal principal
+                                , Model model){
+        log.info("patch MemberQnA");
+        String userId = principalService.getUserIdToPrincipal(principal);
+        MemberQnAPatchResponseDTO patchDTO = myPageService.getMemberQnAPatchData(qnaId, userId);
+        List<MyPageQnAClassificationDTO> classificationDTO = myPageService.getQnAClassification();
 
-        ProductOrderInfoDTO dto = ProductOrderInfoDTO.builder()
-                        .pno(pno)
-                        .orderNo(orderNo)
-                        .pName(myPageMapper.reviewProductInfo(pno))
-                        .build();
+        model.addAttribute("data", patchDTO);
+        model.addAttribute("classification", classificationDTO);
 
-        model.addAttribute("pInfo", dto);
-
-        return "/myPage/orderReview";
+        return "/myPage/patchMemberQnA";
     }
 
-    //리뷰 작성 처리
-    @PostMapping("/review")
+    @GetMapping("/qna/member")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String insertReview(ProductReviewInsertDTO dto
-                                , Principal principal){
-        myPageService.insertReviewProc(dto, principal);
+    public String memberQnAList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , Principal principal
+                                , Model model) {
+        Criteria cri = new Criteria(page, PageAmount.DEFAULT_AMOUNT.getAmount());
+        String userId = principalService.getUserIdToPrincipal(principal);
+        List<MyPageMemberQnAListDTO> content = myPageService.getMemberQnAList(userId, cri);
+        int totalElements = myPageService.getMemberQnATotalElements(userId);
+        PagingResponseDTO<MyPageMemberQnAListDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        return "redirect:/myPage/memberOrderList";
+        model.addAttribute("qna", result);
+
+        return "/myPage/memberQnAList";
     }
 
-    //회원 문의사항 페이지
-    @GetMapping("/qna")
+    @GetMapping("/qna/member/{qnaId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void memberQnAList(Model model, Principal principal, Criteria cri){
-        cri.setKeyword(principal.getName());
-        model.addAttribute("qList", myPageMapper.memberQnAList(cri));
-        int total = myPageMapper.getQnATotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
-    }
+    public String memberQnADetail(@PathVariable("qnaId") long qnaId
+                                , Principal principal
+                                , Model model) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+        MyPageMemberQnADetailResponseDTO result = myPageService.getMemberQnADetail(qnaId, userId);
 
-    //회원 문의사항 상세 페이지
-    @GetMapping("/qna/{qno}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String memberQnADetail(@PathVariable long qno, Model model){
-        model.addAttribute("qDetail", myPageMapper.memberQnADetail(qno));
-        model.addAttribute("qReply", myPageMapper.memberQnAReply(qno));
+        model.addAttribute("detail", result);
 
         return "/myPage/memberQnADetail";
     }
 
-    //회원 문의사항 작성 페이지
-    @GetMapping("/qna/insert")
+    @GetMapping("/review")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void getInsertMemberQnA(){
+    public String reviewList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                            , Principal principal
+                            , Model model) {
+        Criteria cri = new Criteria(page, PageAmount.DEFAULT_AMOUNT.getAmount());
+        String userId = principalService.getUserIdToPrincipal(principal);
+        List<MyPageReviewListDTO> content = myPageService.getReviewList(userId, cri);
+        int totalElements = myPageService.getReviewTotalElements(userId);
+        PagingResponseDTO<MyPageReviewListDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
+        model.addAttribute("list", result);
+
+        return "/myPage/memberReviewList";
     }
 
-    //회원 문의사항 작성 처리
-    @PostMapping("/qna/insert")
+    @GetMapping("/review/patch/{reviewId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String insertMemberQnA(MyQnAInsertDTO dto, Principal principal){
-        myPageService.insertMyQnAProc(dto, principal);
+    public String patchReview(@PathVariable("reviewId") long reviewId
+                                , Principal principal
+                                , Model model) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+        MyPageReviewPatchDTO dto = myPageService.getPatchReviewData(reviewId, userId);
 
-        return "redirect:/myPage/memberQnAList";
+        model.addAttribute("data", dto);
+
+        return "/myPage/memberReviewModify";
     }
 
-    //회원 찜 목록 페이지
-    @GetMapping("/like")
+    @GetMapping("/member/info")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public void likeList(Model model, Principal principal, Criteria cri){
-        cri.setKeyword(principal.getName());
-        cri.setAmount(8);
-        model.addAttribute("lList", myPageMapper.likeList(cri));
-        int total = myPageMapper.getLikeTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+    public String getMemberInfoPage(Principal principal, Model model) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+
+        model.addAttribute("uid", userId);
+
+        return "/myPage/modifyCheck";
     }
 
-    //회원 장바구니 페이지
-    @GetMapping("/cart")
-    public String cart(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        Cart cart = cookieService.checkCookie(request, principal, response, false);
-        model.addAttribute("cartList", myPageMapper.getCartList(cart));
-
-        return "myPage/cart";
-    }
-
-    //회원 장바구니 선택목록 삭제 처리
-    @DeleteMapping("/cart")
-    @ResponseBody
-    public String deleteCart(@RequestBody List<String> cdNoList, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-
-
-        return cartService.deleteCartCheck(cdNoList, principal, request, response);
-    }
-
-    //회원 장바구니 수량 증감
-    @PostMapping("/cart")
-    @ResponseBody
-    public String cartUp(@RequestParam("cdNo")String cdNo, @RequestParam("cPrice")String cPrice, @RequestParam("countType") String countType){
-
-        return cartService.cartCount(cdNo, cPrice, countType);
-    }
-
-    //채팅 문의 리스트
-    @GetMapping("/chat")
+    @GetMapping("/member/patch-info")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String chatQnA(Principal principal, Model model){
-        //채팅 저장 처리 및 내역 출력 기능 구현 후 서비스 호출해서 qList로 전달
-        model.addAttribute("qList", null);
+    public String getPatchMemberInfo(Principal principal, Model model, HttpServletRequest request) {
+        String userId = principalService.getUserIdToPrincipal(principal);
+        cookieService.checkMemberCheckCookie(userId, request);
+        MyPageMemberInfoDTO result = myPageService.getMemberInfo(userId);
 
-        return "myPage/memberChat";
-    }
+        model.addAttribute("data", result);
+        model.addAttribute("mailSuffix", MailSuffix.values());
 
-    //채팅 방 생성
-    @PostMapping("/chat")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    @ResponseBody
-    public String createChatRoom(Principal principal){
-        log.info("Create ChatRoom user : " + principal.getName());
-
-        return myPageService.createChatRoom(principal);
-    }
-
-    //채팅방 입장
-    @GetMapping("/chat/{chatRoomId}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public String chatRoom(@PathVariable("chatRoomId") String chatRoomId, Model model, Principal principal){
-        log.info(principal.getName() + "'s chatRoom connect");
-
-        //채팅방 정보(내역) 전달
-        model.addAttribute("room", myPageService.findByUserRoomId(chatRoomId, principal));
-
-        return "chat/room";
+        return "/myPage/modifyInfo";
     }
 
 }

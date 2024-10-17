@@ -1,33 +1,39 @@
 package org.shop.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.order.ProductOrderDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.shop.domain.dto.order.out.OrderProductResponseDTO;
+import org.shop.service.CookieService;
 import org.shop.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
+import javax.servlet.http.HttpSession;
 
 @RequestMapping("/order")
 @Controller
-@Log4j
+@Slf4j
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    @GetMapping("/product")
+    public String orderProduct(HttpSession session
+                                , Model model) {
 
-    //주문 페이지
-    @PostMapping("/")
-    public String orderPayment(@RequestParam HashMap<String, Object> commandMap, Model model){
-        model.addAttribute("oList", orderService.orderProduct(commandMap));
-        model.addAttribute("orderType", commandMap.get("oType").toString());
+        OrderProductResponseDTO dto = (OrderProductResponseDTO) session.getAttribute("orderResponse");
+        model.addAttribute("order", dto);
+
+        return "order/orderPayment";
+    }
+
+
+    @GetMapping("/cart")
+    public String orderCart(HttpSession session
+                            , Model model) {
+
+        OrderProductResponseDTO dto = (OrderProductResponseDTO) session.getAttribute("orderResponse");
+        model.addAttribute("order", dto);
 
         return "order/orderPayment";
     }
@@ -38,23 +44,5 @@ public class OrderController {
         model.addAttribute("type", oType);
 
         return "order/orderComplete";
-    }
-
-    //결제 처리
-    @PostMapping("/payment")
-    @ResponseBody
-    public String payment(ProductOrderDTO dto
-                        , @RequestParam("oType") String oType
-                        , @RequestParam("cdNo") List<String> cdNo
-                        , @RequestParam("pOpNo") List<String> pOpNo
-                        , @RequestParam("orderCount")List<String> orderCount
-                        , @RequestParam("odPrice")List<String> odPrice
-                        , @RequestParam("pno")List<String> pno
-                        , Principal principal
-                        , HttpServletRequest request
-                        , HttpServletResponse response){
-
-
-        return orderService.orderPayment(dto, cdNo, pOpNo, orderCount, odPrice, pno, oType, request, response, principal);
     }
 }

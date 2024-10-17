@@ -1,5 +1,4 @@
 const idPattern = /^[A-Za-z0-9]{5,15}$/;
-const pwPattern = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/;
 const emailPattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
 const phonePattern = /^01(?:0|1|6|9)([0-9]{3,4})([0-9]{4})$/;
 const token = $("meta[name='_csrf']").attr("content");
@@ -8,6 +7,10 @@ let searchType = "phone";
 let timer = true;
 
 $(document).ready(function(){
+    $(".join-btn").on('click', function(e) {
+        e.preventDefault();
+        location.href='/member/join';
+    })
 
     $(".searchIdBtn").click(function(){
         const name = $('input[name="userName"]').val();
@@ -17,39 +20,40 @@ $(document).ready(function(){
         $('.nameOverlap').text('');
         $('.overlap').text('');
 
-        if(searchType == "phone") {
+        if(searchType === "phone") {
             phone = $('input[name="userPhone"]').val();
-        }else if(searchType == "mail") {
+        }else if(searchType === "mail") {
             mail = $('input[name="userEmail"]').val();
         }
 
-        if(name == null && name == undefined && name == '') {
+        if(name == null && name === undefined && name === '') {
             $('.nameOverlap').text("이름을 입력해주세요");
             $('input[name="userName"]').focus();
-        }else if(searchType == "phone" && phonePattern.test(phone) == false) {
+        }else if(searchType === "phone" && !phonePattern.test(phone)) {
             $('.overlap').text("유효한 번호가 아닙니다.");
             $('input[name="userPhone"]').focus();
-        }else if(searchType == "mail" && emailPattern.test(mail) == false){
+        }else if(searchType === "mail" && !emailPattern.test(mail)){
             $('.overlap').text("유효한 메일 주소가 아닙니다.");
             $('input[name="userEmail"]').focus();
         }else{
-            const formData = {
+            const data = {
                                 userName : name,
-                                userPhone : phone,
-                                userEmail : mail,
+                                userPhone : phone || null,
+                                userEmail : mail || null,
                             }
 
             $.ajax({
                 url: '/member/search-id',
                 method : 'post',
-                data: formData,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
                 beforeSend : function(xhr){
                     xhr.setRequestHeader(header, token);
                 },
                 success : function(data){
-                    if(data == '')
+                    if (data === 'FAIL' || data === 'NOTFOUND')
                         $('.searchOverlap').text("일치하는 정보가 없습니다.");
-                    else{
+                    else {
                         successSearchId(data);
                     }
                 }
@@ -75,7 +79,7 @@ $(document).ready(function(){
             $('.overlap').text("유효한 메일 주소가 아닙니다.");
             $('input[name="userEmail"]').focus();
         }else{
-            var formData = {
+            const data = {
                 userId : uid,
                 userName : name,
                 userEmail : mail,
@@ -84,16 +88,17 @@ $(document).ready(function(){
             $.ajax({
                 url: '/member/search-pw',
                 method: 'post',
-                data: formData,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
                 beforeSend: function(xhr){
                     xhr.setRequestHeader(header, token);
                 },
                 success: function(data){
-                    if(data == -1)
+                    if(data === 'FAIL')
                         $(".searchOverlap").text("일치하는 정보가 없습니다.");
-                    else if(data == 0)
+                    else if(data === 'ERROR')
                         alert('오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요');
-                    else if(data == 1){
+                    else if(data === 'SUCCESS'){
                         document.getElementById('userId').disabled = true;
                         document.getElementById('userName').disabled = true;
                         document.getElementById('userEmail').disabled = true;
@@ -141,191 +146,9 @@ $(document).ready(function(){
 
         $('.form-area').append(str);
     })
-
-    $("#userPw").on("propertychange change keyup paste input", function(){
-        if($("#userPw").val().length < 8){
-            $("#pwOverlap").text("비밀번호는 8자리 이상입니다.");
-            $("#pwStat").val("");
-        }else if(pwPattern.test($("#userPw").val()) == false){
-            $("#pwOverlap").text("비밀번호는 영어,특수문자,숫자가 포함되어야합니다.");
-            $("#pwStat").val("");
-        }else{
-            $("#pwOverlap").text("");
-            $("#pwStat").val("");
-        }
-    })
-
-    $("#checkUserPw").on("propertychange change keyup paste input", function(){
-        if($("#userPw").val() != $("#checkUserPw").val()) {
-            $("#pwCheckOverlap").text("비밀번호가 일치하지 않습니다.");
-            $("#pwStat").val("");
-        }else{
-            $("#pwCheckOverlap").text("");
-            $("#pwStat").val("1");
-        }
-    })
-
-    $("#userEmail").on("propertychange change keyup paste input", function(){
-        if(emailPattern.test($("#userEmail").val()) == false){
-            $("#emailOverlap").text("유효한 주소가 아닙니다.");
-            $("#mailStat").val("");
-        }else{
-            $("#emailOverlap").text("");
-            $("#mailStat").val("1");
-        }
-    })
-
-    $("#userPhone").on("propertychange change keyup paste input", function(){
-        if(phonePattern.test($("#userPhone").val()) == false){
-            $("#phoneOverlap").text("유효한 번호가 아닙니다.");
-            $("#phoneStat").text("");
-        }else{
-            $("#phoneOverlap").text("");
-            $("#phoneStat").val("1");
-        }
-    })
-
-
-    $(function(){
-        $("#IdCheck").click(function(){
-            const uid ={
-                uid : $("#userId").val(),
-            };
-
-            if(uid.uid == ""){
-                $("#idOverlap").text("아이디를 입력하세요");
-            }else if(uid.uid != "" && idPattern.test(uid.uid) == false){
-                $("#idOverlap").text("영문자와 숫자를 사용한 5~15 자리만 가능합니다.");
-
-            }else{
-                $.ajax({
-                    url: "/member/check-id",
-                    type: "post",
-                    data: uid,
-                    dataType: "json",
-                    beforeSend : function(xhr){
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success : function(data){
-                        if(data == 1){
-                            $("#idOverlap").text("사용중인 아이디입니다.");
-                            $("#idStat").val("0");
-                        }else{
-                            $("#idOverlap").text("사용가능한 아이디입니다.");
-                            $("#idStat").val("1");
-                        }
-                    },
-                    error : function(request, status, error){
-                        alert("code:" + request.status + "\n"
-                            + "message : " + request.responseText
-                            + "\n" + "error : " +error);
-                    }
-                });
-            }
-        })
-    });
-
-    const today = new Date();
-    const today_year = today.getFullYear();
-    const start_year = today_year - 100;
-    let index = 0;
-
-    for(let y = today_year; y >= start_year; y--){
-        document.getElementById('select_year').options[index] = new Option(y, y);
-        index++;
-    }
-
-    index = 0;
-
-    for(let m = 1; m <= 12; m++){
-        document.getElementById('select_month').options[index] = new Option(m, m);
-        index++;
-    }
-
-    $("#select_year").on("propertychange change keyup paste input", function(){
-        console.log("select Year");
-        lastday();
-    })
-
-    $("#select_month").on("propertychange change keyup paste input", function(){
-        lastday();
-    })
 });
 
-function lastday(){
-    const Year = $("#select_year").val();
-    const Month = $("#select_month").val();
-    const day = new Date(new Date(Year, Month, 1) - 86400000).getDate();
-    const dayIndex_len = document.getElementById('select_day').length;
-    if(day > dayIndex_len){
-        for(var i = (dayIndex_len+1); i <= day; i++){
-            document.getElementById('select_day').options[i - 1] = new Option(i, i);
-        }
-    }else if(day < dayIndex_len){
-        for(var i = dayIndex_len; i >= day; i--){
-            document.getElementById('select_day').options[i] = null;
-        }
-    }
-}
-
 $(function(){
-    $("#join").click(function() {
-        const formObj = $("form[role='form']");
-        const year = $("#select_year").val();
-        const month = $("#select_month").val();
-        const day = $("#select_day").val();
-        const select_date = [year, month, day].join('-');
-        const str = "<input type='hidden' name='userBirth' value='" + select_date + "'>";
-
-        formObj.append(str);
-
-        if($("#userId").val() == ""){
-            $("#idOverlap").text("아이디를 입력하세요");
-            $("#userId").focus();
-        }
-        else if($("#idStat").val() == ""){
-            $("#idOverlap").text("아이디 중복체크를 해주세요");
-            $("#userId").focus();
-        }
-        else if($("#idStat").val() == "0"){
-            $("#userId").focus();
-        }
-        else if($("#userPw").val() == ""){
-            $("#pwOverlap").text("비밀번호를 입력하세요");
-            $("#userPw").focus();
-        }
-        else if($("#checkUserPw").val() == ""){
-            $("#pwCheckOverlap").text("비밀번호를 다시 입력하세요");
-            $("#checkUserPw").focus();
-        }
-        else if($("#pwStat").val() != "1"){
-            $("#userPw").focus();
-        }
-        else if($("#userName").val() == ""){
-            $("#nameOverlap").text("이름을 입력하세요");
-            $("#userName").focus();
-        }
-        else if($("#userEmail").val() == "") {
-            $("#emailOverlap").text("이메일을 입력하세요");
-            $("#userEmail").focus();
-        }
-        else if($("#mailStat").val() != "1"){
-            $("#userEmail").focus();
-        }
-        else if($("#userPhone").val() == "") {
-            $("#phoneOverlap").text("연락처를 입력하세요");
-            $("#userPhone").focus();
-        }
-        else if($("#phoneStat").val() != "1"){
-            $("#userPhone").focus();
-        }
-        else{
-            formObj.submit();
-        }
-
-
-    });
-
     $(".loginBtn").on("click", function(e){
         e.preventDefault();
         $("#loginForm").submit();
@@ -336,12 +159,12 @@ $(function(){
         location.href='/member/join';
     })
 
-    $(".searchId").on('click', function(e){
+    $(".search-id-btn").on('click', function(e){
         e.preventDefault();
         location.href = '/member/search-id';
     })
 
-    $(".searchPw").on('click', function(e){
+    $(".search-pw-btn").on('click', function(e){
         e.preventDefault();
         location.href = '/member/search-pw';
     })
@@ -361,7 +184,7 @@ $(document).on('click', "#certifi-btn", function(){
     }else if(certify < 100000){
         $('.certifi-overlap').text('유효하지 않은 인증번호입니다.');
     }else{
-        const formData = {
+        const data = {
                             userId : uid,
                             cno : certify,
                         };
@@ -369,16 +192,17 @@ $(document).on('click', "#certifi-btn", function(){
         $.ajax({
             url: '/member/certify-pw',
             method: 'post',
-            data: formData,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
             beforeSend: function(xhr){
                 xhr.setRequestHeader(header, token);
             },
             success: function(data){
-                if(data == -1)
+                if(data === 'FAIL')
                     $('.certifi-overlap').text('유효하지 않은 인증번호입니다.');
-                else if(data == 0)
+                else if(data === 'ERROR')
                     alert('오류가 발생했습니다.\n문제가 계속된다면 관리자에게 문의해주세요');
-                else if(data == 1){
+                else if(data === 'SUCCESS'){
                     $('#formId').val(uid);
                     $('#formCno').val(certify);
                     $('#pwForm').submit();

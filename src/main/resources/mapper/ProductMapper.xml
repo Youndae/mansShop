@@ -3,195 +3,186 @@
 
 <mapper namespace="org.shop.mapper.ProductMapper">
 
-    <select id="productDetail" resultType="org.shop.domain.dto.product.ProductDetailDTO">
-        SELECT firstThumbnail
-        , pName
-        , pPrice
-        , pno
+    <select id="findById" resultType="Product">
+        SELECT *
         FROM product
-        WHERE pno=#{pno}
+        WHERE id = #{productId}
     </select>
 
-    <select id="getProductOp" resultType="org.shop.domain.dto.product.ProductOpDTO">
-        SELECT pOpNo
-                , pSize
-                , pColor
-        FROM productOp
-        WHERE pno=#{pno}
+    <select id="findOrderProductByOptionIds" resultType="OrderProductDTO">
+        <foreach collection="dto.optionNoList" item="optionId" index="index" open="" separator=" UNION ALL " close="">
+            SELECT p.id as productId
+                , p.productName as productName
+                , op.id as productOptionId
+                , op.productSize as pSize
+                , op.productColor as pColor
+                , p.productPrice as price
+                , p.productDiscount as discount
+                , ${dto.countList[index]} as count
+            FROM product p
+            INNER JOIN productOption op
+            ON p.id = op.productId
+            WHERE op.id = #{optionId}
+        </foreach>
     </select>
 
-    <select id="getProductReview" resultType="org.shop.domain.entity.ProductReview">
-        SELECT *
-        FROM(
-            SELECT rownum rn
-                , r.*
-            FROM(
-                SELECT *
-                FROM productReview
-                WHERE pno=#{pno}
-                order by rnum desc
-            )r
-        )
-        WHERE rn
-            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
+    <update id="patchProductToOrder" parameterType="java.util.List">
+        <foreach collection="list" index="index" item="product" open="DECLARE BEGIN" separator=";" close="; END;">
+            UPDATE product
+            SET productSales = productSales + #{product.count}
+            WHERE id = #{product.id}
+        </foreach>
+    </update>
+
+    <select id="findAllByAdminProduct" resultType="AdminProductListDTO">
+        SELECT p.id as productId
+            , p.classificationId as classification
+            , p.productName as productName
+            , sum(op.stock) as stock
+            , count(op.id) as optionCount
+            , p.productPrice as price
+        FROM product p
+        INNER JOIN productOption op
+        ON p.id = op.productId
+        <include refid="productSearchCondition"/>
+        GROUP BY p.id, p.classificationId, p.productName, p.productPrice, p.updatedAt
+        ORDER BY p.updatedAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
-    <select id="getProductReviewTotal" resultType="int">
-        SELECT count(*)
-        FROM productReview
-        WHERE pno=#{pno}
-    </select>
-
-    <select id="getProductQnA" resultType="org.shop.domain.entity.ProductQnA">
-        SELECT *
-        FROM(
-            SELECT rownum rn
-                , q.*
-            FROM(
-                SELECT *
-                FROM productQna
-                WHERE pno=#{pno}
-                ORDER BY pQnAGroupNo DESC
-                    , pQnAIndent
-                )q
-            )
-        WHERE rn
-            BETWEEN (#{cri.pageNum} - 1) * #{cri.amount} + 1 AND #{cri.pageNum} * #{cri.amount}
-
-    </select>
-
-    <select id="getProductQnATotal" resultType="int">
-        SELECT count(*)
-        FROM productQna
-        WHERE pno=#{pno}
-    </select>
-
-    <select id="getLikeProductStat" resultType="int">
-        SELECT count(*)
-        FROM likeProduct
-        WHERE userId=#{userId}
-            AND pno=#{pno}
-    </select>
-
-    <sql id="cartId">
-        <trim prefix="WHERE">
-            <if test="ckId != null">ckId = #{ckId}</if>
-            <if test="ckId == null">userId = #{userId}</if>
+    <sql id="productSearchCondition">
+        <trim prefix="WHERE ">
+            <if test="cri.keyword != null">p.productName LIKE '%'||#{cri.keyword}||'%'</if>
         </trim>
     </sql>
 
-    <select id="checkCart" resultType="int">
-        SELECT count(*)
-        FROM cart
-        <include refid="cartId"></include>
+    <select id="countByAdminProductTotalElements" resultType="int">
+        SELECT distinct(count(p.id))
+        FROM product p
+        <include refid="productSearchCondition"/>
     </select>
 
-    <insert id="addCart" parameterType="org.shop.domain.entity.Cart">
-        INSERT INTO cart(
-            cartNo
-            , userId
-            , ckId
-            , createdAt
-            , updatedAt
-        )
-        VALUES(
-            #{cartNo}
-            , #{userId}
-            , #{ckId}
-            , sysdate
-            , sysdate
-        )
-    </insert>
-
-    <update id="updateCart" parameterType="org.shop.domain.entity.Cart">
-        UPDATE cart SET
-            updatedAt = sysdate
-        WHERE cartNo = #{cartNo}
+    <update id="patchProduct">
+        UPDATE PRODUCT
+        SET classificationId = #{entity.classificationId}
+            , productName = #{entity.productName}
+            , productPrice = #{entity.productPrice}
+            , productDiscount = #{entity.productDiscount}
+            , isOpen = #{entity.isOpen}
+            , updatedAt = SYSDATE
+            <include refid="patchProductThumbnailCondition"/>
+        WHERE id = #{entity.id}
     </update>
 
-    <select id="checkCartNo" resultType="String">
-        SELECT cartNo
-        FROM cart
-        <include refid="cartId"></include>
+    <sql id="patchProductThumbnailCondition">
+        <trim prefix="">
+            <if test="entity.thumbnail != null">
+                , thumbnail = #{entity.thumbnail}
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="saveProduct" parameterType="Product">
+        INSERT INTO product(
+                id
+                , classificationId
+                , productName
+                , productPrice
+                , thumbnail
+                , productDiscount
+                , isOpen
+        )
+        VALUES (
+               #{id}
+               , #{classificationId}
+               , #{productName}
+               , #{productPrice}
+               , #{thumbnail}
+               , #{productDiscount}
+               , #{isOpen}
+               )
+    </insert>
+
+    <select id="findAllOrderByStock" resultType="AdminProductStockInfoDTO">
+        SELECT p.id as productId
+            , p.classificationId as classification
+            , p.productName as productName
+            , sum(op.stock) as totalStock
+            , p.isOpen as isOpen
+        FROM product p
+        INNER JOIN productOption op
+        ON p.id = op.productId
+        <include refid="productSearchCondition"/>
+        GROUP BY p.id, p.classificationid, p.productName, p.isOpen
+        ORDER BY totalStock
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
-    <update id="updateCartDetail" parameterType="org.shop.domain.entity.CartDetail">
-        <foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
-            UPDATE cartDetail SET
-            cCount = cCount + #{item.cCount}
-            , cPrice = cPrice + #{item.cPrice}
-            WHERE
-            pOpNo = #{item.pOpNo}
-            AND
-            cartNo = #{item.cartNo}
-        </foreach>
+    <select id="findAllByDiscountList" resultType="AdminDiscountResponseDTO">
+        SELECT id as productId
+            , classificationId as classification
+            , productName as productName
+            , productPrice as price
+            , productDiscount as discount
+        FROM product
+        WHERE productDiscount > 0
+        <include refid="productSearchKeywordCondition"/>
+        ORDER BY updatedAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByDiscountList" resultType="int">
+        SELECT distinct(count(id))
+        FROM product
+        WHERE productDiscount > 0
+        <include refid="productSearchKeywordCondition"/>
+    </select>
+
+    <sql id="productSearchKeywordCondition">
+        <trim prefix="AND ">
+            <if test="cri.keyword != null">productName LIKE '%'||#{cri.keyword}||'%'</if>
+        </trim>
+    </sql>
+
+    <select id="findAllByClassificationId" resultType="AdminDiscountProductDTO">
+        SELECT id
+            , productName
+        FROM product
+        WHERE classificationId = #{category}
+    </select>
+
+    <update id="patchDiscountProduct" parameterType="AdminPatchDiscountDTO">
+        UPDATE product
+        SET productDiscount = #{discount}
+        WHERE id IN
+              <foreach collection="productIds" item="item" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
     </update>
 
-
-
-    <insert id="addCartDetail" parameterType="org.shop.domain.entity.CartDetail">
-        <foreach collection="list" item="item" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
-            INTO cartDetail(
-                cdNo
-                , cartNo
-                , pOpNo
-                , cCount
-                , cPrice
-            )
-            VALUES(
-                #{item.cdNo}
-                , #{item.cartNo}
-                , #{item.pOpNo}
-                , #{item.cCount}
-                , #{item.cPrice}
-            )
-        </foreach>
-    </insert>
-
-    <select id="checkDetailOption" resultType="String">
-        SELECT pOpNo
-        FROM cartDetail
-        WHERE
-            cartNo = #{cartNo}
+    <select id="getProductSalesList" resultType="AdminProductSalesListDTO">
+        SELECT p.classificationId as classification
+        , p.id as productId
+        , p.productName as productName
+        , (SELECT sum(orderDetailCount) FROM productOrderDetail WHERE productId = p.id) as sales
+        , p.productSales as salesQuantity
+        FROM product p
+        <include refid="productSalesCondition"/>
+        ORDER BY p.classificationId DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
-    <insert id="insertPQnA" parameterType="org.shop.domain.entity.ProductQnA">
-        INSERT INTO productQna(
-            pQnANo
-            , pno
-            , userId
-            , pQnAContent
-            , pQnARegDate
-            , pQnAGroupNo
-        )
-        values(
-            product_QnA_SEQ.NEXTVAL
-            , #{pno}
-            , #{userId}
-            , #{pQnAContent}
-            , sysdate
-            , product_QnA_SEQ.NEXTVAL
-        )
+    <select id="getProductSalesListTotalElements" resultType="int">
+        SELECT distinct(count(id))
+        FROM product
+        <include refid="productSalesCondition"/>
+    </select>
 
-    </insert>
-
-    <insert id="likeProduct" parameterType="String">
-        INSERT INTO likeProduct(
-            likeNo
-            , userId
-            , pno
-        )
-        VALUES(
-            #{likeNo}
-            , #{userId}
-            , #{pno}
-        )
-    </insert>
-
-    <delete id="deLikeProduct" parameterType="String">
-        DELETE FROM likeProduct
-        WHERE userId=#{userId}
-            AND pno=#{pno}
-    </delete>
-
+    <sql id="productSalesCondition">
+        <trim prefix="WHERE ">
+            <if test="cri.keyword != null">
+                productName LIKE '%' || #{cri.keyword} || '%'
+            </if>
+        </trim>
+    </sql>
 </mapper>

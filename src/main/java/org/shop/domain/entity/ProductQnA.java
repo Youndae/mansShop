@@ -3,6 +3,7 @@ package org.shop.domain.entity;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Getter
 @ToString
@@ -12,19 +13,15 @@ import java.sql.Date;
 @Builder
 public class ProductQnA {
 
-    private Long pQnANo;
+    private long id;
 
-    private String pno;
+    private String productId;
 
     private String userId;
 
-    private String pQnAContent;
+    private String qnaContent;
 
-    private Date pQnARegDate;
+    private LocalDate createdAt;
 
-    private int pQnAAnswer;
-
-    private Long pQnAGroupNo;
-
-    private int pQnAIndent;
+    private boolean status;
 }

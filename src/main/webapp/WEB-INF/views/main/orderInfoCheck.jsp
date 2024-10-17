@@ -7,7 +7,8 @@
 <script type="text/javascript" src="/js/myPageOrder.js"></script>
 <link rel="stylesheet" href="/css/nonOrder.css">
 <body>
-<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+<div class="container">
+    <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
     <div class="content orderInfoCheck">
         <div class="orderInfoCheck_header">
             <h1>비회원 주문조회</h1>
@@ -20,7 +21,7 @@
                 </div>
                 <div>
                     <label>주문자 연락처</label>
-                    <input type="text" name="orderPhone">
+                    <input type="text" id="orderPhone" name="orderPhone">
                 </div>
             </form>
         </div>

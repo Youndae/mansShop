@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductInfoImageMapper">
+
+    <select id="findAllByProductId" resultType="String">
+        SELECT imageName
+        FROM productInfoImage
+        WHERE productId = #{productId}
+    </select>
+
+    <insert id="saveInfoImages" parameterType="map">
+        {CALL insert_product_info_images(
+            #{infoImages, jdbcType=ARRAY, jdbcTypeName="ORDER_DETAIL_OBJ_LIST", typeHandler=org.shop.mapper.typeHandler.ProductInfoImageTypeHandler}
+        )}
+    </insert>
+
+    <delete id="deleteByImageNames" parameterType="String">
+        DELETE FROM productInfoImage
+        <where>
+            <foreach collection="list" item="item" open="" close="" separator="OR">
+                (imageName = #{imageName})
+            </foreach>
+        </where>
+    </delete>
+</mapper>

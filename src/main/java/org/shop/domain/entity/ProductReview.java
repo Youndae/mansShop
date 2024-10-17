@@ -3,6 +3,7 @@ package org.shop.domain.entity;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Getter
 @ToString
@@ -12,13 +13,17 @@ import java.sql.Date;
 @Builder
 public class ProductReview {
 
-    private Long rNum;
+    private long id;
 
-    private String pno;
+    private String productId;
+
+    private long productOptionId;
 
     private String userId;
 
     private String reviewContent;
 
-    private Date reviewDate;
+    private LocalDate createdAt;
+
+    private LocalDate updatedAt;
 }

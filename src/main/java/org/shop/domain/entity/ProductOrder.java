@@ -1,60 +1,58 @@
 package org.shop.domain.entity;
 
 import lombok.*;
+import org.shop.domain.dto.order.in.OrderPaymentRequestDTO;
+import org.shop.domain.dto.order.out.OrderProductResponseDTO;
+import org.shop.domain.enumeration.OrderStatus;
 
+import java.security.Principal;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ProductOrder {
 
-    private String orderNo;
+    private long id;
 
     private String userId;
 
-    private String addr;
+    private String recipient;
 
     private String orderPhone;
 
+    private String orderAddress;
+
     private String orderMemo;
 
-    private Long orderPrice;
+    private int orderTotalPrice;
 
-    private int orderStat;
+    private int deliveryFee;
 
-    private Date orderDate;
+    private LocalDateTime createdAt;
 
-    private char orderPayment;
+    private String paymentType;
 
-    private String recipient;
+    private String status;
 
-    public ProductOrder(String orderNo
-                        , String userId
-                        , String addr
-                        , String orderPhone
-                        , String orderMemo
-                        , Long orderPrice
-                        , int orderStat
-                        , Date orderDate
-                        , char orderPayment
-                        , String recipient) {
-        StringBuffer sb = new StringBuffer();
-        this.orderNo = orderNo != null ? orderNo : sb.append(
-                                                            new SimpleDateFormat("yyyyMMddHHmmss")
-                                                                    .format(System.currentTimeMillis())
-                                                    ).toString();
+    private int productCount;
+
+    public ProductOrder (OrderPaymentRequestDTO paymentRequestDTO, OrderProductResponseDTO productDTO, String userId) {
         this.userId = userId;
-        this.addr = addr;
-        this.orderPhone = orderPhone;
-        this.orderMemo = orderMemo;
-        this.orderPrice = orderPrice;
-        this.orderStat = orderStat;
-        this.orderDate = orderDate;
-        this.orderPayment = orderPayment;
-        this.recipient = recipient;
+        this.recipient = paymentRequestDTO.getRecipient();
+        this.orderPhone = paymentRequestDTO.getPhone();
+        this.orderAddress = paymentRequestDTO.getAddress();
+        this.orderMemo = paymentRequestDTO.getMemo();
+        this.orderTotalPrice = productDTO.getFinalTotalPrice();
+        this.deliveryFee = productDTO.getDeliveryFee();
+        this.paymentType = paymentRequestDTO.getPaymentType();
+        this.status = OrderStatus.ORDER.getStatusStr();
+        this.productCount = productDTO.getProducts().size();
     }
 }

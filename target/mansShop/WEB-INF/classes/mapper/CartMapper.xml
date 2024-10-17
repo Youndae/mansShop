@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.CartMapper">
+
+    <select id="findCartIdByUserIdOrCookieId" resultType="Long">
+        SELECT id
+        FROM cart
+        <include refid="findCartIdCondition"/>
+    </select>
+
+    <sql id="findCartIdCondition">
+        <trim prefix="WHERE ">
+            <if test="dto.userId != null"> userId = #{dto.userId}</if>
+            <if test="dto.cookieId != null"> cookieId = #{dto.cookieId}</if>
+        </trim>
+    </sql>
+
+    <insert id="saveCart" parameterType="Cart">
+        INSERT INTO cart(
+                         userId
+                         , cookieId
+        )
+        VALUES (
+                #{userId}
+                , #{cookieId}
+               )
+        <selectKey keyProperty="id" resultType="Long" order="AFTER">
+            SELECT MAX(id) FROM cart where USERID = #{userId} OR COOKIEID = #{cookieId}
+        </selectKey>
+    </insert>
+
+    <update id="updateCartUpdatedAt" parameterType="long">
+        UPDATE cart
+        SET updatedAt = SYSDATE
+        WHERE id = #{cartId}
+    </update>
+
+
+    <delete id="deleteById" parameterType="long">
+        DELETE
+        FROM CART
+        WHERE id = #{cartId}
+    </delete>
+
+</mapper>

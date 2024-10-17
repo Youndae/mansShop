@@ -1,154 +1,78 @@
 const token = $("meta[name='_csrf']").attr("content");
 const header = $("meta[name='_csrf_header']").attr("content");
-let noArr = new Array();
-let nameArr = new Array();
-let sizeArr = new Array();
-let colorArr = new Array();
-let countArr = new Array();
-let priceArr = new Array();
-let numArr = new Array();
-let pnoArr = new Array();
+let optionIdArr = [];
+let noArr = [];
+let nameArr = [];
+let sizeArr = [];
+let colorArr = [];
+let countArr = [];
+let numArr = [];
 let rPageNum = 1;
 let qPageNum = 1;
 
 $(document).ready(function () {
-
-    const pno = $("#pno").val();
-    (function () {
-        $.getJSON("/product/thumb", {pno: pno}, function (arr) {
-            let str = "";
-            let num = 2;
-            $(arr).each(function (i, attach) {
-                const thumbId = "thumb" + num;
-                str += "<img id=\"" + thumbId + "\" src=\"/display?image=" + attach.imageName + "\" onclick=\"firstThumb(this)\">";
-            })
-            $(".thumb").append(str);
-        });
-
-        $.getJSON("/product/option", {pno: pno}, function (arr) {
-            let str = "<option value=\"default\">------</option>";
-
-            $(arr).each(function (i, op) {
-                let optionStr = '';
-                const sizeOption = "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
-                    "사이즈 : " + op.psize + "</option>";
-                const colorOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
-                    "컬러 : " + op.pcolor + "</option>";
-                const defaultOption = "<option value=\"" + op.popNo + "\"></option>";
-                const colorSizeOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
-                    "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
-
-                if(op.pcolor == null && op.psize != null)
-                    optionStr = sizeOption;
-                else if(op.pcolor != null && op.psize == null)
-                    optionStr = colorOption;
-                else if(op.pcolor != null && op.psize != null)
-                    optionStr = colorSizeOption;
-                else
-                    optionStr = defaultOption;
-
-                str += optionStr;
-            })
-            $("#option_select_box").append(str);
-        });
-
-        $.getJSON("/product/info-image", {pno: pno}, function (arr) {
-            let str = "<div class=\"productInfo_img\">";
-            $(arr).each(function (i, info) {
-                str += "<div class=\"infoImg\"><img class=\"infoImg\" src=\"/display?image=" + info.imageName + "\"></div>";
-            })
-            str += "</div>";
-
-            $(".product_detail_info").append(str);
-        })
-
-        showReviewList(1);
-        showProductQnAList(1);
-    })();
-
-
-    $("#productDetail").on('click', function (e) {
-        e.preventDefault();
-        const offset = $('.product_detail_info').offset();
-        moveScroll(offset);
-    });
-
-    $("#productReview").on('click', function (e) {
-        e.preventDefault();
-        const offset = $('.product_Review_List').offset();
-        moveScroll(offset);
-    });
-
-    $("#productQnA").on('click', function (e) {
-        e.preventDefault();
-        const offset = $('.product_QnA_List').offset();
-        moveScroll(offset);
-    });
-
-    $("#productOrderInfo").on('click', function (e) {
-        e.preventDefault();
-        const offset = $('.product_Order_Info').offset();
-        moveScroll(offset);
-    });
-
-    function moveScroll(offset){
-        $('html, body').animate({scrollTop: offset.top - 300}, 300);
-    }
-
     function showProductQnAList(page) {
-        let QnAUL = $(".product_QnA");
+        const path = window.location.pathname;
+        const productId = path.split('/')[2];
+        let qnaElements = $(".product-detail-qna-content");
 
-        getProductQnAList({pno: pno, page: page || 1}, function (QnACount, QnAList) {
-            if (QnAList == null || QnAList.length == 0)
+        getProductQnAList({productId: productId, page: page || 1}, function (pageMaker, content) {
+            if (content == null || content.length === 0)
                 return;
 
-            let str = "";
+            let str = "<ul>";
+            for (let i = 0, len = content.length || 0; i < len; i++) {
+                str += "<li class=\"qna-content-default\">" +
+                            "<div class=\"qna-content-header\">" +
+                                "<strong class=\"qna-writer\">" +
+                                    content[i].writer +
+                                "</strong>" +
+                                "<small class=\"pull-right text-muted\">" +
+                                    parseDate(content[i].createdAt) +
+                                "</small>";
 
-            for (var i = 0, len = QnAList.length || 0; i < len; i++) {
-                const QnARegDate = new Date(QnAList[i].pqnARegDate);
+                if(content[i].status)
+                    str += "<small class=\"pull-right answer\">답변완료</small>";
 
-                QnAList[i].pqnARegDate = QnARegDate.getFullYear() + "/" +
-                                            (QnARegDate.getMonth() + 1) + "/" +
-                                            QnARegDate.getDate();
+                str += "</div>" +
+                        "<div class=\"qna-content-content\">" +
+                            content[i].qnaContent +
+                        "</div>" +
+                    "</li>";
 
-                if (QnAList[i].pqnAAnswer == "0")
-                    QnAList[i].pqnAAnswer = "미답변";
-                else if (QnAList[i].pqnAAnswer == "1")
-                    QnAList[i].pqnAAnswer = "답변완료";
-
-                if (QnAList[i].pqnAIndent == "0") {
-                    str += "<li class=\"QnA_content\">" +
-                                "<div class=\"QnA_content_header\">" +
-                                    "<strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>" +
-                                    "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small>" +
-                                    "<small class=\"pull-right answer\">" + QnAList[i].pqnAAnswer + "</small>" +
-                                "</div>" +
-                                "<div class=\"QnA_content_content\">" +
-                                    "<p>" + QnAList[i].pqnAContent + "</p>" +
-                                "</div>" +
-                            "</li>";
-                } else if (QnAList[i].pqnAIndent == "1") {
-                    str += "<div class=\"QnA_Content_Reply\">" +
-                                "<li class=\"QnA_content\">" +
-                                    "<div>" +
-                                        "<div class=\"QnA_content_header\">" +
-                                            "<strong class=\"QnA_writer\">" + QnAList[i].userId + "</strong>" +
-                                            "<small class=\"pull-right text-muted\">" + QnAList[i].pqnARegDate + "</small>" +
+                if(content[i].status) {
+                    const replyList = content[i].replyList;
+                    for(let j = 0; j < replyList.length; j++) {
+                        str += "<div class=\"qna-content-reply\">" +
+                                    "<li class=\"qna-content\">" +
+                                        "<div>" +
+                                            "<div class=\"qna-content-header\">" +
+                                                "<strong class=\"qna-writer\">" +
+                                                    replyList[j].writer +
+                                                "</strong>" +
+                                                "<small class=\"pull-right text-muted\">" +
+                                                    parseDate(replyList[j].createdAt) +
+                                                "</small>" +
+                                            "</div>" +
+                                            "<div class=\"qna-content-content\">" +
+                                                "<p>" +
+                                                    replyList[j].content +
+                                                "</p>" +
+                                            "</div>" +
                                         "</div>" +
-                                        "<div class=\"QnA_content_content\">" +
-                                            "<p>" + QnAList[i].pqnAContent + "</p>" +
-                                        "</div>" +
-                                    "</div>" +
-                                "</li>" +
-                            "</div>";
+                                    "</li>" +
+                                "</div>"
+                    }
                 }
             }
-            QnAUL.html(str);
-            showPaginate(QnACount, "q");
+            str += "</ul>";
+
+            qnaElements.html(str);
+            showPaginate(pageMaker, "q");
         })
     }
 
-    $(".QnAPaging").on('click', "li a", function (e) {
+    $(".product-detail-qna-paging .paging ").on('click', "li a", function (e) {
         e.preventDefault();
         const targetPageNum = $(this).attr("href");
         qPageNum = targetPageNum;
@@ -158,109 +82,129 @@ $(document).ready(function () {
 
 
     function showReviewList(page) {
-        let reviewUL = $(".review");
+        let reviewElements = $(".product-detail-review-content");
+        const path = window.location.pathname;
+        const productId = path.split('/')[2];
 
-        getReviewList({pno: pno, page: page || 1}, function (reviewCount, reviewList) {
-            if (reviewList == null || reviewList.length == 0)
+
+        getReviewList({productId: productId, page: page || 1}, function (pageMaker, content) {
+            if (content == null || content.length === 0)
                 return;
-            let str = "";
-            for (let i = 0, len = reviewList.length || 0; i < len; i++) {
-                let reviewRegDate = new Date(reviewList[i].reviewDate);
-                reviewList[i].reviewDate = reviewRegDate.getFullYear() + "/" +
-                                            (reviewRegDate.getMonth() + 1) + "/" +
-                                            reviewRegDate.getDate();
+            let str = "<ul>";
 
-                str += "<li class=\"review_content\">" +
-                            "<div class=\"review_content_header\">" +
-                                "<strong class='reviewer'>" + reviewList[i].userId + "</strong>" +
-                                "<small class='pull-right text-muted'>" + reviewList[i].reviewDate + "</small>" +
+            for(let i = 0; i < content.length; i++) {
+                str += "<li class=\"review-content-default\">" +
+                            "<div class=\"review-content-header\">" +
+                                "<strong class=\"reviewer\">" +
+                                    content[i].reviewer +
+                                "</strong>" +
+                                "<small class=\"pull-right text-muted\">" +
+                                    parseDate(content[i].createdAt) +
+                                "</small>" +
                             "</div>" +
-                            "<div class=\"review_content_content\">" +
-                                "<p>" + reviewList[i].reviewContent + "</p>" +
+                            "<div class=\"review-content-content\">" +
+                                "<p>" +
+                                    content[i].reviewContent +
+                                "</p>" +
                             "</div>" +
                         "</li>";
+
+                if(content[i].answerContent != null) {
+                    str += "<div class=\"review-content-reply\">" +
+                                "<li class=\"review-content\">" +
+                                    "<div class=\"review-content-header\">" +
+                                        "<strong class=\"reviewer\">관리자</strong>" +
+                                        "<small class=\"pull-right text-muted\">" +
+                                            parseDate(content[i].answerCreatedAt) +
+                                        "</small>" +
+                                    "</div>" +
+                                    "<div class=\"review-content-content\">" +
+                                        "<p>" +
+                                            content[i].answerContent +
+                                        "</p>" +
+                                    "</div>" +
+                                "</li>" +
+                            "</div>";
+                }
             }
-            reviewUL.html(str);
-            showPaginate(reviewCount, "r");
+
+            str += "</ul>";
+
+            reviewElements.html(str);
+            showPaginate(pageMaker, "r");
         })
     }
 
 
-    $(".reviewPaging").on('click', "li a", function (e) {
+    $(".product-detail-review-paging .paging").on('click', "li a", function (e) {
         e.preventDefault();
+        console.log('review paging');
         const targetPageNum = $(this).attr("href");
+        console.log('review targetNumber : ', targetPageNum);
 
         rPageNum = targetPageNum;
         showReviewList(rPageNum);
     })
+});
 
-    $("#QnAInsert").on('click', function () {
-        let content = $("#product_QnA_InsertForm").serialize();
+function qnaBtnOnClick() {
+    const path = window.location.pathname;
+    const productId = path.split('/')[2];
+    const content = $("#qna-text-input").val();
 
-        if ($("#pQnAContent").val() == "") {
-            $("#QnAContentOverlap").text("문의 내용을 입력하세요");
-        } else {
-            $.ajax({
-                url: "/product/qna",
-                type: "post",
-                data: content,
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader(header, token);
-                },
-                success: function (data) {
-                    if(data == 1)
-                        location.reload();
-                    else
-                        alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
-                },
-                error: function (request, status, error) {
-                    alert("code : " + request.status + "\n"
-                        + "message : " + request.responseText
-                        + "\n" + "error : " + error);
-                }
-            });
+    const postData = {
+        productId: productId,
+        content: content,
+    }
+
+    $.ajax({
+        url: "/product/qna",
+        type: "post",
+        contentType: 'application/json',
+        data: JSON.stringify(postData),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success: function (data) {
+            console.log('result data : ', data);
+            if(data === 'SUCCESS')
+                location.reload();
+            else
+                alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
+        },
+        error: function (request, status, error) {
+            alert("code : " + request.status + "\n"
+                + "message : " + request.responseText
+                + "\n" + "error : " + error);
         }
-    })
+    });
+}
 
+function directBuy() {
 
-    $("#likeProduct").on('click', function () {
-        let pno = $("#pno").val();
-
+    if(numArr.length === 0){
+        alert("상품 옵션을 선택해주세요.");
+    }else {
+        for (let i = 0; i < numArr.length; i++) {
+            const n = numArr[i];
+            const tVal = "productCount" + n;
+            countArr.push($("input[name=" + tVal + "]").val());
+        }
+        console.log('direct');
         $.ajax({
-            url: "/product/like/" + pno,
-            type: 'post',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader(header, token);
-            },
-            success: function (data) {
-                if(data == 1)
-                    location.reload();
-                else
-                    alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
-            },
-            error: function (request, status, error) {
-                alert("code : " + request.status + "\n"
-                    + "message : " + request.responseText
-                    + "\n" + "error : " + error);
-            }
-        });
-    })
-
-    $("#deLike").on('click', function () {
-        const pno = $("#pno").val();
-
-        $.ajax({
-            url: "/product/like/" + pno,
-            type: 'delete',
+            url: '/order/product',
+            type: 'POST',
+            data: JSON.stringify({optionNoList: noArr, countList: countArr}),
             contentType: 'application/json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
-            success: function (data) {
-                if(data == 1)
-                    location.reload();
+            success: function (result) {
+                console.log('order success : ', result);
+                if(result === 'SUCCESS')
+                    location.href = '/order/product';
                 else
-                    alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
+                    alert("오류가 발생했습니다.\n 잠시후 다시 시도해주세요.");
             },
             error: function (request, status, error) {
                 alert("code : " + request.status + "\n"
@@ -268,24 +212,100 @@ $(document).ready(function () {
                     + "\n" + "error : " + error);
             }
         });
-    })
+    }
 
-    $("#anonymous").on('click', function () {
-        const result = confirm("관심상품으로 등록하기 위해서는 로그인이 필요합니다.\n 로그인 하시겠습니까?");
+}
 
-        if (result)
-            location.href = '/member/login';
-    })
+function parseDate(date) {
+    return date.year + "-" +
+            padToTwoDigits(date.monthValue) + "-" +
+            padToTwoDigits(date.dayOfMonth);
+}
 
-});//document.ready End
+function padToTwoDigits(number) {
+    return number.toString().padStart(2, '0');
+}
+
+function detailBtnOnClick(obj) {
+    const val = obj.value;
+
+    let offset = '';
+
+    if(val === 'detail')
+        offset = $('.product-detail-info').offset();
+    else if(val === 'review')
+        offset = $('.product-detail-review').offset();
+    else if(val === 'qna')
+        offset = $('.product-detail-qna').offset();
+    else
+        offset = $('.product-detail-order-info').offset();
+
+    moveScroll(offset);
+}
+
+function moveScroll(offset){
+    $('html, body').animate({scrollTop: offset.top - 300}, 300);
+}
+
+function deLike() {
+    const path = window.location.pathname;
+    const productId = path.split('/')[1];
+
+    $.ajax({
+        url: "/product/like/" + productId,
+        type: 'delete',
+        contentType: 'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success: function (data) {
+            if(data === 'SUCCESS')
+                location.reload();
+            else
+                alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
+        },
+        error: function (request, status, error) {
+            alert("code : " + request.status + "\n"
+                + "message : " + request.responseText
+                + "\n" + "error : " + error);
+        }
+    });
+}
+
+function like() {
+    const path = window.location.pathname;
+    const productId = path.split('/')[1];
+
+    $.ajax({
+        url: "/product/like/" + productId,
+        type: 'post',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success: function (data) {
+            if(data === 'SUCCESS')
+                location.reload();
+            else if(data === 'ACCESS DENIED')
+                if(confirm('관심상품은 회원만 이용가능합니다.\n로그인하시겠습니까?'))
+                    location.href='/member/login';
+            else
+                alert("오류가 발생했습니다.\n문제가 계속되면 관리자에게 문의해주세요.");
+        },
+        error: function (request, status, error) {
+            alert("code : " + request.status + "\n"
+                + "message : " + request.responseText
+                + "\n" + "error : " + error);
+        }
+    });
+}
 
 function getProductQnAList(param, callback, error) {
-    const pno = param.pno;
+    const productId = param.productId;
     const page = param.page || 1;
 
-    $.getJSON("/product/qna/" + pno + "/" + page, function (data) {
+    $.getJSON("/product/qna/" + productId + "/" + page, function (data) {
         if (callback){
-            callback(data.productQnACount, data.productQnAList);
+            callback(data.pageMaker, data.content);
         }
     }).fail(function (xhr, status, err) {
         if (error)
@@ -294,36 +314,24 @@ function getProductQnAList(param, callback, error) {
 }
 
 function getReviewList(param, callback, error) {
-    const pno = param.pno;
+    const productId = param.productId;
     const page = param.page || 1;
 
-    $.getJSON("/product/review/" + pno + "/" + page, function (data) {
+    $.getJSON("/product/review/" + productId + "/" + page, function (data) {
         if (callback)
-            callback(data.reviewCount, data.reviewList);
+            callback(data.pageMaker, data.content);
     }).fail(function (xhr, status, err) {
         if (error)
             error(err);
     });
 }
 
-function showPaginate(count, type) {
+function showPaginate(pageMaker, type) {
 
-    let endNum = 0;
-    if (type == "r")
-        endNum = Math.ceil(rPageNum / 10.0) * 10;
-    else if (type == "q")
-        endNum = Math.ceil(qPageNum / 10.0) * 10;
-
-    let startNum = endNum - 9;
-    let prev = startNum != 1;
-    let next = false;
-
-    if (endNum * 10 >= count)
-        endNum = Math.ceil(count / 10.0);
-
-    if (endNum * 10 < count)
-        next = true;
-
+    let endNum = pageMaker.endPage;
+    let startNum = pageMaker.startPage;
+    let prev = pageMaker.prev;
+    let next = pageMaker.next;
     let str = "<ul class=\"pagination\">";
 
     if (prev)
@@ -346,40 +354,37 @@ function showPaginate(count, type) {
     str += "</ul>";
 
     if (type == "r")
-        $(".reviewPaging").html(str);
+        $(".product-detail-review-paging .paging").html(str);
     else if (type == "q")
-        $(".QnAPaging").html(str);
+        $(".product-detail-qna-paging .paging").html(str);
 }
 
 
 function countUp(obj) {
     const id = obj.attributes['value'].value;
-    const price = parseInt($("#pPrice").val());
+    let price = parseInt($(".price").text().replace(/\D/g, ""));
     let total = 0;
     let count = parseInt($("input[name=" + id + "]").val());
     count = count + 1;
 
     $("input[name=" + id + "]").val(count);
 
-    let opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
+    let opPrice = parseInt($("tr[id=" + id + "] td[name=product-price] span").text().replace(/\D/g, ''));
 
     opPrice = opPrice + price;
 
-    $("tr[id=" + id + "] td[name=productPrice] span").text(opPrice.toLocaleString() + " 원");
+    $("tr[id=" + id + "] td[name=product-price] span").text(opPrice.toLocaleString() + " 원");
 
-    if ($(".totalPrice p span").text().replace(/\D/g, '') == "0") {
-        total = parseInt($(".totalPrice p span").text());
-    } else {
-        total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
-    }
+    total = parseInt($(".total-price p span").text().replace(/\D/g, ''));
+
 
     total = total + price;
-    $(".totalPrice p span").text(total.toLocaleString() + " 원");
+    $(".total-price p span").text(total.toLocaleString() + " 원");
 }
 
 function countDown(obj) {
     const id = obj.attributes['value'].value;
-    const price = parseInt($("#pPrice").val());
+    let price = parseInt($(".price").text().replace(/\D/g, ""));
 
     let count = parseInt($("input[name=" + id + "]").val());
 
@@ -388,16 +393,16 @@ function countDown(obj) {
 
         $("input[name=" + id + "]").val(count);
 
-        let opPrice = parseInt($("tr[id=" + id + "] td[name=productPrice] span").text().replace(/\D/g, ''));
+        let opPrice = parseInt($("tr[id=" + id + "] td[name=product-price] span").text().replace(/\D/g, ''));
 
         opPrice = opPrice - price;
 
-        $("tr[id=" + id + "] td[name=productPrice] span").text(opPrice.toLocaleString() + " 원");
+        $("tr[id=" + id + "] td[name=product-price] span").text(opPrice.toLocaleString() + " 원");
 
-        let total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+        let total = parseInt($(".total-price p span").text().replace(/\D/g, ''));
 
         total = total - price;
-        $(".totalPrice p span").text(total.toLocaleString() + " 원");
+        $(".total-price p span").text(total.toLocaleString() + " 원");
     }
 
 
@@ -405,14 +410,14 @@ function countDown(obj) {
 
 function opRemove(obj) {
     const id = obj.attributes['value'].value;
-    let opPrice = parseInt($(".tempOrderTableData #" + id + " td[name=productPrice] span").text().replace(/\D/g, ''));
-    let totalPrice = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+    let opPrice = parseInt($(".temp-order-table-body #" + id + " td[name=product-price] span").text().replace(/\D/g, ''));
+    let totalPrice = parseInt($(".total-price p span").text().replace(/\D/g, ''));
 
     totalPrice = totalPrice - opPrice;
 
-    $(".totalPrice p span").text(totalPrice.toLocaleString() + " 원");
+    $(".total-price p span").text(totalPrice.toLocaleString() + " 원");
 
-    $(".tempOrderTableData #" + id).remove();
+    $(".temp-order-table-body #" + id).remove();
 
     const pcNum = id.substring(12);
 
@@ -423,128 +428,108 @@ function opRemove(obj) {
     numArr.splice(pcNum, 1);
 }
 
-function firstThumb(obj) {
+function thumbnailMouseOver(obj) {
     const imgName = obj.attributes['src'].value.substring(15);
 
     const str = "<img id=\"firstThumb\" src=\"/display?image=" + imgName + "\">";
 
-    $(".firstThumbnail #firstThumb").remove();
+    $(".first-thumbnail #firstThumb").remove();
 
-    $(".firstThumbnail").append(str);
+    $(".first-thumbnail").append(str);
+}
+
+function addCart() {
+    if(numArr.length === 0){
+        alert("상품 옵션을 선택해주세요.");
+    }else{
+        for (let i = 0; i < numArr.length; i++) {
+            const n = numArr[i];
+            const tVal = "productCount" + n;
+            countArr.push($("input[name=" + tVal + "]").val());
+        }
+
+        $.ajaxSettings.traditional = true;
+        $.ajax({
+            url: '/product/cart',
+            type: 'post',
+            data: JSON.stringify({optionNoList: noArr, countList: countArr}),
+            contentType: 'application/json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function (data) {
+                if(data === 'SUCCESS')
+                    alert("장바구니에 상품이 담겼습니다.");
+                else
+                    alert("오류가 발생했습니다.\n 잠시후 다시 시도해주세요.");
+            },
+            error: function (request, status, error) {
+                alert("code : " + request.status + "\n"
+                    + "message : " + request.responseText
+                    + "\n" + "error : " + error);
+            }
+        });
+    }
 }
 
 $(function () {
     let num = 0;
     let total = 0;
 
-    $(".productInfo_Info #option_select_box").change(function () {
-        const option_txt = $("#option_select_box option:selected").text();
-        const option_val = $("#option_select_box option:selected").val();
-        const option = option_val.split('/');
-        const p = parseInt($("#pPrice").val());
-        let dataStr = "";
+    $("#product-detail-option-select-box").change(function () {
+        const option_txt = $("#product-detail-option-select-box option:selected").text();
+        const option_val = $("#product-detail-option-select-box option:selected").val().split('/');
+        const optionId = option_val[0];
+        let price = parseInt($(".price").text().replace(/\D/g, ""));
 
-        dataStr += "<tr class=\"product_temp_cart\" id=\"productCount" + num + "\" value=\"" + option[0] + "\">" +
-                        "<td>" + option_txt + "</td>" +
-                        "<td class=\"product_temp_cart_input\">" +
-                            "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\" readonly>" +
-                            "<div class=\"pCount\">" +
-                                "<div class=\"pCount_up_down\">" +
-                                    "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>" +
-                                        "<img src=\"/display?image=up.jpg\">" +
-                                    "</button>" +
-                                    "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>" +
-                                        "<img src=\"/display?image=down.jpg\">" +
-                                    "</button>" +
+        let contains = true;
+
+        for(let i = 0; i < noArr.length; i++){
+            if(noArr[i] === optionId){
+                contains = false;
+                break;
+            }
+        }
+
+        if(contains) {
+            let dataStr = "<tr class=\"product-temp-cart\" id=\"productCount" + num + "\" value=\"" + option_val[0] + "\">" +
+                            "<td>" + option_txt + "</td>" +
+                            "<td class=\"product-temp-cart-input\">" +
+                                "<input type=\"text\" name=\"productCount" + num + "\" value=\"1\" readonly>" +
+                                "<div class=\"product-temp-count\">" +
+                                    "<div class=\"count-up-down\">" +
+                                        "<button class=\"productCount up\" name=\"up\" value=\"productCount" + num + "\" onclick=\"countUp(this)\"'>" +
+                                            "<img src=\"/display?image=up.jpg\">" +
+                                        "</button>" +
+                                        "<button class=\"productCount down\" name=\"down\" value=\"productCount" + num + "\" onclick=\"countDown(this)\"'>" +
+                                            "<img src=\"/display?image=down.jpg\">" +
+                                        "</button>" +
+                                    "</div>" +
+                                    "<div class=\"count-remove\">" +
+                                        "<button class=\"remove-btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>" +
+                                            "<img src=\"/display?image=del.jpg\">" +
+                                        "</button>" +
+                                    "</div>" +
                                 "</div>" +
-                                "<div class=\"pCount_remove\">" +
-                                    "<button class=\"remove_btn\" name=\"opRemove\" value=\"productCount" + num + "\" onclick=\"opRemove(this)\"'>" +
-                                        "<img src=\"/display?image=del.jpg\">" +
-                                    "</button>" +
-                                "</div>" +
-                            "</div>" +
-                        "</td>" +
-                        "<td name=\"productPrice\">" + "<span>" + p.toLocaleString() + " 원<span>" + "</td>" +
-                        "<input type=\"hidden\" name=\"color\" value=\"" + option[1] + "\">" +
-                        "<input type=\"hidden\" name=\"size\" value=\"" + option[2] + "\">" +
+                            "</td>" +
+                            "<td name=\"product-price\">" + "<span>" + price.toLocaleString() + " 원<span>" + "</td>" +
+                            "<input type=\"hidden\" name=\"color\" value=\"" + option_val[1] + "\">" +
+                            "<input type=\"hidden\" name=\"size\" value=\"" + option_val[2] + "\">" +
                     "</tr>";
 
-        noArr.push(option[0]);
-        nameArr.push($(".name").text());
-        colorArr.push(option[1] == undefined ? 'nonColor' : option[1]);
-        sizeArr.push(option[2] == undefined ? 'nonSize' : option[2]);
-        numArr.push(num);
-        num++;
+            noArr.push(option_val[0]);
+            nameArr.push($(".name").text());
+            colorArr.push(option_val[1] == undefined ? 'nonColor' : option_val[1]);
+            sizeArr.push(option_val[2] == undefined ? 'nonSize' : option_val[2]);
+            numArr.push(num);
+            num++;
 
-        if ($(".totalPrice p span").text().replace(/\D/g, "") == "0")
-            total = parseInt($(".totalPrice p span").text());
-        else
-            total = parseInt($(".totalPrice p span").text().replace(/\D/g, ''));
+            total = parseInt($(".total-price p span").text().replace(/\D/g, ''));
+            total = total + price;
 
-        total = total + p;
-        $(".totalPrice p span").text(total.toLocaleString() + " 원");
-        $(".tempOrderTableData").append(dataStr);
+            $(".total-price p span").text(total.toLocaleString() + " 원");
+            $(".temp-order-table-body").append(dataStr);
+        }
     })
-
-    $(function () {
-        $("#cart").on('click', function () {
-            if(numArr.length == 0){
-                alert("상품 옵션을 선택해주세요.");
-            }else{
-                for (let i = 0; i < numArr.length; i++) {
-                    const n = numArr[i];
-                    const tVal = "productCount" + n;
-                    countArr.push($("input[name=" + tVal + "]").val());
-                    priceArr.push($("tr[id=" + tVal + "] td[name=productPrice] span").text().replace(/\D/g, ''));
-                }
-
-                $.ajaxSettings.traditional = true;
-                $.ajax({
-                    url: '/product/cart',
-                    type: 'post',
-                    data: {pOpNo: noArr, pCount: countArr, pPrice: priceArr},
-                    dataType: 'json',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader(header, token);
-                    },
-                    success: function (data) {
-                        if(data == 0)
-                            alert("오류가 발생했습니다.\n 잠시후 다시 시도해주세요.");
-                        else
-                            alert("장바구니에 상품이 담겼습니다.");
-                    },
-                    error: function (request, status, error) {
-                        alert("code : " + request.status + "\n"
-                            + "message : " + request.responseText
-                            + "\n" + "error : " + error);
-                    }
-                });
-            }
-        })
-    })
-
-    $(function () {
-        $("#buy").on('click', function () {
-            for (var i = 0; i < numArr.length; i++) {
-                const n = numArr[i];
-                const tVal = "productCount" + n;
-                countArr.push($("input[name=" + tVal + "]").val());
-                priceArr.push($("tr[id=" + tVal + "] td[name=productPrice] span").text().replace(/\D/g, ''));
-                pnoArr.push($("#pno").val());
-            }
-
-            $("input[name=pOpNo]").val(noArr);
-            $("input[name=pName]").val(nameArr);
-            $("input[name=pSize]").val(sizeArr);
-            $("input[name=pColor]").val(colorArr);
-            $("input[name=cCount]").val(countArr);
-            $("input[name=cPrice]").val(priceArr);
-            $("input[name=pno]").val(pnoArr);
-
-            $("#order_form").attr("action", "/order");
-            $("#order_form").submit();
-        })
-    })
-
 
 })

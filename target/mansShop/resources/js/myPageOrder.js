@@ -11,6 +11,8 @@ $(document).ready(function(){
 
     $("#orderInfoCheck").on('click', function(){
         $("#orderInfoCheckForm").attr("action", "/non/order");
+        const phone = $("#orderPhone").val().replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+        $("#orderPhone").val(phone);
         $("#orderInfoCheckForm").submit();
     })
 
@@ -191,50 +193,7 @@ $(document).ready(function(){
             }
         })
     });
-
-    //memberOrderList
-    const date = new Date();
-    let month = 0;
-
-    date.setMonth(date.getMonth() - 3);
-
-    if((date.getMonth() + 1) >= 10)
-        month = date.getMonth() + 1;
-    else
-        month = '0' + (date.getMonth() + 1);
-
-    const regDate = date.getFullYear() + "/" + month + "/01";
-
-    getList(regDate);
 });
-
-
-$(function(){
-    $("#select_orderList_term").change(function(){
-        const val = $("#select_orderList_term option:selected").val();
-        let date;
-
-        if(val == "all"){
-            const regDate = new Date(1990,1,1);
-            date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/" + regDate.getDate();
-        }else{
-            let regDate = new Date();
-            regDate.setMonth(regDate.getMonth() - val);
-            date = regDate.getFullYear() + "/" + (regDate.getMonth() + 1) + "/01";
-        }
-
-        getList(date);
-    })
-
-})
-
-function getList(regDate){
-    $(".memberOrderList div").remove();
-    $.getJSON("/my-page/order/data", {regDate: regDate}, function(arr){
-        let str = jQuery.orderListStr(arr, 'user');
-        $(".memberOrderList").append(str);
-    });
-};
 
 function insertReview(obj){
     const val = obj.attributes['value'].value;

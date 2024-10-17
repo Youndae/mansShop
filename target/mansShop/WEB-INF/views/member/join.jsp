@@ -6,91 +6,113 @@
     <meta name="_csrf" content="${_csrf.token}">
     <meta name="_csrf_header" content="${_csrf.headerName}">
 </head>
-<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="/js/member.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/memberJoin.js"></script>
 <link rel="stylesheet" href="/css/member.css">
+<link rel="stylesheet" href="/css/default.css">
 <body>
-<jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
-    <div class="content">
-        <div class="join_header">
+<div class="container">
+    <jsp:include page="/WEB-INF/views/layout/defaultHeader.jsp"/>
+    <div class="join">
+        <div class="join-header">
             <h1>회원가입</h1>
         </div>
-        <div class="join_content">
-            <form class="formJoin" action="/member/join" method="post" id="joinForm" role="form">
+        <div class="join-content">
+            <div class="join-form">
                 <div>
                     <div>
-                        <label>아이디</label>
+                        <div>
+                            <label>아이디</label>
+                        </div>
+                        <div>
+                            <input type="text" id="userId" placeholder="아이디">
+                            <button type="button" class="default-btn" onclick="handleIdCheck()">중복체크</button>
+                            <div class="overlap join-id-overlap"></div>
+                        </div>
                     </div>
                     <div>
-                         <span>
-                            <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요">
-                            <button type="button" id="IdCheck">중복체크</button>
-                            <div class="overlap" id="idOverlap"></div>
-                            <input type="hidden" id="idStat" value="">
-                         </span>
+                        <div>
+                            <label>비밀번호</label>
+                        </div>
+                        <div>
+                            <input type="password" id="userPw" placeholder="비밀번호">
+                            <div class="overlap join-pw-overlap"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>비밀번호 확인</label>
+                        </div>
+                        <div>
+                            <input type="password" id="checkPw" placeholder="비밀번호 확인">
+                            <div class="overlap join-checkPw-overlap"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>이름</label>
+                        </div>
+                        <div>
+                            <input type="text" id="username" placeholder="이름">
+                            <div class="overlap join-username-overlap"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>닉네임</label>
+                        </div>
+                        <div>
+                            <input type="text" id="nickname" placeholder="닉네임">
+                            <button type="button" onclick="handleNicknameCheck()">중복 체크</button>
+                            <p class="nickname-info">닉네임을 입력하지 않을 시 활동 내역에 대해 닉네임 대신 이름으로 처리됩니다.</p>
+                            <div class="overlap join-nickname-overlap"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>연락처</label>
+                        </div>
+                        <div>
+                            <input type="text" id="phone" placeholder="-를 제외한 숫자만 입력하세요">
+                            <div class="overlap join-phone-overlap"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>생년월일</label>
+                        </div>
+                        <div class="join-birth">
+                            <select id="year">
+
+                            </select>
+                            <select id="month">
+
+                            </select>
+                            <select id="day">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>이메일</label>
+                        </div>
+                        <div>
+                            <input type="text" id="email" placeholder="이메일">
+                            <span> @ </span>
+                            <input type="hidden" class="mail-suffix"/>
+                            <select class="email-select" id="select-email-suffix">
+                                <option value="naver.com">네이버</option>
+                                <option value="daum.net">다음</option>
+                                <option value="gmail.com">구글</option>
+                                <option value="none">직접입력</option>
+                            </select>
+                            <div class="overlap join-email-overlap"></div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div>
-                        <label>비밀번호</label>
-                    </div>
-                    <div>
-                        <input type="password" id="userPw" name="userPw" placeholder="비밀번호를 입력하세요">
-                        <div class="overlap" id="pwOverlap"></div>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>비밀번호 확인</label>
-                    </div>
-                    <div>
-                        <input type="password" id="checkUserPw" placeholder="비밀번호를 한번 더 입력하세요">
-                        <div class="overlap" id="pwCheckOverlap"></div>
-                        <input type="hidden" id="pwStat" value="">
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>이름</label>
-                    </div>
-                    <div>
-                        <input type="text" id="userName" name="userName">
-                        <div class="overlap" id="nameOverlap"></div>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>이메일</label>
-                    </div>
-                    <div>
-                        <input type="text" id="userEmail" name="userEmail">
-                        <div class="overlap" id="emailOverlap"></div>
-                        <input type="hidden" id="mailStat" value="">
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>생년월일</label>
-                    </div>
-                    <div>
-                        <select id="select_year"></select>년&nbsp;
-                        <select id="select_month"></select>월&nbsp;
-                        <select id="select_day"></select>일
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>연락처</label>
-                    </div>
-                    <div>
-                        <input type="text" id="userPhone" name="userPhone" placeholder="-를 제외한 숫자만 입력하세요">
-                        <div class="overlap" id="phoneOverlap"></div>
-                        <input type="hidden" id="phoneStat" value="">
-                    </div>
-                </div>
-                <sec:csrfInput/>
-            </form>
-            <button type="button" id="join">가입</button>
+            </div>
+            <button type="button" class="default-btn join-btn" onclick="handleJoinBtnOnClick()">가입</button>
         </div>
     </div>
 </div>

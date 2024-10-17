@@ -1,88 +1,131 @@
-.join_header{
+.join-header {
     text-align: center;
 }
 
-.join_content{
+.join-content {
     font-size: large;
     padding-left: 45%;
     font-weight: bold;
+    float: left;
+    margin-top: 30px;
+    width: 30%;
 }
 
-.formJoin div{
-    margin: 10px;
+.join-form div {
+    margin-top: 20px;
 }
 
-.join_content input{
+.join-content input {
     width: 270px;
     height: 30px;
 }
 
-button#join{
+.join-content button {
+    background: white;
+    border: 1px solid lightgray;
+}
+
+.join-form button {
     text-align: center;
     width: 100px;
     height: 30px;
-    margin-left: 7%;
+    margin-left: 2%;
 }
+
+.join-btn {
+    width: 270px;
+    margin-top: 20px;
+    height: 30px;
+}
+
+.nickname-info {
+    font-size: small;
+    color: gray;
+}
+
+.email-select {
+    height: 30px;
+}
+
+.join-birth select {
+    margin-left: 10px;
+}
+
 
 /* login */
 
-.login_content div{
+.content div {
     text-align: center;
 }
 
-.login_header{
+.login-header {
     font-size: x-large;
     margin: 10% 0 2% 0;
 }
 
-.login_form input{
+.login-form input {
     height: 40px;
     width: 300px;
 }
 
-/*.login_form button{
-    margin-top: 40px;
+.login-btn button, .join-search-area button {
+    margin-top: 10px;
     height: 30px;
-    width: 100px;
-}*/
-
-.login-form-btn-area button {
-    margin-top: 40px;
-    height: 30px;
+    background: white;
+    border: 1px solid lightgray;
+    cursor: pointer;
 }
 
-.login-form-btn-area .loginBtn-area button{
+.login-btn button {
     width: 300px;
 }
 
-.login-form-btn-area .else-btn-area button{
+.join-search-area button {
     width: 90px;
+    margin-left: 5px;
+}
+
+.join-search-area {
+    margin-top: 10px;
+}
+
+.oauth-area {
+    margin-top: 30px;
+}
+
+.oauth-btn {
+    margin-top: 5px;
+}
+
+.oauth-btn img {
+    width: 200px;
+    cursor: pointer;
 }
 
 
 /* searchId */
-.search-radio-area{
-    margin-bottom: 1%;
+
+.search-id-form input, span{
+    margin: 10px 0 0 1%;
+    height: 20px;
 }
 
-.form-group{
-    margin-bottom: 1%;
+.search-id-overlap {
+    margin-top: 10px;
 }
 
-.search_id_form input{
-    width: 195px;
-    text-align: center;
+.not-found-overlap {
+    color: red;
 }
 
-.search_pw_form input{
-    width: 195px;
-    text-align: center;
+.certification-timer-btn {
+    margin-left: 10px;
+    width: 70px;
+    height: 25px;
 }
 
-.btn-area {
-    margin-top: 1%;
-}
-
-.btn-area button{
-    margin-left: 1%;
+.search-info button {
+    width: 100px;
+    height: 30px;
+    margin: 10px;
 }

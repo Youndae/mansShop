@@ -2,13 +2,28 @@ package org.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.order.OrderPaymentDTO;
+import org.shop.domain.dto.cart.business.CartMemberDTO;
+import org.shop.domain.dto.cart.business.OptionAndCountListDTO;
+import org.shop.domain.dto.order.in.ProductOrderListDTO;
+import org.shop.domain.dto.order.OrderListRequestDTO;
 import org.shop.domain.dto.order.ProductOrderDTO;
-import org.shop.domain.entity.ProductOrder;
-import org.shop.domain.entity.ProductOrderDetail;
-import org.shop.domain.entity.Sales;
-import org.shop.mapper.OrderMapper;
+import org.shop.domain.dto.order.business.OrderCartDetailDTO;
+import org.shop.domain.dto.order.business.OrderDetailDTO;
+import org.shop.domain.dto.order.business.OrderProductPatchDTO;
+import org.shop.domain.dto.order.business.UserOrderData;
+import org.shop.domain.dto.order.in.OrderPaymentRequestDTO;
+import org.shop.domain.dto.order.out.OrderListDTO;
+import org.shop.domain.dto.order.out.OrderListResponseDTO;
+import org.shop.domain.dto.order.out.OrderProductDTO;
+import org.shop.domain.dto.order.out.OrderProductResponseDTO;
+import org.shop.domain.dto.paging.PageCriteria;
+import org.shop.domain.dto.paging.PageDTO;
+import org.shop.domain.dto.paging.PagingResponseDTO;
+import org.shop.domain.entity.*;
+import org.shop.domain.enumeration.Result;
+import org.shop.exception.customException.CustomAccessDeniedException;
+import org.shop.exception.enumeration.ErrorCode;
+import org.shop.mapper.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,129 +34,160 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
 
-    private final OrderMapper orderMapper;
+    private final ProductOrderMapper productOrderMapper;
 
-    private final CartService cartService;
+    private final ProductMapper productMapper;
+
+    private final ProductOptionMapper productOptionMapper;
+
+    private final CartDetailMapper cartDetailMapper;
+
+    private final CartMapper cartMapper;
+
+    private final ProductOrderDetailMapper productOrderDetailMapper;
+
+    private static final String anonymous = "Anonymous";
+
 
     @Override
-    public List<OrderPaymentDTO> orderProduct(HashMap<String, Object> commandMap) {
-        String[] no_array = splitMapData("pOpNo", commandMap);
-        String[] name_array = splitMapData("pName", commandMap);
-        String[] size_array = splitMapData("pSize", commandMap);
-        String[] color_array = splitMapData("pColor", commandMap);
-        String[] count_array = splitMapData("cCount", commandMap);
-        String[] price_array = splitMapData("cPrice", commandMap);
-        String[] pno_array = splitMapData("pno", commandMap);
-        String[] cd_array = splitMapData("cdNo", commandMap);
+    public OrderProductResponseDTO orderProduct(OptionAndCountListDTO optionAndCountListDTO) {
+        List<OrderProductDTO> products = productMapper.findOrderProductByOptionIds(optionAndCountListDTO);
 
-        List<OrderPaymentDTO> dtoList = new ArrayList<>();
-
-        for(int i = 0; i < no_array.length; i++){
-            String size = size_array[i].equals("nonSize") ? null : size_array[i];
-            String color = color_array[i].equals("nonColor") ? null : color_array[i];
-            String cartDetailNo = cd_array == null ? null : cd_array[i];
-
-            OrderPaymentDTO dto = OrderPaymentDTO.builder()
-                    .pOpNo(no_array[i])
-                    .pName(name_array[i])
-                    .cCount(Integer.parseInt(count_array[i]))
-                    .cPrice(Long.parseLong(price_array[i]))
-                    .pSize(size)
-                    .pColor(color)
-                    .cdNo(cartDetailNo)
-                    .pno(pno_array[i])
-                    .build();
-
-            dtoList.add(dto);
-        }
-
-        return dtoList;
+        return new OrderProductResponseDTO(products);
     }
 
+    @Override
+    public OrderProductResponseDTO orderCart(List<Long> cartDetailIds, CartMemberDTO cartMemberDTO) {
+        Long cartId = cartMapper.findCartIdByUserIdOrCookieId(cartMemberDTO);
+        Long checkCartId = cartDetailMapper.findCartIdByCartIdAndDetailId(cartDetailIds.get(0));
 
-    public String[] splitMapData(String key, HashMap<String, Object> commandMap){
-        if(commandMap.get(key) != null)
-            return commandMap.get(key).toString().split(",");
+        if(cartId == null || !cartId.equals(checkCartId))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
 
-        return null;
+        List<OrderProductDTO> products = cartDetailMapper.findOrderProductByOptionIds(cartDetailIds);
+
+        return new OrderProductResponseDTO(products);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String orderPayment(ProductOrderDTO dto
-                            , List<String> cdNo
-                            , List<String> pOpNo
-                            , List<String> orderCount
-                            , List<String> odPrice
-                            , List<String> pno
-                            , String oType
-                            , HttpServletRequest request
-                            , HttpServletResponse response
-                            , Principal principal) {
-        String id = principal == null ? "Anonymous" : principal.getName();
+    public String orderPaymentProduct(OrderProductResponseDTO dto, OrderPaymentRequestDTO paymentDTO, Principal principal) {
+        saveOrderAndDetails(dto, paymentDTO, principal == null ? anonymous : principal.getName());
+        patchProductAndOption(dto.getProducts());
 
-        ProductOrder productOrder = ProductOrder.builder()
-                                                .userId(id)
-                                                .addr(dto.getAddr())
-                                                .orderPhone(dto.getOrderPhone())
-                                                .orderMemo(dto.getOrderMemo())
-                                                .orderPrice(dto.getOrderPrice())
-                                                .orderPayment(dto.getOrderPayment())
-                                                .recipient(dto.getRecipient())
-                                                .build();
-
-        long totalCount = 0;
-        List<ProductOrderDetail> orderDetailList = new ArrayList<>();
-
-        for(int i = 0; i < pOpNo.size(); i++){
-            orderDetailList.add(ProductOrderDetail.builder()
-                            .odNo(productOrder.getOrderNo() + pOpNo.get(i))
-                            .orderNo(productOrder.getOrderNo())
-                            .pOpNo(pOpNo.get(i))
-                            .orderCount(Integer.parseInt(orderCount.get(i)))
-                            .odPrice(Integer.parseInt(odPrice.get(i)))
-                            .pno(pno.get(i))
-                            .build());
-
-            totalCount = totalCount + Long.parseLong(orderCount.get(i));
-        }
-
-        orderMapper.orderPayment(productOrder);
-        orderMapper.orderPaymentOp(orderDetailList);
-        orderMapper.productSales(orderDetailList);
-        orderMapper.productOpSales(orderDetailList);
-        //매출 데이터 처리
-        sales(productOrder.getOrderPrice(), totalCount);
-
-        //oType != "d" 라면 장바구니를 통한 구매이기 때문에 장바구니에서 해당 데이터를 삭제
-        if(oType != "d")
-            cartService.deleteCartCheck(cdNo, principal, request, response);
-
-        return ResultProperties.SUCCESS;
+        return Result.SUCCESS.getResultKey();
     }
 
-    public void sales(long orderPrice, long totalCount) {
-        String now = new SimpleDateFormat("yyyy/MM").format(System.currentTimeMillis()).toString();
-        int salesTermCount = orderMapper.maxSalesTerm(now);
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String orderPaymentCart(OrderProductResponseDTO dto, OrderPaymentRequestDTO paymentDTO, CartMemberDTO cartMemberDTO) {
+        saveOrderAndDetails(dto, paymentDTO, cartMemberDTO.getUserId() == null ? anonymous : cartMemberDTO.getUserId());
+        patchProductAndOption(dto.getProducts());
 
-        if(orderPrice < 100000)
-            orderPrice -= 2500;
+        List<OrderCartDetailDTO> detailList = cartDetailMapper.findAllDetailByUserIdOrCookieId(cartMemberDTO);
+        List<Long> deleteList = new ArrayList<>();
+        for(OrderProductDTO productDTO : dto.getProducts()) {
+            for(OrderCartDetailDTO detail : detailList) {
+                if(productDTO.getProductOptionId() == detail.getOptionId()){
+                    deleteList.add(detail.getDetailId());
+                    break;
+                }
+            }
+        }
 
-        Sales sales = Sales.builder()
-                            .salesOrders(totalCount)
-                            .salesSum(orderPrice)
-                            .salesTerm(now)
-                            .build();
-
-        if(salesTermCount != 1)
-            orderMapper.addTotalSales(sales);
+        if(deleteList.size() == detailList.size())
+            cartMapper.deleteById(detailList.get(0).getCartId());
         else
-            orderMapper.updateTotalSales(sales);
+            cartDetailMapper.deleteByIds(deleteList);
+
+        return Result.SUCCESS.getResultKey();
+    }
+
+    public void saveOrderAndDetails(OrderProductResponseDTO dto, OrderPaymentRequestDTO paymentDTO, String userId) {
+        ProductOrder orderEntity = new ProductOrder(paymentDTO, dto, userId);
+        productOrderMapper.saveOrder(orderEntity);
+        Long orderId = orderEntity.getId();
+        List<ProductOrderDetail> orderDetails = dto.getProducts()
+                                                    .stream()
+                                                    .map(v -> new ProductOrderDetail(v, orderId))
+                                                    .collect(Collectors.toList());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderId", orderId);
+        params.put("orderDetails", orderDetails);
+
+        productOrderDetailMapper.saveOrderDetails(params);
+    }
+
+    public void patchProductAndOption(List<OrderProductDTO> list) {
+        Map<String, Integer> productPatchMap = new HashMap<>();
+        List<OrderProductPatchDTO<Long>> optionPatchList = new ArrayList<>();
+
+        for(OrderProductDTO dto : list){
+            productPatchMap.put(dto.getProductId(), productPatchMap.getOrDefault(dto.getProductId(), 0) + dto.getCount());
+            optionPatchList.add(new OrderProductPatchDTO<>(dto.getProductOptionId(), dto.getCount()));
+        }
+
+        List<OrderProductPatchDTO<String>> productPatchList = productPatchMap.keySet()
+                .stream()
+                .map(k ->
+                        new OrderProductPatchDTO<>(k, productPatchMap.get(k))
+                )
+                .collect(Collectors.toList());
+
+        productMapper.patchProductToOrder(productPatchList);
+        productOptionMapper.patchProductOptionToOrder(optionPatchList);
+    }
+
+    @Override
+    public OrderListResponseDTO<OrderListDTO> getAnonymousOrderList(ProductOrderListDTO dto, OrderListRequestDTO orderDTO) {
+        List<ProductOrder> orderList = productOrderMapper.findOrderList(dto, orderDTO);
+        int totalElements = productOrderMapper.findOrderListCount(dto, orderDTO);
+        List<OrderListDTO> content = orderList.size() == 0 ? null : mappingOrderListContent(orderList);
+        PageCriteria cri = createOrderListPageCriteria(orderDTO);
+
+        return new OrderListResponseDTO<>(
+                content
+                , new PageDTO<>(cri, totalElements)
+                , new UserOrderData(dto.getRecipient(), dto.getOrderPhone())
+        );
+    }
+
+    @Override
+    public PagingResponseDTO<OrderListDTO> getMemberOrderList(ProductOrderListDTO dto, OrderListRequestDTO orderDTO) {
+        List<ProductOrder> orderList = productOrderMapper.findOrderList(dto, orderDTO);
+        int totalElements = productOrderMapper.findOrderListCount(dto, orderDTO);
+        List<OrderListDTO> content = orderList.size() == 0 ? null : mappingOrderListContent(orderList);
+        PageCriteria cri = createOrderListPageCriteria(orderDTO);
+
+        return new PagingResponseDTO<>(content, new PageDTO<>(cri, totalElements));
+    }
+
+    public List<OrderListDTO> mappingOrderListContent(List<ProductOrder> orderList) {
+        List<Long> orderIdList = orderList.stream().map(ProductOrder::getId).collect(Collectors.toList());
+        List<OrderDetailDTO> detailList = productOrderDetailMapper.findByDetailList(orderIdList);
+        List<OrderListDTO> content = new ArrayList<>();
+
+        for(ProductOrder entity : orderList){
+            List<OrderDetailDTO> details = detailList.stream()
+                    .filter(v -> entity.getId() == v.getOrderId())
+                    .collect(Collectors.toList());
+
+            content.add(new OrderListDTO(entity, details));
+        }
+
+        return content;
+    }
+
+    public PageCriteria createOrderListPageCriteria(OrderListRequestDTO dto) {
+        return new PageCriteria(dto.getPage(), dto.getAmount(), dto.getTermValue(), null);
     }
 }

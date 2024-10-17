@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.shop.mapper.ProductReviewMapper">
+
+    <select id="findAllDetailByProductId" resultType="ProductReviewListDTO">
+        SELECT CASE
+                 WHEN m.nickname is null THEN m.userName
+                 ELSE m.nickname
+          END as reviewer
+           , r.reviewContent
+           , r.createdAt
+           , rr.replyContent as answerContent
+           , rr.createdAt as answerCreatedAt
+        FROM productReview r
+               INNER JOIN ProductReviewReply rr
+                          ON r.id = rr.reviewId
+               INNER JOIN member m
+                          ON r.userId = m.userId
+        WHERE r.productId = #{productId}
+        ORDER BY r.createdAt DESC, r.id DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countByProductId" resultType="int">
+        SELECT count(id)
+        FROM productReview
+        WHERE productId = #{productId}
+    </select>
+
+    <select id="findPatchDataByReviewIdAndUserId" resultType="MyPageReviewPatchDTO">
+        SELECT r.id as id
+            , r.reviewContent as content
+            , p.productName as productName
+        FROM productReview r
+        INNER JOIN product p
+        ON r.productId = p.id
+        WHERE r.id = #{id} AND r.userId = #{userId}
+    </select>
+
+    <select id="findById" resultType="ProductReview">
+        SELECT *
+        FROM productReview
+        WHERE id = #{id}
+    </select>
+
+    <update id="patchReview">
+        UPDATE productReview
+        SET reviewContent = #{dto.content}
+        WHERE id = #{dto.id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM productReview
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findAllByAdminList" resultType="AdminReviewListDTO">
+        SELECT r.id as reviewId
+            , p.productName as productName
+            , r.userId as userId
+            , r.updatedAt as updatedAt
+        FROM productReview r
+        INNER JOIN product p
+            on r.productId = p.id
+        <include refid="findReviewListToAdminCondition"/>
+        ORDER BY r.updatedAt DESC
+        OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
+    </select>
+
+    <select id="countAdminReviewListTotalElements" resultType="int">
+        SELECT distinct(count(r.id))
+        FROM productReview r
+        INNER JOIN product p
+            on r.productId = p.id
+        <include refid="findReviewListToAdminCondition"/>
+    </select>
+
+    <sql id="findReviewListToAdminCondition">
+        <trim prefix="WHERE ">
+            <if test="cri.searchType == 'userId'">
+                r.userId LIKE '%' || #{cri.keyword} || '%'
+            </if>
+            <if test="cri.searchType == 'productName'">
+                p.productName LIKE '%' || #{cri.keyword} || '%'
+            </if>
+        </trim>
+    </sql>
+
+    <select id="findDetailByReviewId" resultType="AdminReviewDetailDTO">
+        SELECT r.id as reviewId
+            , p.productName as productName
+            , r.userId as userId
+            , op.productSize as productSize
+            , op.productColor as productColor
+            , r.reviewContent as content
+            , r.createdAt as createdAt
+            , r.updatedAt as updatedAt
+        FROM productReview r
+        INNER JOIN product p
+            ON r.productId = p.id
+        INNER JOIN productOption op
+            on r.productOptionId = op.id
+        WHERE r.id = #{id}
+    </select>
+
+    <insert id="saveReview" parameterType="ProductReview">
+        INSERT INTO productReview(productId, productOptionId, userId, reviewContent)
+        VALUES(#{productId}, #{productOptionId}, #{userId}, #{reviewContent})
+    </insert>
+</mapper>

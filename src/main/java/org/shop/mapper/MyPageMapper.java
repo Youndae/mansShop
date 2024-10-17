@@ -1,108 +1,30 @@
 package org.shop.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import org.shop.domain.dto.member.MemberDTO;
-import org.shop.domain.dto.myPage.*;
+import org.shop.domain.dto.myPage.out.*;
+import org.shop.domain.dto.myPage.qna.out.MyPageMemberQnAListDTO;
+import org.shop.domain.dto.myPage.qna.out.MyPageProductQnAListDTO;
 import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.entity.*;
 
-import java.util.Date;
 import java.util.List;
 
 public interface MyPageMapper {
 
-    public MemberModifyDTO getModifyInfo(String userId);
+    List<LikeListDTO> getLikeList(@Param("userId") String userId, @Param("cri") Criteria cri);
 
-    public MemberDTO getUserInfo(String userId);
+    int getLikeTotalElements(@Param("userId") String userId);
 
-    public void modifyInfo(Member member);
+    List<MyPageProductQnAListDTO> getProductQnAList(@Param("userId") String userId, @Param("cri") Criteria cri);
 
-    public String modifyCheck(String userId);
+    int getProductQnATotalElements(@Param("userId") String userId);
 
-    public List<CartDetailDTO> getCartList(Cart cart);
+    List<MyPageMemberQnAListDTO> getMemberQnAList(@Param("userId") String userId, @Param("cri") Criteria cri);
 
-    public int cartCount(Cart cart);
+    int getMemberQnATotalElements(@Param("userId") String userId);
 
-    public void deleteCart(Cart cart);
+    List<MyPageReviewListDTO> getReviewList(@Param("userId") String userId, @Param("cri") Criteria cri);
 
-    public void deleteCartDetail(List<String> cdNo);
+    int getReviewTotalElements(@Param("userId") String userId);
 
-    public void cartUp(CartDetail cartDetail);
-
-    public void cartDown(CartDetail cartDetail);
-
-    public List<MemberOrderListDTO> memberOrderList(@Param("userId") String userId, @Param("regDate") Date regDate);
-
-    public String reviewProductInfo(String pno);
-
-    public void insertProductReview(ProductReview productReview);
-
-    public void reviewStatUp(@Param("pno") String pno, @Param("orderNo") String orderNo);
-
-    public void deleteReview(long rNum);
-
-    public List<MemberQnAListDTO> memberQnAList(Criteria cri);
-
-    public int getQnATotal(Criteria cri);
-
-    public MemberQnADetailDTO memberQnADetail(long qno);
-
-    public List<MemberQnAReplyListDTO> memberQnAReply(long qno);
-
-    public void insertMemberQnA(MyQnA myQna);
-
-    public List<MemberReviewListDTO> memberReviewList(Criteria cri);
-
-    public int getReviewTotal(Criteria cri);
-
-    public MemberReviewDetailDTO memberReviewDetail(long rNum);
-
-    public void memberReviewModify(ProductReview productReview);
-
-    public List<LikeListDTO> likeList(Criteria cri);
-
-    public int getLikeTotal(Criteria cri);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    MyPageReviewDetailDTO getReviewDetail(@Param("reviewId") long reviewId, @Param("userId") String userId);
 }

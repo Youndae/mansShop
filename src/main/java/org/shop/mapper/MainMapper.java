@@ -1,26 +1,21 @@
 package org.shop.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import org.shop.domain.dto.paging.Criteria;
-import org.shop.domain.dto.myPage.MemberOrderListDTO;
-import org.shop.domain.entity.Product;
+import org.shop.domain.dto.main.out.MainListDTO;
+import org.shop.domain.dto.paging.MainPageCriteria;
 
 import java.util.List;
 
 public interface MainMapper {
 
-    public List<Product> mainBest();
+    List<MainListDTO> findMainBestAndNew(@Param("type") String type);
 
-    public List<Product> mainNew();
+    List<MainListDTO> findClassificationList(@Param("cri") MainPageCriteria cri);
 
-    public List<Product> mainClassification(Criteria cri);
+    int findClassificationElementsCount(@Param("cri") MainPageCriteria cri);
 
-    public int getProductTotal(Criteria cri);
+    List<MainListDTO> findSearchProduct(@Param("cri")MainPageCriteria cri);
 
-    public int getSearchProduct(Criteria cri);
+    int findSearchProductCount(@Param("cri")MainPageCriteria cri);
 
-    public List<Product> searchProduct(Criteria cri);
-
-    public List<MemberOrderListDTO> getNonOrderList(@Param("recipient") String recipient
-                                                , @Param("orderPhone") String orderPhone);
 }

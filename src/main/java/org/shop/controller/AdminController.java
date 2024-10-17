@@ -1,355 +1,339 @@
 package org.shop.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
-import org.shop.domain.ResultProperties;
-import org.shop.domain.dto.admin.*;
-import org.shop.domain.dto.paging.Criteria;
+import lombok.extern.slf4j.Slf4j;
+import org.shop.domain.dto.admin.member.out.AdminMemberResponseDTO;
+import org.shop.domain.dto.admin.order.out.AdminOrderResponseDTO;
+import org.shop.domain.dto.admin.product.out.*;
+import org.shop.domain.dto.admin.qna.out.AdminMemberQnADetailDTO;
+import org.shop.domain.dto.admin.qna.out.AdminProductQnADetailDTO;
+import org.shop.domain.dto.admin.qna.out.AdminQnAClassificationResponseDTO;
+import org.shop.domain.dto.admin.qna.out.AdminQnAListResponseDTO;
+import org.shop.domain.dto.admin.review.business.AdminReviewDetailDTO;
+import org.shop.domain.dto.admin.review.out.AdminReviewDetailResponseDTO;
+import org.shop.domain.dto.admin.review.out.AdminReviewListDTO;
+import org.shop.domain.dto.admin.sales.business.AdminPeriodSalesListDTO;
+import org.shop.domain.dto.admin.sales.out.*;
+import org.shop.domain.dto.paging.PageCriteria;
 import org.shop.domain.dto.paging.PageDTO;
-import org.shop.domain.entity.*;
-import org.shop.mapper.AdminMapper;
+import org.shop.domain.dto.paging.PagingResponseDTO;
+import org.shop.domain.mapper.PageableRequestMapper;
 import org.shop.service.AdminService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.shop.service.ResponseMappingService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 
 @RequestMapping("/admin/")
 @Controller
-@Log4j
+@Slf4j
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
-
-    private final AdminMapper adminMapper;
 
     private final AdminService adminService;
 
+    private final ResponseMappingService responseMappingService;
+
     //상품 목록
     @GetMapping("/product")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String productList(Model model, Criteria cri) {
-        if(cri.getKeyword() == "")
-            cri.setKeyword(null);
+    public String productList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                            , @RequestParam(name = "keyword", required = false) String keyword
+                            , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminProductListDTO> dto = adminService.getProductList(cri);
+        int totalElements = adminService.getProductListTotalElements(cri);
+        PagingResponseDTO<AdminProductListDTO> result = responseMappingService.pagingResponseMapping(dto, cri, totalElements);
 
-        if(cri.getClassification() == "")
-            cri.setClassification(null);
-
-        model.addAttribute("pList", adminMapper.productList(cri));
-        int total = adminMapper.getProductTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+        model.addAttribute("list", result);
 
         return "admin/productList";
     }
 
-    //상품 추가 페이지
-    @GetMapping("/product/new")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String addProduct(){
+    @GetMapping("/product/{productId}")
+    public String productDetail(@PathVariable("productId") String productId
+                                , Model model) {
+        AdminProductDetailDTO result = adminService.getProductDetail(productId);
+
+        model.addAttribute("detail", result);
+
+        return "admin/productDetail";
+    }
+
+    @GetMapping("/product/add")
+    public String addProduct(Model model) {
+
+        List<String> classificationList = adminService.getProductClassificationList();
+
+        model.addAttribute("classification", classificationList);
 
         return "admin/addProduct";
     }
 
-    //상품 추가 처리
-    @PostMapping("/product")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String insertProduct(ProductInsertDTO dto,
-                              @RequestParam("firstThumbFile") MultipartFile firstFiles,
-                              @RequestParam(value = "thumbFiles", required = false) List<MultipartFile> thumbFiles,
-                              @RequestParam("infoFiles") List<MultipartFile> infoFiles) {
+    @GetMapping("/product/patch/{productId}")
+    public String getProductPatchData(@PathVariable("productId") String productId
+                                    , Model model) {
+        AdminProductPatchDataDTO result = adminService.getProductPatchData(productId);
 
-        try{
-            return adminService.addProduct(dto, firstFiles, thumbFiles, infoFiles);
-        }catch (Exception e){
-            return ResultProperties.ERROR;
-        }
+        model.addAttribute("detail", result);
+
+        return "admin/productModify";
     }
 
-    //상품 수정 처리
-    @PatchMapping("/product")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String modifyProductInfo(ProductModifyDTO dto,
-                                  @RequestParam(value = "firstThumbFile", required = false) MultipartFile firstFile,
-                                  @RequestParam(value = "thumbFiles", required = false) List<MultipartFile> thumbFiles,
-                                  @RequestParam(value = "infoFiles", required = false) List<MultipartFile> infoFiles,
-                                  @RequestParam(value = "deleteFirstThumbFile", required = false) String deleteFirstThumbFile,
-                                  @RequestParam(value = "deleteThumbFiles", required = false) List<String> deleteThumbFiles,
-                                  @RequestParam(value = "deleteInfoFiles", required = false) List<String> deleteInfoFiles) {
-        try{
-            return adminService.modifyProduct(dto, firstFile, thumbFiles, infoFiles,
-                    deleteFirstThumbFile, deleteThumbFiles, deleteInfoFiles);
-        }catch (Exception e){
-            return ResultProperties.ERROR;
-        }
+    @GetMapping("/product/stock")
+    public String getProductStockList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                    , @RequestParam(name = "keyword", required = false) String keyword
+                                    , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminProductStockDTO> content = adminService.getProductStockList(cri);
+        int totalElements = adminService.getProductListTotalElements(cri);
+        PagingResponseDTO<AdminProductStockDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+
+        model.addAttribute("list", result);
+
+        return "admin/productStockList";
     }
 
-    //대표 썸네일 데이터
-    @GetMapping("/first-thumb")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public ResponseEntity<List<ProductImageDTO>> getFirstThumb(String pno){
+    @GetMapping("/product/discount")
+    public String getProductDiscountList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                        , @RequestParam(name = "keyword", required = false) String keyword
+                                        , Model model){
 
-        return new ResponseEntity<>(adminMapper.getFirstThumb(pno), HttpStatus.OK);
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminDiscountResponseDTO> content = adminService.getProductDiscountList(cri);
+        int totalElements = adminService.getProductDiscountListTotalElements(cri);
+        PagingResponseDTO<AdminDiscountResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+        model.addAttribute("list", dto);
+
+        return "admin/productDiscountList";
     }
 
-    //대표 썸네일을 제외한 나머지 썸네일 데이터 리스트
-    @GetMapping("/thumbnail")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public ResponseEntity<List<ProductImageDTO>> getThumbnail(String pno){
+    @GetMapping("/product/discount/add")
+    public String productDiscount(Model model) {
+        List<String> classificationList = adminService.getProductClassificationList();
+        model.addAttribute("classification", classificationList);
 
-        return new ResponseEntity<>(adminMapper.getThumbnail(pno), HttpStatus.OK);
+        return "admin/productDiscount";
     }
 
-    //상품 정보 이미지 데이터 리스트
-    @GetMapping("/info-image")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public ResponseEntity<List<ProductImageDTO>> getInfoImg(String pno){
+    @GetMapping("/order/new")
+    public String getNewOrderList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , @RequestParam(name = "searchType", required = false) String searchType
+                                , @RequestParam(value = "keyword", required = false) String keyword
+                                , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, searchType);
+        List<AdminOrderResponseDTO> content = adminService.getNewOrderList(cri);
+        int totalElements = adminService.getNewOrderListTotalElements(cri);
+        PagingResponseDTO<AdminOrderResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        return new ResponseEntity<>(adminMapper.getInfoImg(pno), HttpStatus.OK);
-    }
-
-    //상품 상세 정보 페이지(수정 및 옵션 추가 기능이 존재)
-    @GetMapping("/product-info/{pOpNo}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String productInfo(@PathVariable("pOpNo") String pOpNo, Model model){
-
-        model.addAttribute("info", adminMapper.productInfo(pOpNo));
-
-        return "admin/productInfo";
-    }
-
-    //상품 옵션 추가 처리
-    @PostMapping("/product-option")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String addProductOp(ProductOpInsertDTO dto) {
-        adminService.addProductOp(dto);
-
-        return "redirect:/admin/productList";
-    }
-
-    //상품 옵션(1개) 비공개 처리
-    @PatchMapping("/product-option/close/{pOpNo}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public void closedProductOp(@PathVariable String pOpNo){
-
-        adminMapper.closedProductOp(pOpNo);
-    }
-
-    //상품 옵션(1개) 공개 처리
-    @PatchMapping("/product-option/open/{pOpNo}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public void openProductOp(@PathVariable String pOpNo){
-
-        adminMapper.openProductOp(pOpNo);
-    }
-
-    //상품 비공개 처리
-    @PatchMapping("/product/close/{pno}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public void closedProduct(@PathVariable String pno){
-
-        adminMapper.closedProduct(pno);
-    }
-
-    //상품 공개 처리
-    @PatchMapping("/product/open/{pno}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public void openProduct(@PathVariable String pno){
-
-        adminMapper.openProduct(pno);
-    }
-
-    //주문 목록 페이지
-    @GetMapping("/order")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String orderList(Model model, Criteria cri){
-
-
-        model.addAttribute("order", adminMapper.orderList(cri));
-        int total = adminMapper.getOrderTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+        model.addAttribute("list", dto);
 
         return "admin/orderList";
     }
 
-    //주문 상세 정보 데이터
-    @GetMapping("/order/{orderNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    public ResponseEntity<AdminProductOrderDTO> orderInfo(@PathVariable("orderNo") String orderNo){
+    @GetMapping("/order/all")
+    public String getAllOrderList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , @RequestParam(name = "searchType", required = false) String searchType
+                                , @RequestParam(value = "keyword", required = false) String keyword
+                                , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, searchType);
+        List<AdminOrderResponseDTO> content = adminService.getAllOrderList(cri);
+        int totalElements = adminService.getAllOrderListTotalElements(cri);
+        PagingResponseDTO<AdminOrderResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        return new ResponseEntity<>(adminMapper.orderInfo(orderNo), HttpStatus.OK);
+        model.addAttribute("list", dto);
+
+        return "admin/orderList";
     }
 
-    //주문 정보 데이터 리스트
-    @GetMapping("/order/{orderNo}/data")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    @ResponseBody
-    public ResponseEntity<List<AdminOrderInfoTableDTO>> orderInfoTable(@PathVariable String orderNo){
+    @GetMapping("/qna/product/{type}")
+    public String getProductQnAList(@PathVariable("type") String type
+                                    , @RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                    , @RequestParam(value = "keyword", required = false) String keyword
+                                    , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminQnAListResponseDTO> content = adminService.getProductQnAList(cri, type);
+        int totalElements = adminService.getProductQnAListTotalElements(cri, type);
+        PagingResponseDTO<AdminQnAListResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        return new ResponseEntity<>(adminMapper.orderInfoTable(orderNo), HttpStatus.OK);
-    }
-
-    //주문 상품 배송 처리(관리자의 확인 처리)
-    @PatchMapping("/shipping/{orderNo}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String shippingProcess(@PathVariable String orderNo){
-        adminMapper.shippingProcessing(orderNo);
-
-        return String.valueOf(adminMapper.checkOrderStat(orderNo));
-    }
-
-    //사용자 문의 리스트 페이지
-    @GetMapping("/qna")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String adminQnAList(Model model, Criteria cri){
-
-        model.addAttribute("list", adminMapper.adminQnAList(cri));
-        int total = adminMapper.getAdminQnATotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
-
-        return "admin/adminQnAList";
-    }
-
-    //사용자 문의 상세 페이지
-    @GetMapping("/qna/detail/{qno}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String adminQnADetail(@PathVariable("qno") int qno, Model model){
-
-        model.addAttribute("aqDetail", adminMapper.adminQnADetail(qno));
-
-        return "admin/adminQnADetail";
-    }
-
-    //사용자 문의 답변 완료 처리
-    @PatchMapping("/qna/complete/{qno}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String adminQnAComplete(@PathVariable int qno){
-        adminMapper.adminQnAComplete(qno);
-
-        return String.valueOf(adminMapper.adminQnACheck(qno));
-    }
-
-    //사용자 문의 상세 페이지의 댓글(관리자의 답변) 데이터 리스트
-    @GetMapping("/qna/reply/{qno}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public ResponseEntity<List<MyQnAReplyGetDTO>> getQnAReply(@PathVariable int qno){
-
-        return new ResponseEntity<>(adminMapper.adminQnAReplyList(qno), HttpStatus.OK);
-    }
-
-    //사용자 문의 상세 페이지의 댓글(관리자의 답변) 처리
-    @PostMapping("/qna/reply")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String qnAReply(MyQnAReplyDTO dto, Principal principal){
-
-        return adminService.qnAReplyProc(dto, principal);
-    }
-
-    //사용자 문의 상세 페이지의 댓글(관리자의 답변) 삭제 처리
-    @DeleteMapping("/qna/reply/{replyNo}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseBody
-    public String qnAReplyDel(@PathVariable int replyNo){
-
-        return adminService.qnaReplyDelete(replyNo);
-    }
-
-    //사용자(회원) 데이터
-    @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<MemberInfoDTO> userInfo(@PathVariable("userId") String userId){
-
-        return new ResponseEntity<>(adminMapper.userInfo(userId), HttpStatus.OK);
-    }
-
-    //사용자(회원) 목록
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String userList(Model model, Criteria cri){
-        List<MemberListDTO> dto = adminMapper.userList(cri);
-
-        log.info("dto : " + dto);
-
-        model.addAttribute("uList", dto);
-        int total = adminMapper.getUserTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
-
-        return "admin/userList";
-    }
-
-    //상품별 매출 페이지
-    @GetMapping("/sales/product")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String salesProductList(Model model, Criteria cri){
-        model.addAttribute("spList", adminMapper.salesProductList(cri));
-        int total = adminMapper.getSalesProductTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
-
-        return "admin/salesProductList";
-    }
-
-    //기간별 매출 페이지
-    @GetMapping("/sales/term")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String salesTermList(Model model, Criteria cri){
-        model.addAttribute("stList", adminMapper.salesTermList(cri));
-        int total = adminMapper.getSalesTermTotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
-
-        return "admin/salesTermList";
-    }
-
-    //기간별 매출 페이지의 존재하는 연도 데이터 리스트
-    @GetMapping("/sales/term/year")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<Sales>> salesTermSelect(){
-
-        return new ResponseEntity<>(adminMapper.salesTermSelect(), HttpStatus.OK);
-    }
-
-    //상품 문의 목록 페이지
-    @GetMapping("/product/qna")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    public String productQnAList(Model model, Criteria cri){
-        model.addAttribute("list", adminMapper.productQnAList(cri));
-        int total = adminMapper.getProductQnATotal(cri);
-        model.addAttribute("pageMaker", new PageDTO(cri, total));
+        model.addAttribute("list", dto);
 
         return "admin/productQnAList";
     }
 
-    //상품 문의 상세 페이지
-    @GetMapping("/product/qna/detail/{pQnANo}")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    public String productQnADetail(@PathVariable("pQnANo") long pQnANo, Model model){
-        model.addAttribute("detail", adminMapper.productQnADetail(pQnANo));
+    @GetMapping("/qna/product/detail/{qnaId}")
+    public String getProductQnADetail(@PathVariable("qnaId") long qnaId
+                                    , Model model) {
+        AdminProductQnADetailDTO dto = adminService.getProductQnADetail(qnaId);
+
+        model.addAttribute("detail", dto);
 
         return "admin/productQnADetail";
     }
 
-    //상품 문의 답글 작성 처리
-    @PostMapping("/product/qna/reply")
-    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
-    public String replyProductQnA(ProductQnAReplyDTO dto, Principal principal){
-        adminService.productQnAReplyProc(dto, principal);
+    @GetMapping("/qna/member/{type}")
+    public String getMemberQnAList(@PathVariable("type") String type
+                                    , @RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                    , @RequestParam(value = "keyword", required = false) String keyword
+                                    , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminQnAListResponseDTO> content = adminService.getMemberQnAList(cri, type);
+        int totalElements = adminService.getMemberQnAListTotalElements(cri, type);
+        PagingResponseDTO<AdminQnAListResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
 
-        return "redirect:/admin/productQnAList";
+        model.addAttribute("list", dto);
+
+        return "admin/memberQnAList";
+    }
+
+    @GetMapping("/qna/member/detail/{qnaId}")
+    public String getMemberQnADetail(@PathVariable("qnaId") long qnaId
+                                    , Model model) {
+
+        AdminMemberQnADetailDTO dto = adminService.getMemberQnADetail(qnaId);
+
+        model.addAttribute("detail", dto);
+
+        return "admin/memberQnADetail";
+    }
+
+    @GetMapping("/qna/classification")
+    public String getQnAClassificationList(Model model) {
+
+        List<AdminQnAClassificationResponseDTO> content = adminService.getQnAClassificationList();
+
+        model.addAttribute("list", content);
+
+        return "admin/qnaClassification";
+    }
+
+    @GetMapping("/review")
+    public String getReviewList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , @RequestParam(name = "searchType", required = false) String searchType
+                                , @RequestParam(value = "keyword", required = false) String keyword
+                                , Model model){
+        /**
+         * reviewId
+         * writer
+         * productName
+         * updatedAt
+         *
+         * searchType -> userId, productName
+         */
+
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, searchType);
+        List<AdminReviewListDTO> content = adminService.getReviewList(cri);
+        int totalElements = adminService.getReviewListTotalElements(cri);
+        PagingResponseDTO<AdminReviewListDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+
+        model.addAttribute("list", dto);
+
+        return "admin/reviewList";
+    }
+
+    @GetMapping("/review/{reviewId}")
+    public String getReviewDetail(@PathVariable("reviewId") long reviewId
+                                    , Model model) {
+        AdminReviewDetailResponseDTO content = adminService.getReviewDetail(reviewId);
+
+        model.addAttribute("detail", content);
+
+        return "admin/reviewDetail";
+    }
+
+    @GetMapping("/member")
+    public String getMemberList(@RequestParam(name = "page", required = false, defaultValue = "1") int page
+                                , @RequestParam(name = "searchType", required = false) String searchType
+                                , @RequestParam(value = "keyword", required = false) String keyword
+                                , Model model){
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, searchType);
+        List<AdminMemberResponseDTO> content = adminService.getMemberList(cri);
+        int totalElements = adminService.getMemberListTotalElements(cri);
+        PagingResponseDTO<AdminMemberResponseDTO> dto = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+
+        model.addAttribute("list", dto);
+
+        return "admin/userList";
+    }
+
+    /**
+     *
+     * @param term = YYYY
+     */
+    @GetMapping("/sales/period/{term}")
+    public String getPeriodSalesList(@PathVariable("term") int term
+                                    , Model model) {
+
+        AdminPeriodSalesResponseDTO<AdminPeriodSalesListDTO> content = adminService.getPeriodSalesListByYear(term);
+
+        model.addAttribute("list", content);
+
+        return "admin/periodSales";
+    }
+
+    /**
+     *
+     * @param term = YYYY-MM
+     */
+    @GetMapping("/sales/period/detail/{term}")
+    public String getPeriodSalesDetail(@PathVariable("term") String term
+                                        , Model model) {
+        log.info("AdminController.getPeriodSalesDetail :: term : {}", term);
+        AdminPeriodSalesMonthDetailDTO content = adminService.getPeriodDetail(term);
+
+        model.addAttribute("list", content);
+
+        return "admin/periodSalesDetail";
+    }
+
+    /**
+     *
+     * @param term = YYYY-MM-dd
+     * @param page
+     */
+    @GetMapping("/sales/period/detail/date/{term}")
+    public String getOrderListByDay(@PathVariable(value = "term") String term
+                                    , @RequestParam(value = "page", required = false, defaultValue = "1") int page
+                                    , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, null, null);
+        List<AdminDailySalesOrderResponseDTO> content = adminService.getOrderListByDay(term, cri);
+        int totalElements = adminService.getOrderListByDayTotalCount(term);
+        AdminDailySalesOrderListResponseDTO result = new AdminDailySalesOrderListResponseDTO(
+                content
+                , new PageDTO<>(cri, totalElements)
+                , term
+        );
+
+        model.addAttribute("list", result);
+
+        return "admin/salesOrderList";
+    }
+
+    @GetMapping("/sales/product")
+    public String getProductSalesList(@RequestParam(value = "keyword", required = false) String keyword
+                                    , @RequestParam(value = "page", required = false, defaultValue = "1") int page
+                                    , Model model) {
+        PageCriteria cri = PageableRequestMapper.createDefaultAmountPageCriteria(page, keyword, null);
+        List<AdminProductSalesListDTO> content = adminService.getProductSalesList(cri);
+        int totalElements = adminService.getProductSalesListTotalElements(cri);
+        PagingResponseDTO<AdminProductSalesListDTO> result = responseMappingService.pagingResponseMapping(content, cri, totalElements);
+
+        model.addAttribute("list", result);
+
+        return "admin/productSales";
+    }
+
+    @GetMapping("/sales/product/detail/{productId}")
+    public String getProductSalesDetail(@PathVariable("productId") String productId
+                                        , Model model) {
+
+        AdminProductSalesDetailDTO result = adminService.getProductSalesDetail(productId);
+
+        model.addAttribute("detail", result);
+
+        return "admin/productSalesDetail";
     }
 }

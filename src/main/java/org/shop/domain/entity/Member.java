@@ -1,15 +1,20 @@
 package org.shop.domain.entity;
 
 import lombok.*;
+import org.shop.domain.dto.member.in.MemberJoinDTO;
+import org.shop.domain.dto.member.in.MemberResetPwDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Member {
 
@@ -19,27 +24,52 @@ public class Member {
 
     private String userName;
 
+    private String nickname;
+
     private String userEmail;
 
-    private Date userBirth;
+    private String provider;
 
-    private String userPhone;
+    private LocalDate createdAt;
 
-    private Date joinRegDate;
+    private int memberPoint;
 
-    public Member(String userId, String userPw, String userName, String userEmail, Date userBirth, String userPhone, Date joinRegDate) {
-        this.userId = userId;
-        this.userPw = userPw == null ? null : encodePassword(userPw);
-        this.userName = userName == "" ? null : userName;
-        this.userEmail = userEmail == "" ? null : userEmail;
-        this.userBirth = userBirth;
-        this.userPhone = userPhone;
-        this.joinRegDate = joinRegDate;
+    private String phone;
+
+    private LocalDate birth;
+
+
+    public void setUserEmail(String email) {
+        this.userEmail = email;
     }
 
-    private String encodePassword(String pw) {
+    public void setUserName(String username) {
+        this.userName = username;
+    }
+
+    public Member(MemberJoinDTO joinDTO) {
+        String phoneRegEx = "(\\d{3})(\\d{3,4})(\\d{4})";
+        int[] birthArray = Arrays.stream(joinDTO.getBirth().split("/")).mapToInt(Integer::parseInt).toArray();
+        LocalDate birth = LocalDate.of(birthArray[0], birthArray[1], birthArray[2]);
+
+        this.userId = joinDTO.getUserId();
+        this.userPw = encodePassword(joinDTO.getUserPw());
+        this.userName = joinDTO.getUsername();
+        this.nickname = joinDTO.getNickname();
+        this.phone = joinDTO.getPhone().replaceAll(phoneRegEx, "$1-$2-$3");
+        this.birth = birth;
+        this.userEmail = joinDTO.getEmail();
+        this.provider = "local";
+    }
+
+    public Member(MemberResetPwDTO resetPwDTO) {
+        this.userId = resetPwDTO.getUserId();
+        this.userPw = encodePassword(resetPwDTO.getPassword());
+    }
+
+    private String encodePassword(String userPw) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        return encoder.encode(pw);
+        return encoder.encode(userPw);
     }
 }
