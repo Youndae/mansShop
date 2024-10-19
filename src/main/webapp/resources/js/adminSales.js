@@ -2,8 +2,6 @@ $(function() {
     const path = window.location.pathname;
     const year = Number(path.substring(20));
     const thisYear = new Date().getFullYear();
-    console.log('thisYear : ', thisYear);
-    console.log('year : ', year);
     let periodSelectBoxOptionStr = '';
 
     for(let i = thisYear; i >= thisYear - 3; i--) {

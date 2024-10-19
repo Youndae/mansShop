@@ -14,21 +14,24 @@
 <br/>
 
 ## 사용기술
-* Spring 5.0.7
-* Maven
-* MyBatis
-* JSP
-* Spring Security
-* Lombok
-* Oracle 18c
-* Redis
-* Tomcat 9
-* CSS
-* JQuery
-* Ajax
-* 사용 IDE  :  IntelliJ
-* I'mport API
-* Daum 주소 API
+* BackEnd
+  * Spring 5.0.7
+  * JDK 8
+  * Maven
+  * SpringSecurity 5.0.6
+  * MyBatis
+  * Lombok
+  * Java Mail
+  * commons-io
+* FrontEnd
+  * JSP
+  * JQuery
+  * Ajax
+  * I'mport API
+  * Kakao 우편번호 서비스 API
+* DataBase
+  * Oracle 18c
+  * Redis(Docker)
 
 <br/>
 
@@ -37,44 +40,132 @@
 
 <br/>
 
-## 기능
-* 사용자
-  * 상품 목록 및 상세
-  * 상품 구매 및 장바구니
-  * 구매 상품 리뷰 작성
-  * 상품 문의
-  * 사용자 문의
-  * 정보 수정
-  * 상품 찜하기
-  * 주문내역
-* 관리자
-  * 상품 등록 및 수정, 관리
-  * 매출 내역
-  * 사용자 문의 관리
-  * 주문 상품 관리
-  * 회원 관리
-
-<br/>
-
 ## ERD
-<img src="./src/main/webapp/resources/README_image/ERD.jpg"/>
+<img src="./src/main/webapp/resources/README_image/mansShop_refact_ERD.jpg"/>
 
 <br/>
 
 ## 기능
+* 메인화면
+  * BEST, NEW, 상품 분류별 목록 출력
+  * 상품 리스트 페이징
+  * 상품명 검색
+  * 장바구니
+    * 장바구니 상품 수량 증감
+    * 장바구니 상품 선택 또는 전체 삭제
+    * 장바구니 상품 선택 또는 전체 구매
+  * 주문 조회(비 로그인시에만 출력. 로그인 시 마이페이지에서 조회 가능)
+* 상품 상세
+  * 상품 정보 출력
+  * 상품 옵션 선택
+  * 장바구니 담기
+  * 관심상품 등록
+  * 선택 상품 수량 증감
+  * 선택 상품 결제
+  * 상품 리뷰 리스트
+  * 상품 문의 목록 출력 및 작성
+* 마이페이지
+  * 주문 목록
+    * 배송완료 상품 리뷰 작성
+  * 관심 상품 목록
+  * 문의 내역
+    * 상품 문의 내역
+      * 문의 상세 정보
+      * 문의 삭제
+    * 회원 문의 내역
+      * 문의 작성
+      * 문의 상세 정보
+        * 답변 작성
+        * 문의 삭제
+  * 작성한 리뷰 목록
+    * 작성한 리뷰 상세 및 삭제
+    * 리뷰 수정
+  * 정보 수정
+* 로그인
+  * 회원가입
+  * 로그인
+  * 아이디 및 비밀번호 찾기
+  * 로그아웃
+* 관리자
+  * 상품관리
+    * 상품 목록
+    * 상품 추가
+    * 상품 상세 정보
+    * 상품 수정
+    * 재고 관리
+    * 할인 설정
+  * 주문 관리
+    * 미처리 주문 목록
+      * 주문 상세 정보
+      * 미처리 주문 확인 처리
+      * 미처리 주문 검색(받는사람, 아이디)
+    * 전체 주문 목록
+      * 주문 상세 정보
+      * 전체 주문 검색(받는사람, 아이디)
+  * 문의 관리
+    * 상품 문의
+      * 미답변 문의 목록
+      * 전체 문의 목록
+      * 문의 상세 정보
+      * 문의 답변 작성
+      * 문의 답변 처리
+      * 문의 검색(닉네임)
+    * 회원 문의
+      * 미답변 문의 목록
+      * 전체 문의 목록
+      * 문의 상세 정보
+      * 문의 답변 작성
+      * 문의 답변 처리
+      * 문의 검색(닉네임)
+    * 문의 카테고리 설정
+      * 카테고리 추가
+      * 카테고리 삭제
+    * 회원 관리
+      * 회원 목록
+      * 회원 상세 정보
+      * 회원 주문 목록 조회
+      * 회원 상품 문의 내역 조회
+      * 회원 문의 내역 조회
+      * 포인트 지급
+    * 매출 관리
+      * 기간별 매출
+        * 당해 월별 매출 목록
+        * 당해 매출, 판매량, 주문량 출력
+        * 월 매출 상세 정보
+        * 상품 분류별 월 매출 내역
+        * 일별 매출 내역
+        * 일별 주문 목록
+      * 상품별 매출
+        * 상품별 매출 정보 리스트
+        * 상품 매출 상세 정보
+        * 옵션별 매출 내역
+        * 검색(상품명)
+* 비회원
+  * 메인 화면 모든 기능
+  * 장바구니 사용(쿠키 활용)
+  * 상품 주문
+  * 주문 내역 조회(받는사람, 연락처)
 
 <br/>
+
+## 기능 정리
 
 ### 목차
-* 인증 / 인가
-* 사용자 - 장바구니
-* 사용자 - 주문 결제
-* 사용자 - 아이디 / 비밀번호 찾기
-* 관리자 - 상품 관리
+* 백엔드
+  * 인증 / 인가(SpringSecurity)
+  * Oracle / MyBatis 환경에서 INSERT ALL 문제 발생 및 해결
+  * Multipart/formData 요청에서의 문제
+  * 주문 처리
+* 프론트 엔드
+  * JSTL의 사용
 
 <br/>
 
-## 인증 / 인가
+## 백엔드
+
+<br />
+
+### 인증 / 인가
 <img src="./src/main/webapp/resources/README_image/security_classDiagram.jpg"/>
 
 인증 / 인가에 대한 처리는 Spring Security로 처리했으며, 4개의 클래스를 생성해 Custom하는 방법으로 구현했습니다.   
@@ -84,312 +175,424 @@ Spring Security 설정 방식은 xml 방식으로 처리했으며 암호화는 B
 
 <br/>
 
-## 사용자
-<img src="./src/main/webapp/resources/README_image/product.jpg"/>
+### Oracle / MyBatis 환경에서 INSERT ALL 문제 발생 및 해결
 
-메인 화면과 상품 상세 페이지입니다.   
-초기 화면으로는 판매량이 높은 순서대로 12개의 상품이 출력됩니다.   
-상품 상세 페이지에서는 옵션 선택과 장바구니, 구매, 찜하기, 구매자 리뷰, 상품 문의 기능을 사용할 수 있습니다.
+리펙토링을 진행하게 되면서 데이터베이스 테이블 설계 역시 변경하게 되었습니다.   
+이번 리펙토링은 Man's Shop Boot 버전과 동일한 기능을 제공하는 것으로 처리하는 것이 목표였고, 그에 따라 Boot 버전의 MySQL 설계를 그대로 가져와 사용했습니다.   
+그러면서 각 테이블의 기본키가 NUMBER 타입으로 많이 수정되게 되었는데 이로 인해 INSERT ALL 시 Oracle에서 Sequence가 제대로 동작하지 않는 문제가 발생했습니다.   
 
-그 외 사용자 파트로는 마이페이지가 있습니다.   
-마이페이지에서는 정보 수정, 주문 조회, 구매 상품의 리뷰 작성 및 수정 또는 삭제, 찜 목록, 문의 기능이 있습니다.   
+문제는 INSERT ALL 처리시 2개의 데이터를 삽입했다고 할 때 1, 2와 같이 처리되어야 함에도 1, 1과 같이 처리되는 것이 문제였습니다.   
+문제 원인을 확인해보니 Oracle에서는 INSERT ALL에 대해 Sequence를 매번 호출하는 것이 아닌 최초 호출된 Sequence를 재사용하기 때문에 발생하는 문제라는 것을 알 수 있었습니다.   
 
-<br/>
+이 문제를 해결하기 위한 방법으로는 3가지 방법을 찾을 수 있었습니다.   
+1. 애플리케이션 서비스 레이어에서 반복문을 통해 mapper를 여러번 호출하는 방법
+2. 애플리케이션 xml에서 PL/SQL을 직접 작성해 처리하는 방법
+3. 데이터베이스에 Procedure를 생성하고 xml에서 해당 Procedure를 호출해 처리하는 방법
 
-## 사용자 - 장바구니
+이 방법들 중 3번 방법을 통해 문제를 해결했습니다.   
+1번의 경우 적은 양의 데이터라면 문제가 큰 차이가 발생하지 않겠지만 반복문을 통해 여러번 mapper를 호출한다는 것은 계속해서 Connection 요청을 처리해야 한다는 단점이 있습니다.   
+이 단점은 Connection Overhead를 증가시켜 성능 저하로 이어질 수 있습니다.   
+개인 쇼핑몰이라는 규모의 애플리케이션에서 오버헤드로 인한 성능저하가 발생할 가능성은 낮다고 생각하지만 추후 확장 가능성을 생각한다면 좋은 선택지는 아니라고 생각했습니다.   
 
-<br/>
+2번 방법과 3번 방법은 유사한 처리과정을 거치지만 2번 방법의 경우 애플리케이션의 xml에 PL/SQL을 직접 작성함으로써 타입 변환 등에 대한 신경을 덜 써도 된다는 장점이 있습니다.   
+그러나 애플리케이션 환경에 종속적이게 된다는 문제와 PL/SQL 호출이 계속해서 중첩되면 오히려 1번 방법보다 더 큰 성능 저하를 발생시킬 수 있다는 문제가 있습니다.
+그런 반면, 3번 방법은 데이터베이스에 Procedure를 직접 정의하기 떄문에 종속성 문제를 해결할 수 있습니다. 그러나, 종속되지 않기 때문에 데이터 타입 변환을 처리해야 한다는 단점도 있습니다.   
+데이터 베이스에는 Procedure, Oracle 사용자 정의 타입을 정의해야 하고, 애플리케이션에서는 TypeHandler를 정의해야 하기 때문에 관리해야 할 부분들이 증가하게 됩니다.   
+이 증가하는 양은 INSERT ALL을 처리해야 하는 만큼 증가하기 때문에 애플리케이션 규모가 커질수록 더 많은 양이 증가할 가능성이 있습니다.
+그럼에도 3번 방법을 통해 문제를 해결하고자 결정한 이유는 애플리케이션에 종속되지 않도록 하기 위함과 관리 포인트가 증가하더라도 성능 저하의 우려가 적은 방법을 택하는 것이 최선이라고 생각했기 때문입니다.   
 
-<p style="color: gray">ProductServiceImpl</p>
+해당 방법을 통해 처리한 기능 중 하나는 상품 추가 시 여러개의 상품 옵션을 같이 처리해야 하는 부분입니다.   
+Product 테이블 데이터를 저장한 후 ProductOption 리스트에 대해 다중 Insert 처리가 필요했습니다.   
+그래서 Procedure 정의와 Oracle 사용자 정의 타입을 정의하고 TypeHandler를 정의해 처리했습니다.
+
+```sql
+CREATE OR REPLACE TYPE PRODUCT_OPTION_OBJ AS OBJECT (
+    productId VARCHAR2(200),
+    productSize VARCHAR2(20),
+    productColor VARCHAR2(50),
+    stock NUMBER,
+    isOpen NUMBER(1, 0)
+);
+
+CREATE OR REPLACE TYPE PRODUCT_OPTION_OBJ_LIST AS TABLE OF PRODUCT_OPTION_OBJ;
+
+CREATE OR REPLACE PROCEDURE insert_product_options (
+    product_options IN PRODUCT_OPTION_OBJ_LIST
+) IS
+BEGIN
+  FOR i IN 1..product_options.COUNT LOOP
+    INSERT INTO productOption (productId, productSize, productColor, stock, isOpen)
+    VALUES (product_options(i).productId
+        , product_options(i).productSize
+        , product_options(i).productColor
+        , product_options(i).stock
+        , product_options(i).isOpen
+    );
+  END LOOP;
+END;
+```
 
 ```java
-@Override
-@Transactional(rollbackFor = Exception.class)
-public String addCart(List<String> pOpNo
-                     , List<String> pCount
-                    , List<String> pPrice
-                    , Principal principal
-                    , HttpServletRequest request
-                    , HttpServletResponse response) {
-      CartDetail cartDetail;
-      Cart cart = cookieService.checkCookie(request, principal, response, true);
-      String cartNo = productMapper.checkCartNo(cart);
-      cart.setCartNo(cartNo);
-      List<CartDetail> addCartDetailList = new ArrayList<>();
-
-      //장바구니에 회원 혹은 쿠키에 해당하는 데이터가 있다면
-      //userCartPOpNoList에 해당 데이터의 pOpNo 리스트를 조회해 담아주고
-      //추가할 상품의 pOpNo와 비교해 수량 증감 || 상품 추가 여부를 판단한다.
-      if(cartNo != null){
-          List<CartDetail> updateCartDetailList = new ArrayList<>();
-          List<String> userCartPOpNoList = productMapper.checkDetailOption(cartNo);
-
-          for(int i = 0; i < pOpNo.size(); i++) {
-              cartDetail = buildCartDetail(cartNo, pOpNo.get(i), pCount.get(i), pPrice.get(i));
-
-              //detail에 같은 옵션 상품이 존재한다면
-              if(userCartPOpNoList.contains(pOpNo.get(i)))
-                  updateCartDetailList.add(cartDetail);
-              else //detail에 같은 옵션 상품이 존재하지 않는다면 detail 테이블에 데이터 추가.
-                  addCartDetailList.add(cartDetail);
+//TypeHandler
+public class ProductOptionTypeHandler implements TypeHandler<List<ProductOption>> {
+    @Override
+    public void setParameter(PreparedStatement ps
+                              , int i
+                              , List<ProductOption> parameter
+                              , JdbcType jdbcType) throws SQLException {
+        if(parameter != null && !parameter.isEmpty()){
+          OracleConnection oracleConn = ps.getConnection().unwrap(OracleConnection.class);
+          OracleStruct[] structArray = new OracleStruct[parameter.size()];
+  
+          for(int idx = 0; idx < parameter.size(); idx++) {
+            ProductOption option = parameter.get(idx);
+  
+            Object[] optionAttributes = {
+                    option.getProductId(),
+                    option.getProductSize(),
+                    option.getProductColor(),
+                    option.getStock(),
+                    option.isOpen()
+            };
+  
+            OracleStruct struct = (OracleStruct) oracleConn.createStruct("PRODUCT_OPTION_OBJ", optionAttributes);
+            structArray[idx] = struct;
           }
+  
+          OracleArray array = (OracleArray) oracleConn.createOracleArray("PRODUCT_OPTION_OBJ_LIST", structArray);
+          ps.setArray(i, array);
+        }else
+          ps.setNull(i, Types.ARRAY);
+    }
 
-          if(updateCartDetailList.size() != 0)
-              productMapper.updateCartDetail(updateCartDetailList);
+    @Override
+    public List<ProductOption> getResult(ResultSet rs, String columnName) throws SQLException {
+      return null;
+    }
+  
+    @Override
+    public List<ProductOption> getResult(ResultSet rs, int columnIndex) throws SQLException {
+      return null;
+    }
+  
+    @Override
+    public List<ProductOption> getResult(CallableStatement cs, int columnIndex) throws SQLException {
+      return null;
+    }
+}
 
-          if(addCartDetailList.size() != 0)
-              productMapper.addCartDetail(addCartDetailList);
-          //cart 테이블 데이터의 updatedAt(수정일자) 수정.
-          productMapper.updateCart(cart);
-      }else{ //장바구니 테이블에 회원 혹은 쿠키에 해당하는 데이터가 없다면
-          //cart insert
-          productMapper.addCart(cart);
+//AdminServiceImpl
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class AdminServiceImpl implements AdminService {
+    private final ProductOptionMapper productOptionMapper;
+    //...
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String insertProduct(AdminProductImageDTO imageDTO, AdminProductPatchDTO dto) {
+        //...
+        List<ProductOption> options = dto.getNewOptions().stream()
+                                          .map(option -> option.toEntity(productEntity.getId()))
+                                          .collect(Collectors.toList());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("options", options);
+        productOptionMapper.saveOptions(params);
+    }
+}
+```
+```xml
+<!-- ProductOptionMapper.xml -->
+<insert id="saveOptions" parameterType="map">
+        {CALL insert_product_options(
+        #{options, jdbcType=ARRAY, jdbcTypeName="PRODUCT_OPTION_OBJ_LIST"
+                , typeHandler=org.shop.mapper.typeHandler.ProductOptionTypeHandler}
+        )}
+</insert>
+```
 
-          for(int i = 0; i < pOpNo.size(); i++) {
-              cartDetail = buildCartDetail(cart.getCartNo(), pOpNo.get(i), pCount.get(i), pPrice.get(i));
-              addCartDetailList.add(cartDetail);
-          }
-          //detail insert
-          productMapper.addCartDetail(addCartDetailList);
+최근에는 접하는 강의에서도 그렇고 개발 블로그들을 둘러보더라도 테이블 기본키에 대해 정수형 데이터를 많이 사용하는 것을 볼 수 있었습니다.   
+이유를 찾아보니 정수형 데이터를 사용하는 것이 문자열 데이터를 사용하는 것 보다 인덱싱이 빠르기 때문이라는 것을 알 수 있었습니다.   
+프로젝트를 리펙토링하면서 더미데이터를 늘려보기도 하며 느낀점으로는 인덱싱 성능이 기능 처리 속도와 비례한다는 점을 느낄 수 있었기 때문에 Oracle에서도 Sequence를 활용한 처리가 많아질 것이라고 생각합니다.   
+기능을 바로 처리해야 하는지 아닌지에 따라서도 달라질 것이고 예측되는 데이터양에 따라서도 선택지가 달라질 수는 있겠지만 최근 IT 업계내에서 많이 강조되고 있는 대용량 데이터 환경을 감안한다면 꼭 해봐야 하는 문제 해결 방법이었다고 느꼈습니다.   
+
+Procedure를 정의하고 처리하는 방법의 테스트 및 기능 구현으로는 클래스 리스트만을 매개변수로 넘겨 처리하는 방법과 클래스 리스트와 단일 객체 데이터를 넘기는 방법, 단일 객체 리스트들만 여러개를 넘겨 처리하는 방법까지 3가지 방법으로 테스트해보고 구현해봤습니다.   
+이 문제 해결 방법에 대해서는 블로그에 좀 더 상세하게 기록해두었습니다.
+
+https://myyoun.tistory.com/240
+
+<br/>
+
+### Multipart/formData 요청에서의 문제
+
+리펙토링을 수행하며 Multipart/formData 방식의 요청에 대한 문제가 발생했습니다.   
+해당 문제가 최초 발생한 부분은 관리자 파트에서 상품의 수정 부분이었습니다.   
+상품 수정 기능에서는 상품의 데이터, MultipartFile 타입의 대표 썸네일, String 타입의 삭제할 대표 썸네일명, MultipartFile 리스트 타입의 썸네일과 정보 이미지, String 리스트 타입의 썸네일과 정보이미지의 삭제 파일명, 옵션 리스트가 요청 데이터로 처리됩니다.   
+
+리펙토링 이전의 컨트롤러에서는 해당 요청에 대해 아래 코드와 같이 처리했었습니다.
+
+```java
+//Controller
+@PatchMapping("/product")
+@ResponseBody
+public String patchProduct(ProductModifyDTO dto
+                        , @RequestParam(value = "firstThumbFile", required = false) MultipartFile firstThumbnail
+                        , @RequestParam(value = "deleteFirstThumbnail", required = false) String deleteFirstThumbnail
+                        , @RequestParam(value = "thumbnails", required = false) List<MultipartFile> thumbnails
+                        , @RequestParam(value = "deleteThumbnails", required = false) List<String> deleteThumbnails
+                        , @RequestParam(value = "infoImages", required = false) List<MultipartFile> infoImages
+                        , @RequestParam(value = "deleteInfoImages", required = false) List<String> deleteInfoImages) {
+    
+}
+```
+
+1.0 버전 당시에는 옵션도 한번에 하나만 추가할 수 있었기 때문에 옵션 리스트도 따로 받지 않았고 옵션 정보와 상품 정보는 ProductModifyDTO로 받을 수 있었습니다.   
+그리고 각 파일에 대한 데이터는 모두 @RequestParam을 통해 받도록 처리했습니다.    
+
+이후 Boot 버전을 진행해보면서 이런 구조의 요청에서 바로 DTO에 매핑하면 더 깔끔하고 관리도 수월하지 않을까 라는 생각이 들어 개선하게 되었습니다.   
+최종적으로 Boot 버전에서는 DTO에 받아 처리하도록 할 수 있었습니다.   
+그래서 이번 리펙토링을 통해 이 프로젝트에서도 동일하게 DTO로 매핑하도록 처리하고자 했으나 오류가 발생했습니다.   
+다른 데이터는 모두 정상적으로 매핑되는 반면 MultipartFile 타입의 데이터들은 정상적으로 매핑되지 않는 문제였습니다.
+
+최초 구현 시 처리 코드는 아래와 같았습니다.
+```java
+@PatchMapping(value = "/product/{productId}", consume = {MediaType.MULTIPART_FORM_DATA_VALUE})
+public ResponseEntity<String> patchProduct(@PathVariable("productId") String productId
+                                    , @ModelAttribute AdminProductPatchDTO patchDTO
+                                    , @ModelAttribute AdminProductImageDTO imageDTO
+                                    , @RequestParam(value = "deleteOptionIds", required = false) List<Long> deleteOptionIds) {
+    
+}
+```
+
+AdminProductPatchDTO에 상품 정보와 AdminProductOptionDTO 리스트가 필드로 존재하고, AdminProductImageDTO에는 각 파일에 대한 필드와 삭제 리스트에 대한 필드가 존재합니다.   
+그러나 AdminProductImageDTO에 정상적으로 매핑되지 않는 것을 확인했고 원인을 파악하고자 여러 방법으로 테스트를 했으나 문제를 해결할 수 없었습니다.   
+그래서 다시 파일들을 @RequestParam으로 받도록 처리하니 문제가 해결되는 것을 알 수 있었습니다.   
+
+해당 문제가 발생한 이유를 알아보니 Spring Boot에서는 @ModelAttribute를 통해 MultipartFile을 DTO에 매핑할 수 있으나, Spring MVC 환경에서는 정상적으로 매핑하지 못한다는 것을 알 수 있었습니다.   
+Spring Boot는 Jackson과 통합되어 JSON 데이터 처리에 Jackson Library를 사용하기 때문에 DTO와 JSON의 변환이 더 매끄럽고, Spring Boot에서의 @ModelAttribute는 HTTP 요청을 처리할 때 파일 업로드와 다른 데이터 처리를 통합적으로 다룰 수 있도록 지원해준다는 것을 알게 되었습니다.   
+반면, Spring MVC 환경에서는 Jackson 통합이 자동으로 이루어지지도 않고, HTTP 요청 처리에 있어서도 자동화 지원이 부족하기 떄문에 매핑이 안된다는 이유였습니다.   
+
+그래서 DTO 구조를 조금 변경해 문제를 해결했습니다.   
+AdminProductImageDTO는 각 파일에 대한 필드만 담도록 수정하고, AdminProductDeleteImageDTO라는 DTO를 새로 만들어 삭제 파일명들에 대한 필드만 담도록 처리했습니다.   
+각 파일에 대해서는 @RequestParam으로 받고 컨트롤러에서 서비스를 호출하기 전 AdminProductImageDTO에 담아 서비스를 호출하도록 처리해 문제를 해결할 수 있었습니다.
+
+```java
+@PatchMapping(value = "/product/{productId}", consume = {MediaType.MULTIPART_FORM_DATA_VALUE})
+public ResponseEntity<String> patchProduct(@PathVariable("productId") String productId
+                                    , @RequestParam(value = "deleteOptionIds", required = false) List<Long> deleteOptionIds
+                                    , @RequestParam(value = "firstThumbFile", required = false) MultipartFile firstThumbnail
+                                    , @RequestParam(value = "thumbnails", required = false) List<MultipartFile> thumbnails
+                                    , @RequestParam(value = "infoImages", required = false) List<MultipartFile> infoImages
+                                    , @ModelAttribute AdminProductPatchDTO patchDTO
+                                    , @ModelAttribute AdminProductDeleteImageDTO deleteImageDTO) {
+    AdminProductImageDTO imageDTO = AdminProductImageDTO.builder()
+                                                        .firstThumbnail(firstThumbnail)
+                                                        .thumbnails(thumbnails)
+                                                        .infoImages(infoImages)
+                                                        .build();
+    
+    String result = adminService.patchProduct(productId, deleteOptionIds, imageDTO, deleteImageDTO, patchDTO);
+    
+    return new ResponseEntity<>(result, HttpStatus.OK);
+}
+```
+
+이번 문제 해결로 인해 Spring Boot가 제공하는 설정에 대한 편의성에 대해 좀 더 알 수 있는 기회가 되었습니다.
+
+<br />
+
+
+### 주문 처리
+
+주문 페이지 접근이 가능한 페이지는 장바구니와 상품 상세 페이지입니다.   
+각 페이지에서 선택된 데이터를 서버에 전달하고 서버에서는 해당 데이터들을 파싱한 뒤 주문 페이지를 호출하는 구조입니다.   
+여기서 Get 요청으로 처리하는 경우 데이터가 많아 오류가 발생하는 문제가 있었습니다.   
+또한, 데이터들이 쿼리 파라미터로 전달된다는 문제도 있었기 때문에 다른 방법으로 문제를 해결하고자 했습니다.   
+
+그래서 해당 기능을 Post 요청으로 처리하고 데이터를 처리한 뒤 HttpSession에 해당 데이터들을 담는 방법을 택했습니다.   
+그리고 응답을 받은 Ajax에서는 처리 응답을 받으면 Get 요청을 보내게 되고 해당 Get 요청 메소드에서는 HttpSession에 저장된 데이터를 꺼내 그대로 Model에 담도록 처리했습니다.   
+
+```javascript
+//cart.js
+//선택 상품 주문 버튼 onclick 함수
+function selectOrderCart() {
+    $.ajax({
+      url: '/order/cart',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(checkArr),
+      beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+      },
+      success: function (result) {
+          if(result === 'SUCCESS')
+              location.href = '/order/cart';
+          else 
+              alert('오류가 발생했습니다.');
       }
-      return ResultProperties.SUCCESS;
-}
-
-public CartDetail buildCartDetail(String cartNo, String pOpNo, String pCount, String pPrice){
-      return CartDetail.builder()
-              .cartNo(cartNo)
-              .cdNo(
-                      new SimpleDateFormat("yyyyMMddHHmmss")
-                                      .format(System.currentTimeMillis()
-                              ) + pOpNo + pCount
-              )
-              .pOpNo(pOpNo)
-              .cCount(Integer.parseInt(pCount))
-              .cPrice(Long.parseLong(pPrice))
-              .build();
+    })
 }
 ```
-
-장바구니 기능은 회원만 사용할 수 있도록 처리했다가 리팩토링을 진행하면서 비회원도 사용할 수 있도록 수정하게 되었습니다.   
-비회원의 장바구니 데이터 관리를 위해 cookie를 사용했습니다.   
-비회원 장바구니 데이터의 userId는 Anonymous로 처리하고, cno라는 컬럼에 쿠키값을 넣어 해당 쿠키 데이터를 조회하는 것으로 처리할 수 있도록 구현했습니다.
-
-이 처리를 위해 장바구니 담기 기능은 CookieService의 checkCookie 메소드를 먼저 호출합니다.
-해당 메소드에서는 회원인 경우 사용자 아이디를 담아 반환하고, 비회원인 경우에는 Cookie값을 담아 반환합니다.   
-그리고 비회원인데 첫 상품을 담는 것이라 Cookie가 존재하지 않는다면 Cookie를 생성한 뒤 값을 담아 반환하도록 했습니다.   
-
-비회원의 쿠키 만료기간은 7일로 설정했습니다.   
-데이터베이스의 7일이 지난 비회원의 장바구니 데이터의 처리를 위해 Scheduler를 통해 매일 새벽 3시에 7일이 지난 데이터를 삭제하는 프로시저를 호출하도록 처리해 데이터를 관리하도록 했습니다.
-
-<br/>
-
-## 사용자 - 주문 결제
-
-<img src="./src/main/webapp/resources/README_image/order.jpg">
-
-<br/>
-
-결제 페이지에서는 두개의 API를 사용했습니다.    
-Kakao 우편번호 서비스 API를 통해 주소를 처리하도록 하고, 결제 API는 I'mport API를 사용해 처리했습니다.   
-
-<br/>
-
-<p style="color: gray">OrderServiceImpl</p>
-
 ```java
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String orderPayment(ProductOrderDTO dto
-                            , List<String> cdNo
-                            , List<String> pOpNo
-                            , List<String> orderCount
-                            , List<String> odPrice
-                            , List<String> pno
-                            , String oType
-                            , HttpServletRequest request
-                            , HttpServletResponse response
-                            , Principal principal) {
-        String id = principal == null ? "Anonymous" : principal.getName();
-
-        ProductOrder productOrder = ProductOrder.builder()
-                                                .userId(id)
-                                                .addr(dto.getAddr())
-                                                .orderPhone(dto.getOrderPhone())
-                                                .orderMemo(dto.getOrderMemo())
-                                                .orderPrice(dto.getOrderPrice())
-                                                .orderPayment(dto.getOrderPayment())
-                                                .recipient(dto.getRecipient())
-                                                .build();
-
-        long totalCount = 0;
-        List<ProductOrderDetail> orderDetailList = new ArrayList<>();
-
-        for(int i = 0; i < pOpNo.size(); i++){
-            orderDetailList.add(ProductOrderDetail.builder()
-                            .odNo(productOrder.getOrderNo() + pOpNo.get(i))
-                            .orderNo(productOrder.getOrderNo())
-                            .pOpNo(pOpNo.get(i))
-                            .orderCount(Integer.parseInt(orderCount.get(i)))
-                            .odPrice(Integer.parseInt(odPrice.get(i)))
-                            .pno(pno.get(i))
-                            .build());
-
-            totalCount = totalCount + Long.parseLong(orderCount.get(i));
-        }
-
-        orderMapper.orderPayment(productOrder);
-        orderMapper.orderPaymentOp(orderDetailList);
-        orderMapper.productSales(orderDetailList);
-        orderMapper.productOpSales(orderDetailList);
-        //매출 데이터 처리
-        sales(productOrder.getOrderPrice(), totalCount);
-
-        //oType != "d" 라면 장바구니를 통한 구매이기 때문에 장바구니에서 해당 데이터를 삭제
-        if(oType != "d")
-            cartService.deleteCartCheck(cdNo, principal, request, response);
-
-        return ResultProperties.SUCCESS;
+@RestController
+@RequestMapping("/order")
+@Slf4j
+@RequiredArgsConstructor
+public class OrderRestController {
+    private final OrderService orderService;
+    private final CookieService cookieService;
+    
+    @PostMapping("/cart")
+    public ResponseEntity<String> orderCart(@RequestBody List<Long> cartDetailIds
+                                            , Principal principal
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response
+                                            , HttpSession session) {
+        CartMemberDTO cartMemberDTO = cookieService.createCartMemberDTOToCartDetail(principal, request, response);
+        OrderProductResponseDTO dto = orderService.orderCart(cartDetailIds, cartMemberDTO);
+        
+        session.setAttribute("orderResponse", dto);
+        
+        return new ResponseEntity<>(Result.SUCCESS.getResultKey(), HttpStatus.OK);
     }
+}
 
-    public void sales(long orderPrice, long totalCount) {
-        String now = new SimpleDateFormat("yyyy/MM").format(System.currentTimeMillis()).toString();
-        int salesTermCount = orderMapper.maxSalesTerm(now);
 
-        if(orderPrice < 100000)
-            orderPrice -= 2500;
-
-        Sales sales = Sales.builder()
-                            .salesOrders(totalCount)
-                            .salesSum(orderPrice)
-                            .salesTerm(now)
-                            .build();
-
-        if(salesTermCount != 1)
-            orderMapper.addTotalSales(sales);
-        else
-            orderMapper.updateTotalSales(sales);
-  }
+@Controller
+@RequestMapping("/order")
+@Slf4j
+@RequiredArgsConstructor
+public class OrderController {
+    @GetMapping("/cart")
+    public String orderCart(HttpSession session, Model model) {
+        OrderProductResponseDTO dto = (OrderProductResponseDTO) session.getAttribute("orderResponse");
+        model.addAttribute("order", dto);
+        
+        return "order/orderPayment";
+    }
+}
 ```
 
-비회원의 구매는 장바구니때와 마찬가지로 userId에 Anonymous라는 값을 갖도록 처리했습니다.    
-처리 과정은 주문 테이블에 저장 -> 주문 상세 테이블에 저장 -> 매출 테이블에 저장 또는 수정 -> 장바구니를 통한 구매라면 장바구니에서 결제한 상품의 삭제 순서로 처리합니다.   
-장바구니를 통한 구매인지 아닌지를 확인하기 위해 결제 페이지 접근 시 요청을 보낸 페이지에 따라 oType을 같이 전달하도록 처리했습니다.   
-매출 관련 데이터는 실시간으로 처리할 필요가 없어 추후 batch를 통해 처리하는 방법으로 개선하고자 계획하고 있습니다.
+위 코드는 장바구니 페이지에서 선택 상품 주문 버튼 클릭시 처리되는 코드입니다.   
+페이지의 check-box를 선택할때마다 JQuery에서 이벤트를 감지해 checkArr 전역 변수에 cartDetailId라는 장바구니 상세 테이블 id 값을 배열로 저장합니다.   
+버튼 클릭 이벤트 발생 시 해당 checkArr 데이터를 POST 요청으로 담아 보내게 되며 컨트롤러에서는 cartDetailIds 리스트를 통해 해당 id 값을 갖는 데이터들을 조회합니다.   
+이후 session에 orderResponse로 담아 SUCCESS라는 응답을 반환합니다.   
+'SUCCESS' 응답을 받은 ajax는 get 요청을 보내게 되고 해당 요청을 받은 메소드에서는 session에 저장된 orderResonse를 꺼내 주문 페이지로 연결할 수 있도록 처리했습니다.
+장바구니가 아닌 상품의 경우 product 라는 경로로 처리하도록 했으며, 상품 옵션 테이블 id 인 optionIds 데이터를 담아 처리합니다.   
 
-<br/>
+리펙토링 이전에는 @RestController를 따로 분리하지 않았기 떄문에 @Controller로 처리하고 있었고, Post 요청으로 데이터를 받아 페이지를 반환하는 형태였습니다.   
+또한, 클라이언트에서 보내는 요청 데이터 역시 지금처럼 id 리스트를 보내는 것이 아닌 클라이언트에서 모든 데이터를 파싱한 뒤 보내 컨트롤러에서는 Map으로 받아 클래스에 매핑한 뒤 반환하는 과정이었습니다.   
 
-## 사용자 - 아이디 / 비밀번호 찾기
-<img src="./src/main/webapp/resources/README_image/searchPw_sequence.jpg">
+이전에 처리할때부터 POST 요청에 대해 페이지를 반환하는 과정이 어색하다고 생각하고 있었고, 이 문제를 개선하고자 고민해왔었는데 이번에 session을 통해 문제를 해결할 수 있었습니다.
 
-아이디 찾기 기능은 email 또는 휴대폰 번호 중 하나를 택해 사용자 이름과 같이 요청하면 해당하는 정보를 조회해 반환하도록 처리했습니다.   
-비밀번호 찾기의 경우 아이디, 사용자 이름, email을 담아 요청하면 서버에서 일치하는 정보가 있는지 체크한 뒤 6자리의 인증번호를 생성합니다.   
-인증번호는 생성된 뒤 redis에 'userId : 인증번호' 구조로 저장한 뒤 사용자 email로 전송됩니다.   
-사용자가 인증번호를 입력하게 되면 서버에서는 아이디와 인증번호를 같이 전달받고 redis 데이터와 비교한 뒤 일치한다면 비밀번호 변경 페이지에 접근하게 됩니다.   
-비밀번호 변경 요청에서도 인증번호를 담고 있다가 같이 요청하도록 해 비정상적인 비밀번호 변경 페이지의 접근에서 요청이 발생하더라도 대응할 수 있도록 처리했습니다.
+<br />
 
-메일 전송은 JavaMailSender와 Gmail의 IMAP 설정으로 처리했습니다.   
-Redis는 RedisTemplate을 통해 처리했으며, 저장되는 인증번호 데이터의 만료 시간은 6분으로 처리했습니다.   
-Redis에 저장된 인증번호의 삭제 시점은 만료 시간이 종료되거나 비밀번호 변경 요청이 발생하는 시점에 처리됩니다.   
+## 프론트 엔드
 
-비밀번호 변경 페이지 접근에 대한 처리는 고민이 많았습니다.   
-인증번호와 사용자 아이디를 변경 페이지에서 갖고 있도록 하기 위해 Get 요청 시 전달해야 할 필요가 있었는데 그럼 URL에 노출된다는 문제가 있었습니다.   
-문제를 해결하기 위해 Post 요청으로 처리하는 것도 고려했으나, Post 요청의 개념에서 너무 벗어나는 것 아닌가 라는 생각에 Get 요청에서 해결하는 방법을 찾았습니다.   
-이 문제는 변경 페이지에서 script 태그를 통해 URL 파라미터를 출력하지 않도록 하는 방법으로 해결할 수 있었습니다.
+### JSTL 사용
 
-<br/>
+이번 리펙토링을 통해 JSTL을 적극적으로 사용해 처리하는 방법으로 개선하게 되었습니다.   
+기존에는 파싱에 필요한 데이터들에 대해 JQuery에서 getJSON으로 추가 요청을 보내고 응답 받은 데이터를 파싱 한 뒤 append로 추가해주는 형태로 구현했었습니다.   
 
-## 관리자
-<img src="./src/main/webapp/resources/README_image/admin.jpg">
+이번 리펙토링에서는 페이지에 필요한 데이터는 컨트롤러에서 페이지 반환 시 모두 담아 보내도록 개선했습니다.   
+최초 로딩 시 모두 출력되어야 하는 데이터들이고, JSTL로 제어가 가능한데 JQuery에서 로딩 이후 getJSON을 통해 추가 요청으로 처리하는게 비효율적이라고 생각했기 때문입니다.   
+주로 c, fmt 태그를 가장 많이 사용했고, sec 태그는 간간히 추가해서 사용했습니다.
 
-관리자 페이지에는 상품관리, 주문 관리, 회원 문의 관리, 상품 문의 관리, 회원 관리, 매출 관리 기능이 있습니다.   
-모두 리스트 데이터로 테이블 구조로 구성되어있습니다.   
-상품 관리에서는 상품의 추가 및 수정, 옵션 추가, 상품 및 옵션 노출 여부를 관리할 수 있습니다.   
-주문 목록에서는 모든 회원 및 비회원의 주문 내역을 확인할 수 있으며 관리자가 주문내역 확인 후 배송 처리 버튼을 누를 시 '배송중'으로 상태를 변경할 수 있도록 처리했습니다.   
-문의사항과 상품 문의는 관리자가 확인 후 바로 답변을 댓글 형태로 작성할 수 있도록 처리했으며, 회원 목록에서는 회원 정보와 주문내역을 확인 할 수 있도록 처리했습니다.   
-매출관리는 상품별, 기간별 매출을 확인할 수 있도록 구현했습니다.   
+JSTL을 사용한 방법으로 가장 많이 개선한 페이지는 상품 상세 페이지 입니다.   
+상품 상세페이지는 여러 테이블의 데이터들이 필요합니다.   
+상품 데이터, 상품 옵션 리스트, 상품 정보 이미지 리스트, 리뷰 리스트, 문의 리스트 등이 필요하기 때문에 제어해야 할 데이터가 많았습니다.   
+이전 버전에서는 상품 데이터만 컨트롤러에서 전달하고 썸네일, 정보 이미지, 옵션, 리뷰, 문의 리스트는 페이지 로딩 후 JQuery에서 getJSON을 통해 받아오도록 처리했습니다.   
+그러나 이번 버전에서는 모든 데이터를 컨트롤러에서 최초 전달하도록 하고, 페이징 기능이 들어간느 리뷰와 문의 리스트에 대해서만 페이징 버튼 이벤트에 따라 getJSON으로 처리하도록 개선했습니다.   
 
-<br/>
+productDetail.jsp 전체 코드는 아래 링크에서 확인하실 수 있습니다.
+https://github.com/Youndae/mansShop/blob/master/src/main/webapp/WEB-INF/views/product/productDetail.jsp
 
-## 관리자 - 상품 관리
+해당 페이지에서 개선된 기능 중 옵션에 대해 이전 버전에서는 아래와 같이 처리했습니다.
 
-<p style="color: gray">AdminServiceImpl</p>
+```html
+<!-- 옵션 select-box -->
+<div class="product-detail-select mgt-4">
+  <label>옵션</label>
+  <select id="option-select-box">
+    
+  </select>
+</div>
+```
+```javascript
+$(function() {
+    const pno = $("#pno").val();
+    $.getJSON('/product/option', {pno: pno}, function (arr) {
+        let str = "<option value=\"default\">-----</option>";
 
-```java
-    @Value("#{filePath['file.path']}")
-    private String filePath;
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public String modifyProduct(ProductModifyDTO dto
-                                , MultipartFile firstThumb
-                                , List<MultipartFile> thumb
-                                , List<MultipartFile> infoImg
-                                , String delFirstThumb
-                                , List<String> delThumb
-                                , List<String> delInfoImg) {
-        //이미지 순서 번호
-        int step = adminMapper.maxStep(dto.getPno());
-        //상품 재고
-        long stock = dto.getPStock();
-
-        //상품 테이블 수정
-        adminMapper.modifyProduct(Product.builder()
-                                            .pno(dto.getPno())
-                                            .pName(dto.getPName())
-                                            .pClassification(dto.getPClassification())
-                                            .pPrice(dto.getPPrice())
-                                            .firstThumbnail(imgProc(firstThumb))
-                                            .build()
-                                        );
-        //상품 옵션 테이블 수정
-        adminMapper.modifyProductOp(ProductOp.builder()
-                                            .pOpNo(dto.getPOpNo())
-                                            .pSize(dto.getPSize())
-                                            .pColor(dto.getPColor())
-                                            .pStock(stock)
-                                            .build()
-                                    );
-
-        //삭제이미지 DB 데이터 삭제 및 파일 삭제
-        //firstThumbnail 파일 삭제
-        deleteFiles(delFirstThumb);
-        //썸네일 파일 삭제
-        if(!delThumb.isEmpty()){
-            for(String imageName : delThumb)
-                deleteFiles(imageName);
-
-            adminMapper.deleteThumb(delThumb);
-        }
-
-        //정보 이미지 파일 삭제
-        if(!delInfoImg.isEmpty()){
-            for(String imageName : delInfoImg)
-                deleteFiles(imageName);
-
-            adminMapper.deleteInfoImg(delInfoImg);
-        }
-
-        //상품 썸네일, 정보이미지 파일 저장 및 데이터 리스트화 및 데이터 저장
-        if(!thumb.isEmpty()) {
-            List<ProductThumbnail> addProductThumbList = saveProductThumbnail(dto.getPno(), thumb);
-            adminMapper.addProductThumbnail(addProductThumbList);
-        }
-        if(!infoImg.isEmpty()) {
-            List<ProductImg> addProductImageList = saveProductInfoImage(dto.getPno(), step, infoImg);
-            adminMapper.addProductInfo(addProductImageList);
-        }
-
-        return ResultProperties.SUCCESS;
-    }
+        $(arr).each(function (i, op){
+            let optionStr = '';
+            const sizeOption = "<option value=\"" + op.popNo + "/" + op.psize + "\">" +
+                    "사이즈 : " + op.psize + "</option>";
+            const colorOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "\">" +
+                    "컬러 : " + op.pcolor + "</option>";
+            const defaultOption = "<option value=\"" + op.popNo + "\"></option>";
+            const colorSizeOption = "<option value=\"" + op.popNo + "/" + op.pcolor + "/" + op.psize + "\">" +
+                    "컬러 : " + op.pcolor + "     사이즈 : " + op.psize + "</option>";
+  
+            if(op.pcolor == null && op.psize != null)
+              optionStr = sizeOption;
+            else if(op.pcolor != null && op.psize == null)
+              optionStr = colorOption;
+            else if(op.pcolor != null && op.psize != null)
+              optionStr = colorSizeOption;
+            else
+              optionStr = defaultOption;
+  
+            str += optionStr;
+        })
+        $("#option-select-box").append(str);
+    })
+})
 ```
 
-상품 관리 중 수정 코드입니다.   
-상품 관련 테이블은 여러가지 테이블로 분리되어있습니다.   
-가장 기본적으로 상품 정보를 담고 있는 Product, 상품 옵션을 담고 있는 ProductOp, 상품 썸네일 정보를 담고 있는 ProductThumbnail, 상품 정보 이미지에 대한 데이터를 담고 있는 ProductImg로 분리했습니다.      
-Product 테이블을 중심으로 뻗어있기 때문에 상품 정보를 먼저 처리한 뒤 옵션 데이터를 수정하고 이후 파일에 대한 처리를 수행합니다.   
-이미지 파일의 처리는 imgProc이라는 메소드로 분리해 처리했으며 해당 메소드에서는 파일 저장만을 처리합니다.   
-대표 썸네일을 제외한 다른 이미지들에 대해서는 여러장이 존재할 수 있기 때문에 저장된 파일에 대한 데이터를 리스트에 담아 동적 쿼리로 처리합니다.   
-파일 경로에 대해서는 file.properties로 properties 파일을 생성해 관리합니다.
+이 방식과 유사한 방법으로 썸네일, 정보 이미지, 리뷰, 문의 리스트까지 처리했습니다.   
+그러다보니 상세페이지 요청이 한번 발생하고 나면 추가적으로 5번의 요청이 더 발생하는 구조였습니다.   
+최초 페이지 로딩 시 필요한 데이터들인데 너무 많은 횟수의 요청이 발생하고, 이 데이터들의 제어는 JSTL로 충분히 처리할 수 있기 때문에 전체 데이터를 넘겨주는 방식으로 개선했습니다.
+
+```html
+<div class="product-detail-select mgt-4">
+  <labal>옵션</labal>
+  <select id="product-detail-option-select-box">
+        <option value="default" selected hidden>옵션을 선택해주세요</option>
+        <c:forEach items="${product.options}" var="option">
+          <c:set var="result" value=""/>
+          <c:set var="optionValue" value="${option.optionId}"/>
+          <c:if test="${options.PSize ne null}">
+            <c:set var="result" value="사이즈 : ${option.PSize}"/>
+            <c:set var="optionValue" value="${optionValue}/${option.PSize}"/>
+          </c:if>
+          <c:if test="${option.color ne null}">
+            <c:if test="${not empty result}">
+              <c:set var="result" value="${result}, "/>
+            </c:if>
+            <c:set var="optionValue" value="${optionValue}/${option.color}"/>
+            <c:set var="result" value="${result}컬러: ${option.color}"/>
+          </c:if>
+          
+          <c:choose>
+            <c:when test="${option.stock == 0}">
+              <option value="${optionValue}" disabled>${result}</option>
+            </c:when>
+            <c:otherwise>
+              <option value="${optionValue}">${result}</option>
+            </c:otherwise>
+          </c:choose>
+        </c:forEach>
+  </select>
+</div>
+```
+
+금액과 같은 데이터에 대해서는 fmt:formatNumber 를 통해 3자리 단위 ' , '를 찍을 수 있도록 처리했습니다.
+
+<br />
+
 
 ## 느낀점과 고민중인 부분
 DTO, Entity, VO에 대해 다시 알아보며 VO 하나만으로 작성되어 있던 도메인 모델을 개선하며 DTO, Entity의 역할을 명확하게 하고 이해할 수 있는 기회였습니다.   

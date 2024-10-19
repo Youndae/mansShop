@@ -50,6 +50,13 @@
         OFFSET #{cri.offset} ROWS FETCH NEXT #{cri.amount} ROWS ONLY
     </select>
 
+    <insert id="saveEntity" parameterType="java.util.List">
+        <foreach collection="list" index="index" item="board" open="DECLARE BEGIN" separator=";" close="; END;">
+            INSERT INTO board (title, content, userId)
+            VALUES(#{board.title}, #{board.content}, #{board.userId})
+        </foreach>
+    </insert>
+
     <sql id="productSearchCondition">
         <trim prefix="WHERE ">
             <if test="cri.keyword != null">p.productName LIKE '%'||#{cri.keyword}||'%'</if>

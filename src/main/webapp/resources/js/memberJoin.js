@@ -67,8 +67,6 @@ function updateBirthDayOptions() {
 }
 
 function handleIdCheck() {
-    //ajax.post
-    //return VALID, FAIL, DUPLICATE
     const userId = $('#userId').val();
     $('.join-id-overlap').text('');
     if(!idPattern.test(userId)){
@@ -92,8 +90,6 @@ function handleIdCheck() {
 }
 
 function handleNicknameCheck() {
-    //ajax.post
-    //return VALID, FAIL, DUPLICATE
     const nickname = $('#nickname').val();
     $('.join-nickname-overlap').text('');
     if(nickname === '' || nickname === ' ') {

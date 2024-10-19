@@ -68,26 +68,6 @@ public class AdminRestController {
                                                             .infoImages(infoImages)
                                                             .build();
 
-        /*
-            SpringMVC에서는 MultipartFile을 DTO에 매핑하는 것이 잘 동작하지 않을 수도 있다.
-            @ModelAttribute의 경우 주로 일반 문자열 및 숫자 타입의 formData를 DTO로 매핑하는데 사용된다.
-            MultipartFile은 HTTP Request body에서 binary data를 처리하기 때문에 이 방식으로 매핑하는데 어려움이 있다.
-            @ModelAttribute가 사용되면 Spring은 해당 DTO의 필드에 대한 값을 URL 쿼리 문자열 또는 form field에서 찾으려고 한다.
-            그러나 MultipartFile은 이러한 방식으로 처리되지 않기 때문에 DTO에 올바르게 매핑되지 않을 수 있다.
-
-            SpringBoot에서는 Jackson과 통합되어 JSON 데이터처리에 Jacson 라이브러리를 사용한다.
-            그래서 DTO와 JSON의 변환을 자동으로 처리하기 때문에 DTO에 파일과 다른 데이터가 혼합되어 있을 때 더 매끄럽게 작동할 수 있는 것이다.
-            SpringMVC에서는 이러한 통합이 자동으로 이루어지지 않기때문에 MultipartFile과 DTO의 조합이 덜 직관적일 수 있다.
-
-            SpringBoot에서 ModelAttribute는 HTTP 요청을 처리할 때 파일 업로드와 다른 데이터 처리를 통합적으로 다룰 수 있는 지원을 제공한다.
-            그러나 SpringMVC에서는 이러한 처리의 자동화 지원이 부족하기 떄문에 개발자가 수작업을 통해 처리하게 된다.
-
-            SpringBoot의 Controller에서 @ModelAttribute는 MultipartFile과 일반 필드들을 함께 처리하는데 있어서 더 자연스럽게 동작하며,
-            MultipartFile을 포함한 DTO를 수용할 수 있는 방식으로 설계되어 있다.
-            또한, MultipartResolver를 구성하여 파일 업로드를 지원하기 때문에 SpringMVC보다 더 쉽게 파일 업로드를 설정할 수 있다.
-            Spring MVC에서는 MultipartResolver를 수동으로 설정해야 하며 이 과정에서 발생할 수 있는 문제에 대한 책임이 개발자에게 있다.
-         */
-
         String result = adminService.patchProduct(productId, deleteOptionIds, imageDTO, deleteImageDTO, patchDTO);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

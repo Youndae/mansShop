@@ -19,10 +19,6 @@ public class MainServiceImpl implements MainService{
 
     private final MainMapper mainMapper;
 
-    private final ProductOrderMapper productOrderMapper;
-
-    private final ProductOrderDetailMapper productOrderDetailMapper;
-
     @Override
     public List<MainListDTO> getMainBestAndNewList(String type) {
 
