@@ -11,7 +11,6 @@ $(function() {
     $('#sales-li a').attr('href', '/admin/sales/period/' + year);
 
     if(!path.startsWith(memberPath)){
-        console.log('side nav');
         let str = '';
         let elements = '';
         if(path.startsWith(productPath)){

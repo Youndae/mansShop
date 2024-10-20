@@ -24,7 +24,8 @@
 
     <insert id="saveOptions" parameterType="map">
         {CALL insert_product_options(
-            #{options, jdbcType=ARRAY, jdbcTypeName="PRODUCT_OPTION_OBJ_LIST", typeHandler=org.shop.mapper.typeHandler.ProductOptionTypeHandler}
+            #{options, jdbcType=ARRAY, jdbcTypeName="PRODUCT_OPTION_OBJ_LIST"
+                , typeHandler=org.shop.mapper.typeHandler.ProductOptionTypeHandler}
         )}
     </insert>
 

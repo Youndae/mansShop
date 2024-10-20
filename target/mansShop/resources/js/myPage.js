@@ -354,7 +354,6 @@ function deleteReviewBtnOnClick(obj) {
 }
 
 function memberCheckBtnOnClick() {
-    console.log('checkBtnOnClick');
     const userId = $("#username").val();
     const pwElements = $("#userPw");
     const userPw = pwElements.val();
@@ -382,13 +381,12 @@ function memberCheckBtnOnClick() {
                 xhr.setRequestHeader(header, token);
             },
             success: function (data) {
-                console.log('member Check response : ', data);
-                /*if(data === 'SUCCESS')
-                    location.href='/my-page/patchInfo';
+                if(data === 'SUCCESS')
+                    location.href='/my-page/member/patch-info';
                 else{
                     overlapElements.text('유효한 비밀번호가 아닙니다.');
                     pwElements.focus();
-                }*/
+                }
             },
             error: function(request, status, error) {
                 alert('code : ' + request.status + '\n'

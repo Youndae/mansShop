@@ -48,7 +48,6 @@ $(function() {
         const appendElements = $(".discount-content-content");
         const productElements = await createElementsBySelectDiscountProduct(selectValue);
         if(appendElements.is(':empty')){
-            console.log('appendElements is empty');
             const str = "<div class=\"discount-input\">" +
                 "<label>할인율 (%) : </label>" +
                 "<input type=\"number\" id=\"discount-value-input\">" +

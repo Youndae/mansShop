@@ -1,13 +1,10 @@
-/*const token = $("meta[name='_csrf']").attr("content");
-const header = $("meta[name='_csrf_header']").attr("content");*/
-
 $(document).ready(function(){
     $(".top a").on('click', function(){
         const classification = $(this).text();
 
-        if(classification == "BEST"){
+        if(classification === "BEST"){
             location.href="/";
-        }else if(classification == "NEW"){
+        }else if(classification === "NEW"){
             location.href="/new";
         }else{
             location.href="/"+classification;

@@ -4,8 +4,6 @@ let checkArr = [];
 
 
 function checkBoxOnChange(obj) {
-    console.log('checkbox : ', obj.value);
-    console.log('status : ', obj.checked);
 
     if(obj.checked)
         checkArr.push(obj.value);
@@ -19,7 +17,6 @@ function checkBoxOnChange(obj) {
 }
 
 function removeCartProduct(obj) {
-    console.log('remove id : ', obj.id);
     const arr = [];
     arr.push(obj.id);
     $.ajax({
@@ -43,7 +40,6 @@ function removeCartProduct(obj) {
 }
 
 function cartCountUp(obj) {
-    console.log('countUp id : ', obj.id);
     $.ajax({
         url: '/cart/up/' + obj.id,
         type: 'PATCH',
@@ -64,7 +60,6 @@ function cartCountUp(obj) {
 }
 
 function cartCountDown(obj) {
-    console.log('countDown id : ', obj.id);
     $.ajax({
         url: '/cart/down/' + obj.id,
         type: 'PATCH',
