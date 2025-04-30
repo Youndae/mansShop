@@ -27,7 +27,7 @@
 
 <br/>
 
-Spring MVC, JSP 환경의 기본 구조로서 Layerd Architecture 구조
+Spring MVC, JSP 환경의 기본 구조로서 Layered Architecture 구조
 
 <br />
 
